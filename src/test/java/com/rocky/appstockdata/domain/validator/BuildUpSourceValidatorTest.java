@@ -12,8 +12,10 @@ class BuildUpSourceValidatorTest {
     @Test
     void validate_ok() {
         BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
-                .startDate("2021-10-10")
-                .endDate("2021-10-30")
+                .companyName("흥아해운")
+                .buildupAmount(10000L)
+                .startDate("2021-10-13")
+                .endDate("2021-10-15")
                 .build();
 
         Exception exception = null;
