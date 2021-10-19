@@ -32,6 +32,6 @@ spring:
     url: jdbc:mysql://54.180.121.125:3306/stock_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
 
 server:
-  port: 8080
+  port: 8081
   servlet:
     context-path: /
