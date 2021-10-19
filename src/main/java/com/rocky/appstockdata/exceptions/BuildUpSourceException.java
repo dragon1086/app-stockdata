@@ -1,5 +1,8 @@
 package com.rocky.appstockdata.exceptions;
 
+import lombok.Getter;
+
+@Getter
 public class BuildUpSourceException extends Exception{
     private String message;
 

@@ -7,12 +7,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BuildUp {
-    private Float earningRate;
+    private Double earningRate;
     private Long earningAmount;
     private Long totalAmount;
 
     @Builder
-    public BuildUp(Float earningRate, Long earningAmount, Long totalAmount) {
+    public BuildUp(Double earningRate, Long earningAmount, Long totalAmount) {
         this.earningRate = earningRate;
         this.earningAmount = earningAmount;
         this.totalAmount = totalAmount;

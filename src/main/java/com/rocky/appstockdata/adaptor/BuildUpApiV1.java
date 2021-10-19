@@ -3,6 +3,8 @@ package com.rocky.appstockdata.adaptor;
 import com.rocky.appstockdata.domain.BuildUp;
 import com.rocky.appstockdata.domain.BuildUpSourceDTO;
 import com.rocky.appstockdata.domain.Post;
+import com.rocky.appstockdata.domain.validator.BuildUpSourceValidator;
+import com.rocky.appstockdata.exceptions.BuildUpSourceException;
 import com.rocky.appstockdata.port.in.BuildUpCalculatePort;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -43,24 +45,37 @@ public class BuildUpApiV1 {
 
     @GetMapping(value = "buildup-calculate")
     public String buildUpResultController(ModelMap modelMap,
-                                          @RequestParam("companyName") String companyName,
-                                          @RequestParam("buildupAmount") String buildupAmount,
-                                          @RequestParam("startDate") String startDate,
-                                          @RequestParam("endDate") String endDate){
-        modelMap.put("companyNameResult", companyName);
-        modelMap.put("buildupAmount", buildupAmount);
-        modelMap.put("startDate", startDate);
-        modelMap.put("endDate", endDate);
+                                          @RequestParam(value = "companyName", required = false) String companyName,
+                                          @RequestParam(value = "buildupAmount", required = false) String buildupAmount,
+                                          @RequestParam(value = "startDate", required = false) String startDate,
+                                          @RequestParam(value = "endDate", required = false) String endDate){
 
-        BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
-                .companyName(companyName)
-                .buildupAmount(Long.parseLong(buildupAmount))
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
 
-        BuildUp buildUp = buildUpCalculateService.calculateBuildUp(buildUpSourceDTO);
+        try{
+            BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
+                    .companyName(companyName)
+                    .buildupAmount(Long.parseLong(buildupAmount))
+                    .startDate(startDate)
+                    .endDate(endDate)
+                    .build();
 
-        return "buildUpResult";
+            BuildUpSourceValidator.validate(buildUpSourceDTO);
+
+            BuildUp buildUp = buildUpCalculateService.calculateBuildUp(buildUpSourceDTO);
+
+            modelMap.put("earningRate", buildUp.getEarningRate());
+            modelMap.put("earningAmount", buildUp.getEarningAmount());
+            modelMap.put("totalAmount", buildUp.getTotalAmount());
+
+        }catch (BuildUpSourceException e){
+            modelMap.put("isError", "true");
+            modelMap.put("errorMessage", e.getMessage());
+        }catch (NumberFormatException e){
+            modelMap.put("isError", "true");
+            modelMap.put("errorMessage", "빌드업 금액 입력 시 숫자로 입력하셔야 합니다.");
+        }finally {
+            return "buildUpResult";
+        }
+
     }
 }

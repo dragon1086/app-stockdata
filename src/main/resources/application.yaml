@@ -3,6 +3,11 @@ spring:
     view:
       prefix: /WEB-INF/jsp/
       suffix: .jsp
+  datasource:
+    username: root
+    password: gmrfyd12
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/stock_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
 
 server:
   port: 8081

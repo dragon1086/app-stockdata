@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rocky.appstockdata.port.out.StockDealRepository">
+    <select id="getDailyDeal" parameterType="com.rocky.appstockdata.domain.BuildUpSourceDTO" resultType="com.rocky.appstockdata.domain.DailyDeal">
+        SELECT
+            ITEM_CODE as itemCode,
+            ITEM_NAME as itemName,
+            CLOSING_PRICE as closingPrice,
+            START_PRICE as startPrice,
+            HIGH_PRICE as highPrice,
+            LOW_PRICE as lowPrice,
+            TRADE_VOLUME as tradeVolume,
+            TRADE_MONEY as tradeMoney,
+            DEAL_DATE as dealDate,
+            TOTAL_AMOUNT as totalAmount,
+            KOSPI_KOSDAQ as kospiKosdaq
+        FROM
+            DEAL_HISTORY
+        WHERE 1=1
+          AND ITEM_NAME = #{companyName}
+          AND DEAL_DATE BETWEEN STR_TO_DATE(#{startDate}, '%Y-%m-%d') AND STR_TO_DATE(#{endDate}, '%Y-%m-%d')
+    </select>
+</mapper>

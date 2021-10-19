@@ -2,27 +2,42 @@ package com.rocky.appstockdata.application;
 
 import com.rocky.appstockdata.domain.BuildUp;
 import com.rocky.appstockdata.domain.BuildUpSourceDTO;
+import com.rocky.appstockdata.port.out.StockDealRepository;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BuildUpCalculateUseCaseTest {
+    @Autowired
+    StockDealRepository stockDealRepository;
+
+    BuildUpCalculateUseCase buildUpCalculateUseCase;
+
+    @BeforeAll
+    public void setup(){
+        buildUpCalculateUseCase = new BuildUpCalculateUseCase(stockDealRepository);
+    }
+
     @Test
     void calculateBuildUp() {
         BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
-                .companyName("testCompany")
-                .buildupAmount(1000000L)
-                .startDate("2021-10-15")
-                .endDate("2021-10-17")
+                .companyName("흥아해운")
+                .buildupAmount(10000L)
+                .startDate("2021-10-13")
+                .endDate("2021-10-15")
                 .build();
 
-        BuildUpCalculateUseCase buildUpCalculateUseCase = new BuildUpCalculateUseCase();
-
         BuildUp expectedResult = BuildUp.builder()
-                .earningRate(21.5f)
-                .earningAmount(15000L)
-                .totalAmount(45000L)
+                .earningRate(24.24)
+                .earningAmount(6420L)
+                .totalAmount(36420L)
                 .build();
 
         BuildUp buildUp = buildUpCalculateUseCase.calculateBuildUp(buildUpSourceDTO);

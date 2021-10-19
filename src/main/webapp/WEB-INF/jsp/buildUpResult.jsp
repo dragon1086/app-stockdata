@@ -7,11 +7,20 @@
 <body>
 
 <div class="container">
-    <h1>테스트 결과는?</h1>
-    <h1>${companyNameResult}</h1>
-    <h1>${startDate}</h1>
-    <h1>${endDate}</h1>
-    <h1>${buildupAmount}</h1>
+    <h1>빌드업 결과</h1>
+    <div>
+        <c:choose>
+            <c:when test="${isError== 'true'}">
+                <h1>${errorMessage}</h1>
+            </c:when>
+            <c:otherwise>
+                <h1>수익률 : ${earningRate}%</h1>
+                <h1>수익금액 : ${earningAmount}원</h1>
+                <h1>현재 평가금액 : ${totalAmount}원</h1>
+            </c:otherwise>
+        </c:choose>
+    </div>
+
 </div>
 
 </body>

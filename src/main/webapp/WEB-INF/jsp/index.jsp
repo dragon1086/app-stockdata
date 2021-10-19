@@ -14,10 +14,12 @@ font-family: Tahoma, Verdana, Arial, sans-serif; }
 </head>
 <body>
     <form action="buildup-calculate" method="get" name="calculateRequestFrom">
-        <input type="text" name="companyName" size="50"><br>
-        <input type="date" name="startDate"/><br>
-        <input type="date" name="endDate"/><br>
-        <input type="text" name="buildupAmount" size="50"><br>
+        <h1>오리지널 빌드업 시뮬레이션 계산기</h1>
+        <p>데이터는 2000.01.01 ~ 2021.10.15 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
+        기업 이름 : <input type="text" name="companyName" size="50"><br>
+        시작 날짜 : <input type="date" name="startDate"/><br>
+        매도 날짜 : <input type="date" name="endDate"/><br>
+        빌드업 금액 : <input type="text" name="buildupAmount" size="50"><br>
         <input type="submit" value="전송" onclick="return">
     </form>
 

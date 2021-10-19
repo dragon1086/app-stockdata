@@ -1,10 +1,17 @@
 package com.rocky.appstockdata.infrastructure;
 
+import com.rocky.appstockdata.domain.BuildUpSourceDTO;
+import com.rocky.appstockdata.domain.DailyDeal;
+import com.rocky.appstockdata.port.out.StockDealRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.List;
 
+@SpringBootTest
 public class MySQLConnectionTest {
     // MySQL Connector 의 클래스. DB 연결 드라이버 정의
     private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
@@ -12,6 +19,9 @@ public class MySQLConnectionTest {
     private static final String URL = "jdbc:mysql://localhost:3306/stock_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false";
     private static final String USER = "root";
     private static final String PASSWORD = "gmrfyd12";
+
+    @Autowired
+    private StockDealRepository stockDealRepository;
 
     @Test
     public void testConnection() throws Exception {
@@ -22,6 +32,14 @@ public class MySQLConnectionTest {
             System.out.println(connection);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void stockDealRepository(){
+        List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(BuildUpSourceDTO.builder().build());
+        for(DailyDeal dailyDeal : dailyDealList){
+            System.out.println("dailyDeal.toString() = " + dailyDeal.toString());
         }
     }
 }
