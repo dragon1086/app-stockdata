@@ -24,7 +24,7 @@ public class BuildUpApiV1 {
         this.buildUpCalculateService = buildUpCalculateService;
     }
 
-    @GetMapping
+    @GetMapping("/")
     public String index(Model model){
         return "index";
     }
