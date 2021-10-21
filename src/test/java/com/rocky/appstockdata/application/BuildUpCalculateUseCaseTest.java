@@ -2,6 +2,7 @@ package com.rocky.appstockdata.application;
 
 import com.rocky.appstockdata.domain.BuildUp;
 import com.rocky.appstockdata.domain.BuildUpSourceDTO;
+import com.rocky.appstockdata.exceptions.NoResultDataException;
 import com.rocky.appstockdata.port.out.StockDealRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -47,5 +48,25 @@ class BuildUpCalculateUseCaseTest {
         Assertions.assertThat(buildUp.getEarningAmount()).isEqualTo(expectedResult.getEarningAmount());
         Assertions.assertThat(buildUp.getEarningRate()).isEqualTo(expectedResult.getEarningRate());
         Assertions.assertThat(buildUp.getTotalAmount()).isEqualTo(expectedResult.getTotalAmount());
+    }
+
+    @Test
+    void calculateBuildUp_with_no_data() {
+        BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
+                .companyName("흥아해운")
+                .buildupAmount(10000L)
+                .startDate("1500-10-13")
+                .endDate("1500-10-15")
+                .build();
+
+        Exception resultException = null;
+
+        try{
+            BuildUp buildUp = buildUpCalculateUseCase.calculateBuildUp(buildUpSourceDTO);
+        }catch(NoResultDataException e){
+            resultException = e;
+        }
+
+        Assertions.assertThat(resultException).isNotNull();
     }
 }
