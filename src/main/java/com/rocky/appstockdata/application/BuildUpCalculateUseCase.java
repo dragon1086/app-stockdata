@@ -6,7 +6,6 @@ import com.rocky.appstockdata.domain.DailyDeal;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import com.rocky.appstockdata.port.in.BuildUpCalculatePort;
 import com.rocky.appstockdata.port.out.StockDealRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
