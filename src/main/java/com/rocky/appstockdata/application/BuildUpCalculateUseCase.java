@@ -52,6 +52,7 @@ public class BuildUpCalculateUseCase implements BuildUpCalculatePort {
                 .earningRate(Double.parseDouble(String.format("%.2f",myEarningRate * 100)))
                 .earningAmount(myEarningAmount)
                 .totalAmount(myEvaluatedAmount)
+                .sumOfPurchaseAmount(sumOfPurchaseAmount)
                 .build();
     }
 }

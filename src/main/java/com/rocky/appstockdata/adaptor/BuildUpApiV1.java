@@ -66,6 +66,7 @@ public class BuildUpApiV1 {
             modelMap.put("earningRate", buildUp.getEarningRate());
             modelMap.put("earningAmount", buildUp.getEarningAmount());
             modelMap.put("totalAmount", buildUp.getTotalAmount());
+            modelMap.put("sumOfPurchaseAmount", buildUp.getSumOfPurchaseAmount());
 
         }catch (BuildUpSourceException e){
             modelMap.put("isError", "true");
