@@ -6,6 +6,7 @@ spring:
     view:
       prefix: /WEB-INF/jsp/
       suffix: .jsp
+    static-path-pattern: /resources/**
   datasource:
     username: root
     password: gmrfyd12
@@ -25,6 +26,7 @@ spring:
     view:
       prefix: /WEB-INF/jsp/
       suffix: .jsp
+    static-path-pattern: /resources/**
   datasource:
     username: root
     password: Qlalfqjsgh1!
