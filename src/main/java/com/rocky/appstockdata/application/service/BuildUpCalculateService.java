@@ -1,19 +1,19 @@
-package com.rocky.appstockdata.application;
+package com.rocky.appstockdata.application.service;
 
 import com.rocky.appstockdata.domain.BuildUp;
 import com.rocky.appstockdata.domain.BuildUpSourceDTO;
 import com.rocky.appstockdata.domain.DailyDeal;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
-import com.rocky.appstockdata.port.in.BuildUpCalculatePort;
-import com.rocky.appstockdata.port.out.StockDealRepository;
+import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
+import com.rocky.appstockdata.application.port.out.StockDealRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class BuildUpCalculateUseCase implements BuildUpCalculatePort {
+public class BuildUpCalculateService implements BuildUpCalculateUseCase {
     StockDealRepository stockDealRepository;
-    public BuildUpCalculateUseCase(StockDealRepository stockDealRepository) {
+    public BuildUpCalculateService(StockDealRepository stockDealRepository) {
         this.stockDealRepository = stockDealRepository;
     }
 

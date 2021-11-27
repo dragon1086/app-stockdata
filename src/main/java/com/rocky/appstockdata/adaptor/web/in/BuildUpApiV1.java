@@ -1,11 +1,11 @@
-package com.rocky.appstockdata.adaptor;
+package com.rocky.appstockdata.adaptor.web.in;
 
 import com.rocky.appstockdata.domain.BuildUp;
 import com.rocky.appstockdata.domain.BuildUpSourceDTO;
 import com.rocky.appstockdata.domain.validator.BuildUpSourceValidator;
 import com.rocky.appstockdata.exceptions.BuildUpSourceException;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
-import com.rocky.appstockdata.port.in.BuildUpCalculatePort;
+import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class BuildUpApiV1 {
-    private final BuildUpCalculatePort buildUpCalculateService;
+    private final BuildUpCalculateUseCase buildUpCalculateService;
 
-    public BuildUpApiV1(BuildUpCalculatePort buildUpCalculateService) {
+    public BuildUpApiV1(BuildUpCalculateUseCase buildUpCalculateService) {
         this.buildUpCalculateService = buildUpCalculateService;
     }
 

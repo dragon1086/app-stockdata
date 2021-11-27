@@ -1,4 +1,4 @@
-package com.rocky.appstockdata.port.out;
+package com.rocky.appstockdata.application.port.out;
 
 import com.rocky.appstockdata.domain.BuildUpSourceDTO;
 import com.rocky.appstockdata.domain.DailyDeal;

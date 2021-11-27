@@ -1,9 +1,10 @@
 package com.rocky.appstockdata.application;
 
+import com.rocky.appstockdata.application.service.BuildUpCalculateService;
 import com.rocky.appstockdata.domain.BuildUp;
 import com.rocky.appstockdata.domain.BuildUpSourceDTO;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
-import com.rocky.appstockdata.port.out.StockDealRepository;
+import com.rocky.appstockdata.application.port.out.StockDealRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,15 +16,15 @@ import org.springframework.context.annotation.Profile;
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Profile("local")
-class BuildUpCalculateUseCaseTest {
+class BuildUpCalculateServiceTest {
     @Autowired
     StockDealRepository stockDealRepository;
 
-    BuildUpCalculateUseCase buildUpCalculateUseCase;
+    BuildUpCalculateService buildUpCalculateService;
 
     @BeforeAll
     public void setup(){
-        buildUpCalculateUseCase = new BuildUpCalculateUseCase(stockDealRepository);
+        buildUpCalculateService = new BuildUpCalculateService(stockDealRepository);
     }
 
     @Test
@@ -41,7 +42,7 @@ class BuildUpCalculateUseCaseTest {
                 .totalAmount(36420L)
                 .build();
 
-        BuildUp buildUp = buildUpCalculateUseCase.calculateBuildUp(buildUpSourceDTO);
+        BuildUp buildUp = buildUpCalculateService.calculateBuildUp(buildUpSourceDTO);
 
         Assertions.assertThat(buildUp.getEarningAmount()).isEqualTo(expectedResult.getEarningAmount());
         Assertions.assertThat(buildUp.getEarningRate()).isEqualTo(expectedResult.getEarningRate());
@@ -60,7 +61,7 @@ class BuildUpCalculateUseCaseTest {
         Exception resultException = null;
 
         try{
-            BuildUp buildUp = buildUpCalculateUseCase.calculateBuildUp(buildUpSourceDTO);
+            BuildUp buildUp = buildUpCalculateService.calculateBuildUp(buildUpSourceDTO);
         }catch(NoResultDataException e){
             resultException = e;
         }
