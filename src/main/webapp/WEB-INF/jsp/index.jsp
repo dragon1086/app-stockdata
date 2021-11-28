@@ -42,7 +42,7 @@
     <form action="buildup-calculate" method="get" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
             <h1 class="display-5 fw-bold">오리지널 빌드업 시뮬레이션 계산기</h1>
-            <div class="col-lg-6 mx-auto">
+            <div class="display-5 mx-auto">
                 <p class="lead mb-4">매일 종가로 주식을 매수하면, 투입금액 대비 얼마나 수익날 지 계산하는 프로그램입니다.</p>
                 <p></p>
                 <p class="lead mb-4">데이터는 지금 2000.01.01 ~ 2021.11.05 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
