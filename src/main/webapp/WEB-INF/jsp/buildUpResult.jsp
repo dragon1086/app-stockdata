@@ -118,19 +118,23 @@
             datasets: [{
                 label: "종가",
                 data: closingPriceList,
-                lineTension: 0,
+                lineTension: 0.1,
                 backgroundColor: 'transparent',
                 borderColor: '#007bff',
-                borderWidth: 4,
-                pointBackgroundColor: '#007bff'
+                borderWidth: 2,
+                pointBackgroundColor: '#007bff',
+                fill: false,
+                pointRadius: 0.5
             },{
                 label: "내 평단",
                 data: myAverageUnitPriceList,
-                lineTension: 0,
+                lineTension: 0.1,
                 backgroundColor: 'transparent',
                 borderColor: '#b22222',
-                borderWidth: 2,
-                pointBackgroundColor: '#b22222'
+                borderWidth: 1,
+                pointBackgroundColor: '#b22222',
+                fill: false,
+                pointRadius: 0.5
             }]
         },
         options: {
