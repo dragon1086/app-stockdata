@@ -3,11 +3,13 @@ package com.rocky.appstockdata.application.service;
 import com.rocky.appstockdata.domain.BuildUp;
 import com.rocky.appstockdata.domain.BuildUpSourceDTO;
 import com.rocky.appstockdata.domain.DailyDeal;
+import com.rocky.appstockdata.domain.DailyDealHistory;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,6 +29,7 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
         long finalRemainingAmount = 0L;
         double myEarningRate;
         long myEarningAmount;
+        List<DailyDealHistory> dailyDealHistories = new ArrayList<>();
 
         List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(buildUpSourceDTO);
         if(dailyDealList.isEmpty()){
@@ -36,12 +39,23 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
 
         for(DailyDeal dailyDeal : dailyDealList){
             Long closingPrice = dailyDeal.getClosingPrice();
+
             long buildupAmount = buildUpSourceDTO.getBuildupAmount() + finalRemainingAmount;
             int purchaseQuantity = (int) Math.floor(buildupAmount / (double) closingPrice);
             long purchaseAmount = closingPrice * purchaseQuantity;
 
             sumOfPurchaseQuantity += purchaseQuantity;
             sumOfPurchaseAmount += purchaseAmount;
+
+            if(sumOfPurchaseQuantity != 0L){
+                dailyDealHistories.add(DailyDealHistory.builder()
+                        .dealDate(dailyDeal.getDealDate())
+                        .closingPrice(closingPrice)
+                        .myAverageUnitPrice(Math.round(sumOfPurchaseAmount / (double)sumOfPurchaseQuantity))
+                        .purchaseQuantity(purchaseQuantity)
+                        .buildupAmount(buildupAmount)
+                        .build());
+            }
 
             finalClosingPrice = closingPrice;
             finalRemainingAmount = buildupAmount - purchaseAmount;
@@ -56,6 +70,7 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
                 .earningAmount(myEarningAmount)
                 .totalAmount(sumOfPurchaseAmount + myEarningAmount + finalRemainingAmount)
                 .sumOfPurchaseAmount(sumOfPurchaseAmount)
+                .dailyDealHistories(dailyDealHistories)
                 .build();
     }
 }

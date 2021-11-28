@@ -48,6 +48,8 @@ public class BuildUpApiV1 {
             modelMap.put("earningAmount", buildUp.getEarningAmount());
             modelMap.put("totalAmount", buildUp.getTotalAmount());
             modelMap.put("sumOfPurchaseAmount", buildUp.getSumOfPurchaseAmount());
+            modelMap.put("dailyDealHistories", buildUp.getDailyDealHistories());
+            modelMap.put("isError", "false");
 
         }catch (BuildUpSourceException | NoResultDataException e){
             modelMap.put("isError", "true");
