@@ -34,7 +34,7 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
         List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(buildUpSourceDTO);
         if(dailyDealList.isEmpty()){
             throw new NoResultDataException("조회하신 검색 결과가 없습니다. 종목명 또는 조회기간을 확인 부탁드립니다.\r\n"
-                + "종목명은 영문표기를 한글로 변형 또는 반대로 해서 다시 입력해보시기 바랍니다. (종목기준 : 대신증권)");
+                + "종목명은 영문표기를 한글로 변형 또는 반대로 해서 다시 입력해보시기 바랍니다.");
         }
 
         for(DailyDeal dailyDeal : dailyDealList){
@@ -53,7 +53,7 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
                         .closingPrice(closingPrice)
                         .myAverageUnitPrice(Math.round(sumOfPurchaseAmount / (double)sumOfPurchaseQuantity))
                         .purchaseQuantity(purchaseQuantity)
-                        .buildupAmount(buildupAmount)
+                        .buildupAmount(buildupAmount - purchaseAmount)
                         .build());
             }
 

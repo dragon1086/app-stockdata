@@ -45,13 +45,13 @@
         <div class="row">
             <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">빌드업 결과</h1>
                     <div>
                         <c:choose>
-                            <c:when test="${isError== 'true'}">
+                            <c:when test="${isError == 'true'}">
                                 <h1>${errorMessage}</h1>
                             </c:when>
                             <c:otherwise>
+                                <h1 class="h2">빌드업 결과</h1>
                                 <h1>수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h1>
                                 <h1>수익금액 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h1>
                                 <h1>총 투입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" /></h1>
