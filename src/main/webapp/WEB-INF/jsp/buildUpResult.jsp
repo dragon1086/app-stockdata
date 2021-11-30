@@ -54,7 +54,7 @@
                                 <h1 class="h2">빌드업 결과</h1>
                                 <h1>수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h1>
                                 <h1>수익금액 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h1>
-                                <h1>총 투입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" /></h1>
+                                <h1>총 투입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h1>
                                 <h1>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h1>
                             </c:otherwise>
                         </c:choose>
@@ -79,10 +79,10 @@
                         <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
                             <tr>
                                 <td>${dailyDealHistory.dealDate}</td>
-                                <td>${dailyDealHistory.closingPrice}</td>
-                                <td>${dailyDealHistory.purchaseQuantity}</td>
-                                <td>${dailyDealHistory.myAverageUnitPrice}</td>
-                                <td>${dailyDealHistory.buildupAmount}</td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.closingPrice}" pattern="#,###" /></td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.purchaseQuantity}" pattern="#,###" /></td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.myAverageUnitPrice}" pattern="#,###" /></td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.buildupAmount}" pattern="#,###" /></td>
                             </tr>
                         </c:forEach>
                         </tbody>
