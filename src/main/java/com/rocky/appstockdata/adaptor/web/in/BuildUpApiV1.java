@@ -31,7 +31,6 @@ public class BuildUpApiV1 {
                                           @RequestParam(value = "startDate", required = false) String startDate,
                                           @RequestParam(value = "endDate", required = false) String endDate){
 
-
         try{
             BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
                     .companyName(companyName)
@@ -39,28 +38,39 @@ public class BuildUpApiV1 {
                     .startDate(startDate)
                     .endDate(endDate)
                     .build();
-
             BuildUpSourceValidator.validate(buildUpSourceDTO);
 
             BuildUp buildUp = buildUpCalculateService.calculateBuildUp(buildUpSourceDTO);
 
-            modelMap.put("earningRate", buildUp.getEarningRate());
-            modelMap.put("earningAmount", buildUp.getEarningAmount());
-            modelMap.put("totalAmount", buildUp.getTotalAmount());
-            modelMap.put("sumOfPurchaseAmount", buildUp.getSumOfPurchaseAmount());
-            modelMap.put("dailyDealHistories", buildUp.getDailyDealHistories());
-            modelMap.put("isError", "false");
-
+            setModelMap(modelMap, buildUp);
         }catch (BuildUpSourceException | NoResultDataException e){
-            modelMap.put("isError", "true");
-            modelMap.put("errorMessage", e.getMessage());
-            return "buildUpResult";
+            return createModelMapWithBuilUpException(modelMap, e.getMessage());
         }catch (NumberFormatException e){
-            modelMap.put("isError", "true");
-            modelMap.put("errorMessage", "빌드업 금액 입력 시 숫자로 입력하셔야 합니다.");
-            return "buildUpResult";
+            return createModelMapWithNumberFormatException(modelMap, "빌드업 금액 입력 시 숫자로 입력하셔야 합니다.");
         }
 
         return "buildUpResult";
     }
+
+    private void setModelMap(ModelMap modelMap, BuildUp buildUp) {
+        modelMap.put("earningRate", buildUp.getEarningRate());
+        modelMap.put("earningAmount", buildUp.getEarningAmount());
+        modelMap.put("totalAmount", buildUp.getTotalAmount());
+        modelMap.put("sumOfPurchaseAmount", buildUp.getSumOfPurchaseAmount());
+        modelMap.put("dailyDealHistories", buildUp.getDailyDealHistories());
+        modelMap.put("isError", "false");
+    }
+
+    private String createModelMapWithBuilUpException(ModelMap modelMap, String message) {
+        modelMap.put("isError", "true");
+        modelMap.put("errorMessage", message);
+        return "buildUpResult";
+    }
+
+    private String createModelMapWithNumberFormatException(ModelMap modelMap, String s) {
+        modelMap.put("isError", "true");
+        modelMap.put("errorMessage", s);
+        return "buildUpResult";
+    }
+
 }
