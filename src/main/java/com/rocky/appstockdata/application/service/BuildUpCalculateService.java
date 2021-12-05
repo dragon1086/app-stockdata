@@ -7,12 +7,16 @@ import com.rocky.appstockdata.domain.DailyDealHistory;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class BuildUpCalculateService implements BuildUpCalculateUseCase {
     StockDealRepository stockDealRepository;
     public BuildUpCalculateService(StockDealRepository stockDealRepository) {
@@ -50,7 +54,12 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
             if(sumOfPurchaseQuantity != 0L){
                 dailyDealHistories.add(DailyDealHistory.builder()
                         .dealDate(dailyDeal.getDealDate())
+                        .dealDateForTimestamp(transformDate(dailyDeal.getDealDate()))
                         .closingPrice(closingPrice)
+                        .startPrice(dailyDeal.getStartPrice())
+                        .highPrice(dailyDeal.getHighPrice())
+                        .lowPrice(dailyDeal.getLowPrice())
+                        .tradeVolume(dailyDeal.getTradeVolume())
                         .myAverageUnitPrice(Math.round(sumOfPurchaseAmount / (double)sumOfPurchaseQuantity))
                         .purchaseQuantity(purchaseQuantity)
                         .buildupAmount(buildupAmount - purchaseAmount)
@@ -66,11 +75,20 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
         myEarningAmount = Math.round(myEarningRate * sumOfPurchaseAmount);
 
         return BuildUp.builder()
+                .itemName(dailyDealList.get(0).getItemName())
                 .earningRate(Double.parseDouble(String.format("%.2f",myEarningRate * 100)))
                 .earningAmount(myEarningAmount)
                 .totalAmount(sumOfPurchaseAmount + myEarningAmount + finalRemainingAmount)
                 .sumOfPurchaseAmount(sumOfPurchaseAmount)
                 .dailyDealHistories(dailyDealHistories)
                 .build();
+    }
+
+    private long transformDate(String dealDate) {
+        int year = Integer.parseInt(dealDate.substring(0,4));
+        int month = Integer.parseInt(dealDate.substring(4,6));
+        int day = Integer.parseInt(dealDate.substring(6,8));
+
+        return ZonedDateTime.of(year, month, day, 0, 0, 0, 0, ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
     }
 }

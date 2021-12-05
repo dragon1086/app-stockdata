@@ -14,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 @SpringBootTest
@@ -32,6 +36,8 @@ class BuildUpCalculateServiceTest {
 
     @Test
     void calculateBuildUp() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
                 .companyName("흥아해운")
                 .buildupAmount(10000L)
@@ -47,22 +53,37 @@ class BuildUpCalculateServiceTest {
                 .dailyDealHistories(Arrays.asList(
                         DailyDealHistory.builder()
                                 .closingPrice(3050)
+                                .startPrice(2860)
+                                .highPrice(3180)
+                                .lowPrice(2840)
+                                .tradeVolume(5828293)
                                 .myAverageUnitPrice(3050)
                                 .dealDate("20211013")
+                                .dealDateForTimestamp(1634050800000L)
                                 .purchaseQuantity(3)
                                 .buildupAmount(850L)
                         .build(),
                         DailyDealHistory.builder()
                                 .closingPrice(3965)
+                                .startPrice(3060)
+                                .highPrice(3965)
+                                .lowPrice(3015)
+                                .tradeVolume(17056503)
                                 .myAverageUnitPrice(3416)
                                 .dealDate("20211014")
+                                .dealDateForTimestamp(1634137200000L)
                                 .purchaseQuantity(2)
                                 .buildupAmount(2920L)
                                 .build(),
                         DailyDealHistory.builder()
                                 .closingPrice(4700)
+                                .startPrice(4245)
+                                .highPrice(4945)
+                                .lowPrice(4245)
+                                .tradeVolume(50682633)
                                 .myAverageUnitPrice(3783)
                                 .dealDate("20211015")
+                                .dealDateForTimestamp(1634223600000L)
                                 .purchaseQuantity(2)
                                 .buildupAmount(3520L)
                                 .build()))

@@ -13,6 +13,7 @@ public class BuildUp {
     private Long earningAmount;
     private Long totalAmount;
     private Long sumOfPurchaseAmount;
+    private String itemName;
     private List<DailyDealHistory> dailyDealHistories;
 
     @Builder
@@ -20,11 +21,13 @@ public class BuildUp {
                    Long earningAmount,
                    Long totalAmount,
                    Long sumOfPurchaseAmount,
+                   String itemName,
                    List<DailyDealHistory> dailyDealHistories) {
         this.earningRate = earningRate;
         this.earningAmount = earningAmount;
         this.totalAmount = totalAmount;
         this.sumOfPurchaseAmount = sumOfPurchaseAmount;
+        this.itemName = itemName;
         this.dailyDealHistories = dailyDealHistories;
     }
 }

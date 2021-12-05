@@ -53,6 +53,7 @@ public class BuildUpApiV1 {
     }
 
     private void setModelMap(ModelMap modelMap, BuildUp buildUp) {
+        modelMap.put("itemName", buildUp.getItemName());
         modelMap.put("earningRate", buildUp.getEarningRate());
         modelMap.put("earningAmount", buildUp.getEarningAmount());
         modelMap.put("totalAmount", buildUp.getTotalAmount());
