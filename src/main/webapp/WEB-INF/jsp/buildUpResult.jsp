@@ -185,7 +185,19 @@
                                         units: groupingUnits
                                     },
                                     onSeries: 'candle'
-                                }]
+                                }],
+                                responsive: {
+                                    rules: [{
+                                        condition: {
+                                            maxWidth: 800
+                                        },
+                                        chartOptions: {
+                                            rangeSelector: {
+                                                inputEnabled: false
+                                            }
+                                        }
+                                    }]
+                                }
                             });
                         });
                     }
