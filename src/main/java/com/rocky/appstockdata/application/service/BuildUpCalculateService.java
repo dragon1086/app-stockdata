@@ -51,12 +51,12 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
             int purchaseQuantity = (int) Math.floor(buildupAmount / (double) closingPrice);
             long purchaseAmount = closingPrice * purchaseQuantity;
 
+            //매입 평단 수정 : ((기존 평단 * 기존 매수 수량) + (매수가 * 신규 매수 수량)) / (기존 매수 수량 + 신규 매수 수량) ->이동평균 계산법
+            myAverageUnitPrice = Math.round(((myAverageUnitPrice * sumOfPurchaseQuantity) + (closingPrice * purchaseQuantity))  / (double)(sumOfPurchaseQuantity + purchaseQuantity));
             //총 구매개수 누적
             sumOfPurchaseQuantity += purchaseQuantity;
             //총 매수금액 누적
             sumOfPurchaseAmount += purchaseAmount;
-            //매입평단 수정
-            myAverageUnitPrice = sumOfPurchaseAmount / (double)sumOfPurchaseQuantity;
 
             if(sumOfPurchaseQuantity != 0L){
                 dailyDealHistories.add(DailyDealHistory.builder()
@@ -73,6 +73,7 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
                         .build());
             }
 
+            //남아있는 예수금 갱신
             finalRemainingAmount = buildupAmount - purchaseAmount;
 
             //종가매수 마지막날 전량매도
@@ -97,8 +98,8 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
             }
         }
 
-        //수익률 : (총 매도금액-총 수수료-총 구매금액)/총 구매금액
-        double myEarningRate = (sumOfSellingAmount - sumOfCommission - sumOfPurchaseAmount) / (double)sumOfPurchaseAmount;
+        //수익률 : 실현손익 총합 / (남은금액 + 구매한 총금액)
+        double myEarningRate = sumOfRealizedEarningAmount / (double)(finalRemainingAmount + sumOfPurchaseAmount);
         //최종적으로 손에 든 금액 : 남은금액 + 구매한 총금액 + 실현손익
         long myTotalAmount = finalRemainingAmount + sumOfPurchaseAmount + sumOfRealizedEarningAmount;
 
@@ -132,6 +133,7 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
         long sumOfRealizedEarningAmount = 0L;
         int sumOfPurchaseQuantity = 0;
         int sumOfSellingQuantity = 0;
+        int sumOfMyQuantity = 0;
         double myAverageUnitPrice = 0.0d;
         long finalRemainingAmount = 0L;
 
@@ -167,16 +169,19 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
                         //추가매수 실시. 매수 기록 리스트 형태로 남겨야 함.
 
                         //매수 수량 : (내림)(이전까지 총 구매금액 * 구매비중 / 매수단가)
-                        int additionalBuyingQuantity = (int) Math.floor((sumOfPurchaseAmount * dealModification.getBuyPercent()/100) / (double) dealModification.getBuyPrice());
+                        int additionalBuyingQuantity = (int) Math.floor((sumOfPurchaseAmount * (double)dealModification.getBuyPercent()/100) / (double) dealModification.getBuyPrice());
                         //매수 금액 : 매수 수량 * 매수 단가
                         long additionalBuyingAmount = additionalBuyingQuantity * dealModification.getBuyPrice();
 
+                        //매입 평단 수정 : ((기존 평단 * 내 보유 수량) + (매수가 * 신규 매수 수량)) / (내 보유수량 + 신규 매수 수량) ->이동평균 계산법
+                        // (추가매수와 추가매도가 같은 날에 있을 경우, 추가매도의 평단은 곧 추가매수의 평단이 된다. 왜냐하면 매수 먼저 하니까.)
+                        myAverageUnitPrice = Math.round(((myAverageUnitPrice * sumOfMyQuantity) + (dealModification.getBuyPrice() * additionalBuyingQuantity))  / (double)(sumOfMyQuantity + additionalBuyingQuantity));
                         //총 구매개수 누적
                         sumOfPurchaseQuantity += additionalBuyingQuantity;
+                        //총 보유수량 누적
+                        sumOfMyQuantity += additionalBuyingQuantity;
                         //총 매수금액 누적
                         sumOfPurchaseAmount += additionalBuyingAmount;
-                        //매입 평단 수정 (추가매수와 추가매도가 같은 날에 있을 경우, 추가매도의 평단은 곧 추가매수의 평단이 된다. 왜냐하면 매수 먼저 하니까.)
-                        myAverageUnitPrice = Math.round(sumOfPurchaseAmount / (double)sumOfPurchaseQuantity);
                         //당일 추가 매수 수량 합계
                         sumOfAdditionalBuyingQuantityForToday += additionalBuyingQuantity;
                         //당일 추가 매수 금액 합계
@@ -186,7 +191,7 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
                         //추가매도 실시. 매도 기록 리스트 형태로 남겨야 함.
 
                         //매도 수량 : (내림)(이전까지 총 구매금액 * 매도비중 / 매도단가)
-                        int additionalSellingQuantity = (int) Math.floor((sumOfPurchaseAmount * dealModification.getSellPercent()/100) / (double) dealModification.getSellPrice());
+                        int additionalSellingQuantity = (int) Math.floor((sumOfPurchaseAmount * (double)dealModification.getSellPercent()/100) / (double) dealModification.getSellPrice());
                         //매도 금액 : 매도 수량 * 매도 단가
                         long additionalSellingAmount = additionalSellingQuantity * dealModification.getSellPrice();
                         //매도 수수료(0.3%)
@@ -196,6 +201,8 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
 
                         //총 매도개수 누적
                         sumOfSellingQuantity += additionalSellingQuantity;
+                        //총 보유수량 누적
+                        sumOfMyQuantity -= additionalSellingQuantity;
                         //총 매도액 누적
                         sumOfSellingAmount += additionalSellingAmount;
                         //총 수수료 누적
@@ -219,9 +226,14 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
             int purchaseQuantity = (int) Math.floor(buildupAmount / (double) closingPrice);
             long purchaseAmount = closingPrice * purchaseQuantity;
 
+            //매입 평단 수정 : ((기존 평단 * 내 보유 수량) + (매수가 * 신규 매수 수량)) / (내 보유수량 + 신규 매수 수량) ->이동평균 계산법
+            myAverageUnitPrice = Math.round(((myAverageUnitPrice * sumOfMyQuantity) + (closingPrice * purchaseQuantity))  / (double)(sumOfMyQuantity + purchaseQuantity));
+            //총 매수수량 누적
             sumOfPurchaseQuantity += purchaseQuantity;
+            //총 보유수량 누적
+            sumOfMyQuantity += purchaseQuantity;
+            //총 매수금액 누적
             sumOfPurchaseAmount += purchaseAmount;
-            myAverageUnitPrice = Math.round(sumOfPurchaseAmount / (double)sumOfPurchaseQuantity);
 
             if(sumOfPurchaseQuantity != 0L){
                 dailyDealHistories.add(DailyDealHistory.builder()
@@ -244,6 +256,7 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
                         .build());
             }
 
+            //남아있는 예수금 갱신
             finalRemainingAmount = buildupAmount - purchaseAmount;
 
             //종가매수 마지막날 전량매도
@@ -268,8 +281,8 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
             }
         }
 
-        //수익률 : (총 매도금액-총 수수료-총 구매금액)/총 구매금액
-        double myEarningRate = (sumOfSellingAmount - sumOfCommission - sumOfPurchaseAmount) / (double)sumOfPurchaseAmount;
+        //수익률 : 실현손익 총합 / (남은금액 + 구매한 총금액)
+        double myEarningRate = sumOfRealizedEarningAmount / (double)(finalRemainingAmount + sumOfPurchaseAmount);
         //최종적으로 손에 든 금액 : 남은금액 + 구매한 총금액 + 실현손익
         long myTotalAmount = finalRemainingAmount + sumOfPurchaseAmount + sumOfRealizedEarningAmount;
 
