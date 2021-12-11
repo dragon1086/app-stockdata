@@ -77,6 +77,10 @@
                         var candleStickDataList = [];
                         var volumeList = [];
                         var myAverageUnitPriceList = [];
+                        var additionalBuyingPrice = [];
+                        var additionalSellingPrice = [];
+                        var additionalBuyingAmount = [];
+                        var additionalSellingAmount = [];
                         var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
 
                         <c:if test="${isError == 'false'}">
@@ -84,6 +88,14 @@
                                 candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
                                 volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
                                 myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
+                                <c:if test="${dailyDealHistory.additionalBuyingQuantity != 0}">
+                                    additionalBuyingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount / dailyDealHistory.additionalBuyingQuantity}]);
+                                    additionalBuyingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount}]);
+                                </c:if>
+                                <c:if test="${dailyDealHistory.additionalSellingQuantity != 0}">
+                                    additionalSellingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount / dailyDealHistory.additionalSellingQuantity}]);
+                                    additionalSellingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount}]);
+                                </c:if>
                             </c:forEach>
                         </c:if>
 
@@ -125,34 +137,6 @@
                                 },
                                 chart: {
                                     zoomType: 'xy',
-                                    events: {
-                                        click: function (event) {
-                                            // Get the quiz form element
-                                            var modificationForm = document.getElementById('modifyCalculation');
-
-                                            if(modificationForm){
-                                                // First create a DIV element.
-                                                var newModificationForm = document.createElement('div');
-                                                newModificationForm.className = "input-group mb-3";
-
-                                                // Then add the content (a new input box) of the element.
-                                                newModificationForm.innerHTML =
-                                                    "<span class='input-group-text' id='basic-addon1'>수정 날짜</span>"
-                                                    + "<input type='date' class='form-control' name='modifyDate' placeholder='수정하실 날짜를 선택하세요' aria-label='modifyDate' aria-describedby='basic-addon1'>"
-                                                    + "<span class='input-group-text' id='basic-addon2'>매도 비중%(현시점 보유비중의 몇%)</span>"
-                                                    + "<input type='text' class='form-control' name='sellPercent' placeholder='% 제외하고 입력하세요' aria-label='sellPercent' aria-describedby='basic-addon2'>"
-                                                    + "<span class='input-group-text' id='basic-addon3'>매도 가격</span>"
-                                                    + "<input type='text' class='form-control' name='sellPrice' placeholder='매도하실 금액을 입력하세요(저가와 고가 사이)' aria-label='sellPrice' aria-describedby='basic-addon3'>"
-                                                    + "<span class='input-group-text' id='basic-addon4'>매수 비중%(현시점 보유비중의 몇%)</span>"
-                                                    + "<input type='text' class='form-control' name='buyPercent' placeholder='% 제외하고 입력하세요' aria-label='buyPercent' aria-describedby='basic-addon4'>"
-                                                    + "<span class='input-group-text' id='basic-addon5'>매수 가격</span>"
-                                                    + "<input type='text' class='form-control' name='buyPrice' placeholder='매수하실 금액을 입력하세요(저가와 고가 사이)' aria-label='buyPrice' aria-describedby='basic-addon5'>";
-
-                                                // Finally put it where it is supposed to appear.
-                                                document.getElementById("parentDivForModifiyCalculation").appendChild(newModificationForm);
-                                            }
-                                        }
-                                    }
                                 },
                                 time:{
                                     useUTC: false,
@@ -180,7 +164,7 @@
                                     title: {
                                         text: '${itemName}'
                                     },
-                                    height: '75%',
+                                    height: '50%',
                                     lineWidth: 2,
                                     resize: {
                                         enabled: true
@@ -193,8 +177,20 @@
                                     title: {
                                         text: '거래량'
                                     },
-                                    top: '80%',
-                                    height: '20%',
+                                    top: '55%',
+                                    height: '25%',
+                                    offset: 0,
+                                    lineWidth: 2
+                                }, {
+                                    labels: {
+                                        align: 'right',
+                                        x: -3
+                                    },
+                                    title: {
+                                        text: '매수/매도 금액'
+                                    },
+                                    top: '85%',
+                                    height: '15%',
                                     offset: 0,
                                     lineWidth: 2
                                 }],
@@ -234,6 +230,64 @@
                                         units: groupingUnits
                                     },
                                     onSeries: 'candle'
+                                }, {
+                                    type: 'scatter',
+                                    name: '추가 매수단가',
+                                    data: additionalBuyingPrice,
+                                    dataGrouping: {
+                                        units: groupingUnits
+                                    },
+                                    onSeries: 'candle',
+                                    dataLabels: {
+                                        enabled: true,
+                                        borderRadius: 20,
+                                        borderColor: 'red',
+                                        y: -5,
+                                        shape: 'callout',
+                                        rotation: 20
+                                    },
+                                    marker: {
+                                        enabled: true,
+                                        radius: 10
+                                    }
+                                }, {
+                                    type: 'scatter',
+                                    name: '추가 매도단가',
+                                    data: additionalSellingPrice,
+                                    dataGrouping: {
+                                        units: groupingUnits
+                                    },
+                                    onSeries: 'candle',
+                                    dataLabels: {
+                                        enabled: true,
+                                        borderRadius: 20,
+                                        borderColor: 'blue',
+                                        y: 5,
+                                        shape: null,
+                                        rotation: 20
+                                    },
+                                    marker: {
+                                        enabled: true,
+                                        radius: 10
+                                    }
+                                }, {
+                                    type: 'column',
+                                    id: 'buyingAmount',
+                                    name: '매수 금액',
+                                    data: additionalBuyingAmount,
+                                    dataGrouping: {
+                                        units: groupingUnits
+                                    },
+                                    yAxis: 2,
+                                }, {
+                                    type: 'column',
+                                    name: '매도 금액',
+                                    data: additionalSellingAmount,
+                                    dataGrouping: {
+                                        units: groupingUnits
+                                    },
+                                    yAxis: 2,
+                                    onSeries: 'buyingAmount'
                                 }],
                                 responsive: {
                                     rules: [{
@@ -273,30 +327,6 @@
                             </script>
                         </div>
                     </div>
-                    <div class="px-4 py-5 my-5 text-center" id="parentDivForModifiyCalculation">
-                        <h1>그래프의 배경을 클릭하시면, 수정할 수 있는 행이 추가됩니다. </h1>
-                        <p></p>
-                        <h3>1개 행에 매수/매도 다 입력해도 되고, 한쪽만 입력해도 됩니다.</h3>
-                        <h3>단, 매수/매도 비중을 입력했으면 매수/매도 단가도 필수입니다. 비중과 단가 중 하나라도 미입력 시 계산 무시합니다.</h3>
-                        <h3>같은날짜에 더 매수/매도 하고 싶으시면, 행을 더 추가하시면 됩니다.</h3>
-                        <h3>날짜가 없는 행은 계산에서 제외됩니다.</h3>
-                        <h3>매도 시 매도금액의 0.3%를 수수료차원에서 실현손익에서 뺍니다.</h3>
-                        <div class="input-group mb-3" id= "modifyInputGroup">
-                            <span class="input-group-text" id="basic-addon1">수정 날짜</span>
-                            <input type="date" class="form-control" name="modifyDate" placeholder="수정하실 날짜를 선택하세요" aria-label="modifyDate" aria-describedby="basic-addon1">
-                            <span class="input-group-text" id="basic-addon2">매도 비중%(현시점 보유비중의 몇%)</span>
-                            <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요" aria-label="sellPercent" aria-describedby="basic-addon2">
-                            <span class="input-group-text" id="basic-addon3">매도 가격</span>
-                            <input type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
-                            <span class="input-group-text" id="basic-addon4">매수 비중%(현시점 보유비중의 몇%)</span>
-                            <input type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요" aria-label="buyPercent" aria-describedby="basic-addon4">
-                            <span class="input-group-text" id="basic-addon5">매수 가격</span>
-                            <input type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
-                        </div>
-                    </div>
-                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                        <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">수정 전송</button>
-                    </div>
                 </form>
 
                 <hr style="height:3px;color:#dc874f">
@@ -307,8 +337,14 @@
                         <tr>
                             <th scope="col">거래일</th>
                             <th scope="col">종가</th>
-                            <th scope="col">구매수량</th>
+                            <th scope="col">종가 구매수량</th>
                             <th scope="col">내 평단</th>
+                            <th scope="col">추가 구매수량</th>
+                            <th scope="col">추가 구매금액</th>
+                            <th scope="col">추가 매도수량</th>
+                            <th scope="col">추가 매도금액</th>
+                            <th scope="col">매도 시 수수료</th>
+                            <th scope="col">매도 시 실현손익</th>
                             <th scope="col">예수금</th>
                         </tr>
                         </thead>
@@ -319,6 +355,12 @@
                                 <td><fmt:formatNumber value="${dailyDealHistory.closingPrice}" pattern="#,###" /></td>
                                 <td><fmt:formatNumber value="${dailyDealHistory.closingPurchaseQuantity}" pattern="#,###" /></td>
                                 <td><fmt:formatNumber value="${dailyDealHistory.myAverageUnitPrice}" pattern="#,###" /></td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.additionalBuyingQuantity}" pattern="#,###" /></td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.additionalBuyingAmount}" pattern="#,###" /></td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.additionalSellingQuantity}" pattern="#,###" /></td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.additionalSellingAmount}" pattern="#,###" /></td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.commission}" pattern="#,###" /></td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.realizedEarningAmount}" pattern="#,###" /></td>
                                 <td><fmt:formatNumber value="${dailyDealHistory.remainingAmount}" pattern="#,###" /></td>
                             </tr>
                         </c:forEach>
