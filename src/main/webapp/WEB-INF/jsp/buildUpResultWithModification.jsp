@@ -286,6 +286,7 @@
                                         units: groupingUnits
                                     },
                                     yAxis: 2,
+                                    color: '#FF0000'
                                 }, {
                                     type: 'column',
                                     name: '매도 금액',
@@ -294,6 +295,7 @@
                                         units: groupingUnits
                                     },
                                     yAxis: 2,
+                                    color: '#0022ff',
                                     onSeries: 'buyingAmount'
                                 }],
                                 responsive: {
