@@ -34,4 +34,14 @@ public class DealModification {
             this.buyPrice = Long.parseLong(buyPrice);
         }
     }
+
+    public DealModificationView transformForView(){
+        return DealModificationView.builder()
+                .modifyDate(this.modifyDate)
+                .buyPercent(this.buyPercent)
+                .buyPrice(this.buyPrice)
+                .sellPercent(this.sellPercent)
+                .sellPrice(this.sellPrice)
+                .build();
+    }
 }

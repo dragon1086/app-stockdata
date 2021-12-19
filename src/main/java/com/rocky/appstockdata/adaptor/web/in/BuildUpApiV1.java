@@ -146,6 +146,7 @@ public class BuildUpApiV1 {
         modelMap.put("sumOfPurchaseQuantity", buildUp.getSumOfPurchaseQuantity());
         modelMap.put("sumOfSellingQuantity", buildUp.getSumOfSellingQuantity());
         modelMap.put("dailyDealHistories", buildUp.getDailyDealHistories());
+        modelMap.put("dealModifications", buildUpModificationSourceDTO.dealModificationsForView());
         modelMap.put("isError", "false");
     }
 

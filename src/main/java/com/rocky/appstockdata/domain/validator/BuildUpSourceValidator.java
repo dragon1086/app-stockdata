@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 public class BuildUpSourceValidator {
     public static void validate(BuildUpSourceDTO buildUpSourceDTO) throws BuildUpSourceException {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDate = LocalDate.parse(buildUpSourceDTO.getStartDate(), dateTimeFormatter);
         LocalDate endDate = LocalDate.parse(buildUpSourceDTO.getEndDate(), dateTimeFormatter);
 
