@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.rocky.appstockdata.domain.utils.BuildUpUtil.transformDate;
+
 @Service
 @Slf4j
 public class BuildUpCalculateService implements BuildUpCalculateUseCase {
@@ -35,7 +37,11 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
 
         List<DailyDealHistory> dailyDealHistories = new ArrayList<>();
 
-        List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(buildUpSourceDTO);
+        List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
+                                                                .companyName(buildUpSourceDTO.getCompanyName())
+                                                                .startDate(buildUpSourceDTO.getStartDate())
+                                                                .endDate(buildUpSourceDTO.getEndDate())
+                                                                .build());
         if(dailyDealList.isEmpty()){
             throw new NoResultDataException("조회하신 검색 결과가 없습니다. 종목명 또는 조회기간을 확인 부탁드립니다.\r\n"
                 + "종목명은 영문표기를 한글로 변형 또는 반대로 해서 다시 입력해보시기 바랍니다.");
@@ -117,14 +123,6 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
                 .build();
     }
 
-    private long transformDate(String dealDate) {
-        int year = Integer.parseInt(dealDate.substring(0,4));
-        int month = Integer.parseInt(dealDate.substring(4,6));
-        int day = Integer.parseInt(dealDate.substring(6,8));
-
-        return ZonedDateTime.of(year, month, day, 0, 0, 0, 0, ZoneId.of("Asia/Seoul")).toInstant().toEpochMilli();
-    }
-
     @Override
     public BuildUp calculateBuildUpModification(BuildUpModificationSourceDTO buildUpModificationSourceDTO) {
         long sumOfPurchaseAmount = 0L;
@@ -139,12 +137,11 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
 
         List<DailyDealHistory> dailyDealHistories = new ArrayList<>();
 
-        List<DailyDeal> existingDailyDealList = stockDealRepository.getDailyDeal(BuildUpSourceDTO.builder()
+        List<DailyDeal> existingDailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
                                                                             .companyName(buildUpModificationSourceDTO.getCompanyName())
                                                                             .endDate(buildUpModificationSourceDTO.getEndDate())
                                                                             .startDate(buildUpModificationSourceDTO.getStartDate())
-                                                                            .buildupAmount(buildUpModificationSourceDTO.getBuildupAmount())
-                .build());
+                                                                            .build());
 
         List<DealModification> allDealModifications = buildUpModificationSourceDTO.getDealModifications();
 

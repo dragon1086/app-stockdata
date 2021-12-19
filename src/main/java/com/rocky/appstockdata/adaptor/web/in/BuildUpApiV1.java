@@ -1,12 +1,12 @@
 package com.rocky.appstockdata.adaptor.web.in;
 
 import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
-import com.rocky.appstockdata.domain.BuildUp;
-import com.rocky.appstockdata.domain.BuildUpModificationSourceDTO;
-import com.rocky.appstockdata.domain.BuildUpSourceDTO;
-import com.rocky.appstockdata.domain.DealModification;
+import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
+import com.rocky.appstockdata.domain.*;
 import com.rocky.appstockdata.domain.validator.BuildUpSourceValidator;
+import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
 import com.rocky.appstockdata.exceptions.BuildUpSourceException;
+import com.rocky.appstockdata.exceptions.DealTrainingSourceException;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -22,10 +22,12 @@ import java.util.List;
 @Controller
 @Slf4j
 public class BuildUpApiV1 {
-    private final BuildUpCalculateUseCase buildUpCalculateService;
+    private final BuildUpCalculateUseCase buildUpCalculateUseCase;
+    private final DealTrainingUseCase dealTrainingUseCase;
 
-    public BuildUpApiV1(BuildUpCalculateUseCase buildUpCalculateService) {
-        this.buildUpCalculateService = buildUpCalculateService;
+    public BuildUpApiV1(BuildUpCalculateUseCase buildUpCalculateUseCase, DealTrainingUseCase dealTrainingUseCase) {
+        this.buildUpCalculateUseCase = buildUpCalculateUseCase;
+        this.dealTrainingUseCase = dealTrainingUseCase;
     }
 
     @GetMapping("/")
@@ -33,7 +35,53 @@ public class BuildUpApiV1 {
         return "index";
     }
 
-    @GetMapping(value = "buildup-calculate")
+    @GetMapping("/deal-training")
+    public String dealTrainingMain(){
+        return "dealTrainingIndex";
+    }
+
+    @PostMapping("/deal-calculate")
+    public String dealCalculate(ModelMap modelMap,
+                                @RequestParam(value = "companyName", required = false) String companyName,
+                                @RequestParam(value = "slotAmount", required = false) String slotAmount,
+                                @RequestParam(value = "portion", required = false) String portion){
+        try{
+            DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
+                    .companyName(companyName)
+                    .slotAmount(Long.parseLong(slotAmount))
+                    .portion(Integer.parseInt(portion))
+                    .build();
+
+            DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
+
+            DealTrainingResult dealTrainingResult = dealTrainingUseCase.initializeDailyDeal(dealTrainingSourceDTO);
+            setModelMap(modelMap, dealTrainingResult, dealTrainingSourceDTO);
+        } catch (DealTrainingSourceException e) {
+            return createModelMapWithDealTrainingSourceException(modelMap, e.getMessage());
+        }
+
+        return "dealTraining";
+    }
+
+    private void setModelMap(ModelMap modelMap, DealTrainingResult dealTrainingResult, DealTrainingSourceDTO dealTrainingSourceDTO) {
+        modelMap.put("companyName", dealTrainingSourceDTO.getCompanyName());
+        modelMap.put("startDate", dealTrainingResult.getStartDate());
+        modelMap.put("endDate", dealTrainingResult.getEndDate());
+        modelMap.put("itemName", dealTrainingResult.getItemName());
+        modelMap.put("dailyDealHistories", dealTrainingResult.getDailyDealHistories());
+        modelMap.put("slotAmount", dealTrainingSourceDTO.getSlotAmount());
+        modelMap.put("portion", dealTrainingSourceDTO.getPortion());
+
+        modelMap.put("isError", "false");
+    }
+
+    private String createModelMapWithDealTrainingSourceException(ModelMap modelMap, String message) {
+        modelMap.put("isError", "true");
+        modelMap.put("errorMessage", message);
+        return "dealTraining";
+    }
+
+    @PostMapping(value = "buildup-calculate")
     public String buildUpResultController(ModelMap modelMap,
                                           @RequestParam(value = "companyName", required = false) String companyName,
                                           @RequestParam(value = "buildupAmount", required = false) String buildupAmount,
@@ -49,7 +97,7 @@ public class BuildUpApiV1 {
                     .build();
             BuildUpSourceValidator.validate(buildUpSourceDTO);
 
-            BuildUp buildUp = buildUpCalculateService.calculateBuildUp(buildUpSourceDTO);
+            BuildUp buildUp = buildUpCalculateUseCase.calculateBuildUp(buildUpSourceDTO);
 
             setModelMap(modelMap, buildUp, buildUpSourceDTO);
         } catch (BuildUpSourceException | NoResultDataException e){
@@ -125,7 +173,7 @@ public class BuildUpApiV1 {
 
         log.info("dealModification :" + dealModifications.toString());
 
-        BuildUp buildUp = buildUpCalculateService.calculateBuildUpModification(buildUpModificationSourceDTO);
+        BuildUp buildUp = buildUpCalculateUseCase.calculateBuildUpModification(buildUpModificationSourceDTO);
 
         setModificationModelMap(modelMap, buildUp, buildUpModificationSourceDTO);
         return "buildUpResultWithModification";

@@ -3,6 +3,7 @@ package com.rocky.appstockdata.infrastructure;
 import com.rocky.appstockdata.domain.BuildUpSourceDTO;
 import com.rocky.appstockdata.domain.DailyDeal;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
+import com.rocky.appstockdata.domain.DailyDealRequestDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,7 +38,7 @@ public class MySQLConnectionTest {
 
     @Test
     public void stockDealRepository(){
-        List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(BuildUpSourceDTO.builder().build());
+        List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder().build());
         for(DailyDeal dailyDeal : dailyDealList){
             System.out.println("dailyDeal.toString() = " + dailyDeal.toString());
         }
