@@ -83,6 +83,30 @@
         <button type="button" class="btn btn-dark" onclick="location.href='/'">초기화면 돌아가기</button>
         <div class="row">
             <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+                    <div>
+                        <c:choose>
+                            <c:when test="${isError == 'true'}">
+                                <h1>${errorMessage}</h1>
+                            </c:when>
+                            <c:otherwise>
+                                <h1>매매 현황</h1>
+                                <p></p>
+                                <h2>수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
+                                <h2>실현손익 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
+                                <h2>총 투입금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
+                                <h2>현재 비중 : <fmt:formatNumber value="${portion}"/>%</h2>
+                                <h2>남은 금액 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
+                                <h2>남은 비중 : <fmt:formatNumber value="${remainingPortion}" pattern="#,###" />%</h2>
+                                <h2>총 매도수수료(0.3%) : <fmt:formatNumber value="${sumOfCommission}" pattern="#,###" />원</h2>
+                                <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
+                                <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###" />%</h2>
+                                <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
+                                <h2>현재 종가 : <fmt:formatNumber value="${currentClosingPrice}" pattern="#,###" />원</h2>
+                            </c:otherwise>
+                        </c:choose>
+                    </div>
+                </div>
                 <div id="container" style="height: 800px; min-width: 310px"></div>
                 <script>
                     function drawCandleStickChart(){

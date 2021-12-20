@@ -3,6 +3,7 @@ package com.rocky.appstockdata.adaptor.web.in;
 import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
 import com.rocky.appstockdata.domain.*;
+import com.rocky.appstockdata.domain.utils.DealTrainingUtil;
 import com.rocky.appstockdata.domain.validator.BuildUpSourceValidator;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
 import com.rocky.appstockdata.exceptions.BuildUpSourceException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -64,6 +66,8 @@ public class BuildUpApiV1 {
     }
 
     private void setModelMap(ModelMap modelMap, DealTrainingResult dealTrainingResult, DealTrainingSourceDTO dealTrainingSourceDTO) {
+        DailyDealHistory initialModificationDeal = dealTrainingResult.getDailyDealHistories().get(dealTrainingResult.getDailyDealHistories().size() - 1);
+
         modelMap.put("companyName", dealTrainingSourceDTO.getCompanyName());
         modelMap.put("startDate", dealTrainingResult.getStartDate());
         modelMap.put("endDate", dealTrainingResult.getEndDate());
@@ -71,7 +75,17 @@ public class BuildUpApiV1 {
         modelMap.put("dailyDealHistories", dealTrainingResult.getDailyDealHistories());
         modelMap.put("slotAmount", dealTrainingSourceDTO.getSlotAmount());
         modelMap.put("portion", dealTrainingSourceDTO.getPortion());
-
+        modelMap.put("remainingSlotAmount", dealTrainingResult.getRemainingSlotAmount());
+        modelMap.put("remainingPortion", dealTrainingResult.getRemainingPortion());
+        modelMap.put("dealModifications", Collections.singletonList(DealModification.builder()
+                                            .modifyDate(DealTrainingUtil.transformToDateFormat(initialModificationDeal.getDealDate()))
+                                            .buyPercent(String.valueOf(dealTrainingSourceDTO.getPortion()))
+                                            .buyPrice(String.valueOf(initialModificationDeal.getMyAverageUnitPrice()))
+                                            .build()));
+        modelMap.put("totalAmount", dealTrainingResult.getTotalAmount());
+        modelMap.put("valuationPercent", dealTrainingResult.getValuationPercent());
+        modelMap.put("averageUnitPrice", dealTrainingResult.getAverageUnitPrice());
+        modelMap.put("currentClosingPrice", dealTrainingResult.getCurrentClosingPrice());
         modelMap.put("isError", "false");
     }
 

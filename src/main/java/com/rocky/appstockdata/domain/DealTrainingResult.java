@@ -22,6 +22,12 @@ public class DealTrainingResult {
     private List<DailyDealHistory> dailyDealHistories;
     private LocalDate startDate;
     private LocalDate endDate;
+    private long remainingSlotAmount;
+    private int remainingPortion;
+    private List<DealModification> dealModifications;
+    private double valuationPercent;
+    private long averageUnitPrice;
+    private long currentClosingPrice;
 
     @Builder
     public DealTrainingResult(Double earningRate,
@@ -35,7 +41,13 @@ public class DealTrainingResult {
                               String itemName,
                               List<DailyDealHistory> dailyDealHistories,
                               LocalDate startDate,
-                              LocalDate endDate) {
+                              LocalDate endDate,
+                              long remainingSlotAmount,
+                              int remainingPortion,
+                              List<DealModification> dealModifications,
+                              double valuationPercent,
+                              long averageUnitPrice,
+                              long currentClosingPrice) {
         this.earningRate = earningRate;
         this.earningAmount = earningAmount;
         this.totalAmount = totalAmount;
@@ -48,5 +60,11 @@ public class DealTrainingResult {
         this.dailyDealHistories = dailyDealHistories;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.remainingSlotAmount = remainingSlotAmount;
+        this.remainingPortion = remainingPortion;
+        this.dealModifications = dealModifications;
+        this.valuationPercent = valuationPercent;
+        this.averageUnitPrice = averageUnitPrice;
+        this.currentClosingPrice = currentClosingPrice;
     }
 }

@@ -16,4 +16,11 @@ public class DealTrainingUtilTest {
         assertThat(random).isBetween(start, end);
     }
 
+    @Test
+    public void transformToDateFormat(){
+        String rawData = "20211225";
+        String result = DealTrainingUtil.transformToDateFormat(rawData);
+
+        assertThat(result).isEqualTo("2021-12-25");
+    }
 }

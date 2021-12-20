@@ -21,4 +21,12 @@ public class DealTrainingUtil {
 
         return LocalDate.ofEpochDay(randomDay);
     }
+
+    public static String transformToDateFormat(String rawData){
+        String year = rawData.substring(0, 4);
+        String month = rawData.substring(4, 6);
+        String day = rawData.substring(6, 8);
+
+        return year + "-" + month + "-" + day;
+    }
 }
