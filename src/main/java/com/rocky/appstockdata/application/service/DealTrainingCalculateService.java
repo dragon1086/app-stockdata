@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static com.rocky.appstockdata.domain.utils.BuildUpUtil.transformDate;
 
@@ -36,6 +33,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
         long myAverageUnitPrice = 0L;
         long finalClosingPrice = 0L;
         int sumOfMyQuantity = 0;
+        String initialDealDate = "";
 
         List<DailyDealHistory> dailyDealHistories = new ArrayList<>();
 
@@ -52,6 +50,8 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                                                                     .endDate(endDateString)
                                                             .build());
 
+        DailyDeal nextTryDay = dailyDealList.remove(dailyDealList.size() - 1);
+
         Iterator<DailyDeal> dailyDeals = dailyDealList.iterator();
         while(dailyDeals.hasNext()){
             DailyDeal dailyDeal = dailyDeals.next();
@@ -67,6 +67,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                     .build());
 
             if(!dailyDeals.hasNext()){
+                initialDealDate = dailyDeal.getDealDate();
                 Random random = new Random();
                 double valuationPercent = MIN_MINUS_FIFTY_PERCENT + (MAX_PLUS_FIFTY_PERCENT - MIN_MINUS_FIFTY_PERCENT) * random.nextDouble();
 
@@ -95,16 +96,31 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                         .closingPurchaseQuantity(initialBuyingQuantity)
                         .additionalBuyingQuantity(initialBuyingQuantity)
                         .additionalBuyingAmount(purchaseAmount)
+                        .buyPrice(initialAverageUnitPrice)
+                        .buyPercent(dealTrainingSourceDTO.getPortion())
+                        .remainingAmount(remainingSlotAmount)
                         .build());
             }
         }
+
+        //차트에 마지막 일봉 추가 -> 이걸로 사용자는 살지 말지 판단할 수 있음
+        dailyDealHistories.add(DailyDealHistory.builder()
+                .dealDate(nextTryDay.getDealDate())
+                .dealDateForTimestamp(transformDate(nextTryDay.getDealDate()))
+                .closingPrice(nextTryDay.getClosingPrice())
+                .startPrice(nextTryDay.getStartPrice())
+                .highPrice(nextTryDay.getHighPrice())
+                .lowPrice(nextTryDay.getLowPrice())
+                .tradeVolume(nextTryDay.getTradeVolume())
+                .myAverageUnitPrice(myAverageUnitPrice)
+                .build());
 
         currentValuationPercent = (sumOfPurchaseAmount !=0) ? Math.round((finalClosingPrice - myAverageUnitPrice)/(double)myAverageUnitPrice*100*100)/100 : 0.0d;
 
         return DealTrainingResult.builder()
                 .itemName(dealTrainingSourceDTO.getCompanyName())
                 .startDate(startDate)
-                .endDate(endDate)
+                .endDate(DealTrainingUtil.transformToLocalDate(nextTryDay.getDealDate()))
                 .dailyDealHistories(dailyDealHistories)
                 .remainingSlotAmount(remainingSlotAmount)
                 .remainingPortion(remainingPortion)
@@ -112,6 +128,12 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 .valuationPercent(currentValuationPercent)
                 .averageUnitPrice(myAverageUnitPrice)
                 .currentClosingPrice(finalClosingPrice)
+                .nextTryDate(DealTrainingUtil.transformToDateFormat(nextTryDay.getDealDate()))
+                .dealModifications(Collections.singletonList(DealModification.builder()
+                        .modifyDate(DealTrainingUtil.transformToDateFormat(initialDealDate))
+                        .buyPercent(String.valueOf(dealTrainingSourceDTO.getPortion()))
+                        .buyPrice(String.valueOf(myAverageUnitPrice))
+                        .build()))
                 .build();
     }
 }

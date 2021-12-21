@@ -47,6 +47,7 @@
     <script>
         $(function(){
             additionalBuyingSellHistory();
+            $('input[id=thisModifyDate]').attr('value',"${nextTryDate}");
         });
 
         function additionalBuyingSellHistory(){
@@ -345,7 +346,7 @@
                     }
                     drawCandleStickChart();
                 </script>
-                <form id="modifyCalculation" action="buildup-calculate-modify" method="post" name="calculateRequestFrom">
+                <form id="modifyCalculation" action="deal-calculate-modify" method="post" name="calculateRequestFrom">
                     <div class="px-4 py-5 my-5 text-center">
                         <h3>최초 입력 요청값</h3>
                         <div class="input-group mb-3">
@@ -377,7 +378,7 @@
                         <h3>매도 시 매도금액의 0.3%를 수수료차원에서 실현손익에서 뺍니다.</h3>
                         <div class="input-group mb-3" id= "modifyInputGroup">
                             <span class="input-group-text" id="basic-addon1">수정 날짜</span>
-                            <input readonly="true" type="date" class="form-control" name="modifyDate" aria-label="modifyDate" aria-describedby="basic-addon1">
+                            <input readonly="true" id="thisModifyDate" type="date" class="form-control" name="modifyDate" aria-label="modifyDate" aria-describedby="basic-addon1">
                             <span class="input-group-text" id="basic-addon2">매도 비중%(현시점 보유비중의 몇%)</span>
                             <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요" aria-label="sellPercent" aria-describedby="basic-addon2">
                             <span class="input-group-text" id="basic-addon3">매도 가격</span>
@@ -399,14 +400,16 @@
                 </form>
 
                 <hr style="height:3px;color:#dc874f">
-                <h2>매매 이력</h2>
+                <h2>날짜별 전체 이력</h2>
                 <div class="table-responsive">
                     <table class="table table-striped table-sm">
                         <thead>
                         <tr>
                             <th scope="col">거래일</th>
-                            <th scope="col">종가</th>
-                            <th scope="col">종가 구매수량</th>
+                            <th scope="col">매수단가</th>
+                            <th scope="col">매수비중</th>
+                            <th scope="col">매도단가</th>
+                            <th scope="col">매도비중</th>
                             <th scope="col">내 평단</th>
                             <th scope="col">추가 구매수량</th>
                             <th scope="col">추가 구매금액</th>
@@ -421,8 +424,10 @@
                         <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
                             <tr>
                                 <td>${dailyDealHistory.dealDate}</td>
-                                <td><fmt:formatNumber value="${dailyDealHistory.closingPrice}" pattern="#,###" />원</td>
-                                <td><fmt:formatNumber value="${dailyDealHistory.closingPurchaseQuantity}" pattern="#,###" />주</td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.buyPrice}" pattern="#,###" />원</td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.buyPercent}" pattern="#,###" />%</td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.sellPrice}" pattern="#,###" />원</td>
+                                <td><fmt:formatNumber value="${dailyDealHistory.sellPercent}" pattern="#,###" />%</td>
                                 <td><fmt:formatNumber value="${dailyDealHistory.myAverageUnitPrice}" pattern="#,###" />원</td>
                                 <td><fmt:formatNumber value="${dailyDealHistory.additionalBuyingQuantity}" pattern="#,###" />주</td>
                                 <td><fmt:formatNumber value="${dailyDealHistory.additionalBuyingAmount}" pattern="#,###" />원</td>

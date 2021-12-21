@@ -66,7 +66,8 @@ public class BuildUpApiV1 {
     }
 
     private void setModelMap(ModelMap modelMap, DealTrainingResult dealTrainingResult, DealTrainingSourceDTO dealTrainingSourceDTO) {
-        DailyDealHistory initialModificationDeal = dealTrainingResult.getDailyDealHistories().get(dealTrainingResult.getDailyDealHistories().size() - 1);
+        //마지막날짜는 사용자가 매수/매도를 판단해야하는 날짜이므로, 그 이전날을 최초매수일로 설정
+        DailyDealHistory initialModificationDeal = dealTrainingResult.getDailyDealHistories().get(dealTrainingResult.getDailyDealHistories().size() - 2);
 
         modelMap.put("companyName", dealTrainingSourceDTO.getCompanyName());
         modelMap.put("startDate", dealTrainingResult.getStartDate());
@@ -77,21 +78,43 @@ public class BuildUpApiV1 {
         modelMap.put("portion", dealTrainingSourceDTO.getPortion());
         modelMap.put("remainingSlotAmount", dealTrainingResult.getRemainingSlotAmount());
         modelMap.put("remainingPortion", dealTrainingResult.getRemainingPortion());
-        modelMap.put("dealModifications", Collections.singletonList(DealModification.builder()
-                                            .modifyDate(DealTrainingUtil.transformToDateFormat(initialModificationDeal.getDealDate()))
-                                            .buyPercent(String.valueOf(dealTrainingSourceDTO.getPortion()))
-                                            .buyPrice(String.valueOf(initialModificationDeal.getMyAverageUnitPrice()))
-                                            .build()));
+        modelMap.put("dealModifications", dealTrainingResult.getDealModifications());
         modelMap.put("totalAmount", dealTrainingResult.getTotalAmount());
         modelMap.put("valuationPercent", dealTrainingResult.getValuationPercent());
         modelMap.put("averageUnitPrice", dealTrainingResult.getAverageUnitPrice());
         modelMap.put("currentClosingPrice", dealTrainingResult.getCurrentClosingPrice());
+        modelMap.put("nextTryDate", dealTrainingResult.getNextTryDate());
         modelMap.put("isError", "false");
     }
 
     private String createModelMapWithDealTrainingSourceException(ModelMap modelMap, String message) {
         modelMap.put("isError", "true");
         modelMap.put("errorMessage", message);
+        return "dealTraining";
+    }
+
+    @PostMapping("/deal-calculate-modify")
+    public String dealCalculateModify(ModelMap modelMap,
+                                      @RequestParam(value = "companyName") String companyName,
+                                      @RequestParam("startDate") String startDate,
+                                      @RequestParam("endDate") String endDate,
+                                      @RequestParam(value = "slotAmount") String slotAmount,
+                                      @RequestParam(value = "portion") String portion){
+        try{
+            DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
+                    .companyName(companyName)
+                    .slotAmount(Long.parseLong(slotAmount))
+                    .portion(Integer.parseInt(portion))
+                    .build();
+
+            DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
+
+            DealTrainingResult dealTrainingResult = dealTrainingUseCase.initializeDailyDeal(dealTrainingSourceDTO);
+            setModelMap(modelMap, dealTrainingResult, dealTrainingSourceDTO);
+        } catch (DealTrainingSourceException e) {
+            return createModelMapWithDealTrainingSourceException(modelMap, e.getMessage());
+        }
+
         return "dealTraining";
     }
 

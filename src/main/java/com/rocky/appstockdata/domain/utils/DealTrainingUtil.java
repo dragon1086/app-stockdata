@@ -29,4 +29,12 @@ public class DealTrainingUtil {
 
         return year + "-" + month + "-" + day;
     }
+
+    public static LocalDate transformToLocalDate(String rawData){
+        String year = rawData.substring(0, 4);
+        String month = rawData.substring(4, 6);
+        String day = rawData.substring(6, 8);
+
+        return LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));
+    }
 }

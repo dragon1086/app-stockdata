@@ -28,6 +28,7 @@ public class DealTrainingResult {
     private double valuationPercent;
     private long averageUnitPrice;
     private long currentClosingPrice;
+    private String nextTryDate;
 
     @Builder
     public DealTrainingResult(Double earningRate,
@@ -47,7 +48,8 @@ public class DealTrainingResult {
                               List<DealModification> dealModifications,
                               double valuationPercent,
                               long averageUnitPrice,
-                              long currentClosingPrice) {
+                              long currentClosingPrice,
+                              String nextTryDate) {
         this.earningRate = earningRate;
         this.earningAmount = earningAmount;
         this.totalAmount = totalAmount;
@@ -66,5 +68,6 @@ public class DealTrainingResult {
         this.valuationPercent = valuationPercent;
         this.averageUnitPrice = averageUnitPrice;
         this.currentClosingPrice = currentClosingPrice;
+        this.nextTryDate = nextTryDate;
     }
 }

@@ -26,6 +26,10 @@ public class DailyDealHistory {
     private long commission;
     private int additionalSellingQuantity;
     private long additionalSellingAmount;
+    private int sellPercent;
+    private long sellPrice;
+    private int buyPercent;
+    private long buyPrice;
 
     @Builder
     public DailyDealHistory(long closingPrice,
@@ -44,7 +48,11 @@ public class DailyDealHistory {
                             long realizedEarningAmount,
                             long commission,
                             int additionalSellingQuantity,
-                            long additionalSellingAmount) {
+                            long additionalSellingAmount,
+                            int sellPercent,
+                            long sellPrice,
+                            int buyPercent,
+                            long buyPrice) {
         this.closingPrice = closingPrice;
         this.myAverageUnitPrice = myAverageUnitPrice;
         this.dealDate = dealDate;
@@ -62,5 +70,9 @@ public class DailyDealHistory {
         this.commission = commission;
         this.additionalSellingQuantity = additionalSellingQuantity;
         this.additionalSellingAmount = additionalSellingAmount;
+        this.sellPercent = sellPercent;
+        this.sellPrice = sellPrice;
+        this.buyPercent = buyPercent;
+        this.buyPrice = buyPrice;
     }
 }
