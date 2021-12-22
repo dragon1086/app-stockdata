@@ -107,6 +107,9 @@ public class BuildUpApiV1 {
                                       @RequestParam(value = "sellPrice", defaultValue = "0") String[] sellPrices,
                                       @RequestParam(value = "buyPercent", defaultValue = "0") String[] buyPercents,
                                       @RequestParam(value = "buyPrice", defaultValue = "0") String[] buyPrices){
+        //TODO: 날짜별 이력 내림차순 정렬
+        //TODO: 수정칸을 그래프 위로 옮기기
+
         List<DealModification> dealModifications = new ArrayList<>();
 
         try{
