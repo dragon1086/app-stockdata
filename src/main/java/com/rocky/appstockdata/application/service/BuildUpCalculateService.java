@@ -7,8 +7,6 @@ import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +16,8 @@ import static com.rocky.appstockdata.domain.utils.BuildUpUtil.transformDate;
 @Service
 @Slf4j
 public class BuildUpCalculateService implements BuildUpCalculateUseCase {
+    //TODO: 리팩토링
+
     StockDealRepository stockDealRepository;
     public BuildUpCalculateService(StockDealRepository stockDealRepository) {
         this.stockDealRepository = stockDealRepository;

@@ -68,7 +68,7 @@
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon3">시작 비중(%)</span>
-                <input type="text" class="form-control"  name="portion" placeholder="% 제외하고 입력하세요" aria-label="portion" aria-describedby="basic-addon3">
+                <input type="text" class="form-control"  name="portion" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="portion" aria-describedby="basic-addon3">
             </div>
 
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">

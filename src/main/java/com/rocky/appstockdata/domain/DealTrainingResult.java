@@ -23,7 +23,7 @@ public class DealTrainingResult {
     private LocalDate startDate;
     private LocalDate endDate;
     private long remainingSlotAmount;
-    private int remainingPortion;
+    private double remainingPortion;
     private List<DealModification> dealModifications;
     private double valuationPercent;
     private long averageUnitPrice;
@@ -44,7 +44,7 @@ public class DealTrainingResult {
                               LocalDate startDate,
                               LocalDate endDate,
                               long remainingSlotAmount,
-                              int remainingPortion,
+                              double remainingPortion,
                               List<DealModification> dealModifications,
                               double valuationPercent,
                               long averageUnitPrice,

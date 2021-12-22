@@ -3,7 +3,6 @@ package com.rocky.appstockdata.adaptor.web.in;
 import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
 import com.rocky.appstockdata.domain.*;
-import com.rocky.appstockdata.domain.utils.DealTrainingUtil;
 import com.rocky.appstockdata.domain.validator.BuildUpSourceValidator;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
 import com.rocky.appstockdata.exceptions.BuildUpSourceException;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -51,7 +49,7 @@ public class BuildUpApiV1 {
             DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
                     .companyName(companyName)
                     .slotAmount(Long.parseLong(slotAmount))
-                    .portion(Integer.parseInt(portion))
+                    .portion(Double.parseDouble(portion))
                     .build();
 
             DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
@@ -66,16 +64,13 @@ public class BuildUpApiV1 {
     }
 
     private void setModelMap(ModelMap modelMap, DealTrainingResult dealTrainingResult, DealTrainingSourceDTO dealTrainingSourceDTO) {
-        //마지막날짜는 사용자가 매수/매도를 판단해야하는 날짜이므로, 그 이전날을 최초매수일로 설정
-        DailyDealHistory initialModificationDeal = dealTrainingResult.getDailyDealHistories().get(dealTrainingResult.getDailyDealHistories().size() - 2);
-
         modelMap.put("companyName", dealTrainingSourceDTO.getCompanyName());
         modelMap.put("startDate", dealTrainingResult.getStartDate());
         modelMap.put("endDate", dealTrainingResult.getEndDate());
         modelMap.put("itemName", dealTrainingResult.getItemName());
         modelMap.put("dailyDealHistories", dealTrainingResult.getDailyDealHistories());
         modelMap.put("slotAmount", dealTrainingSourceDTO.getSlotAmount());
-        modelMap.put("portion", dealTrainingSourceDTO.getPortion());
+        modelMap.put("portion", 100.0 - dealTrainingResult.getRemainingPortion());
         modelMap.put("remainingSlotAmount", dealTrainingResult.getRemainingSlotAmount());
         modelMap.put("remainingPortion", dealTrainingResult.getRemainingPortion());
         modelMap.put("dealModifications", dealTrainingResult.getDealModifications());
@@ -84,6 +79,13 @@ public class BuildUpApiV1 {
         modelMap.put("averageUnitPrice", dealTrainingResult.getAverageUnitPrice());
         modelMap.put("currentClosingPrice", dealTrainingResult.getCurrentClosingPrice());
         modelMap.put("nextTryDate", dealTrainingResult.getNextTryDate());
+        modelMap.put("sumOfPurchaseAmount", dealTrainingResult.getSumOfPurchaseAmount());
+        modelMap.put("sumOfSellingAmount", dealTrainingResult.getSumOfSellingAmount());
+        modelMap.put("sumOfCommission", dealTrainingResult.getSumOfCommission());
+        modelMap.put("sumOfPurchaseQuantity", dealTrainingResult.getSumOfPurchaseQuantity());
+        modelMap.put("sumOfSellingQuantity", dealTrainingResult.getSumOfSellingQuantity());
+        modelMap.put("earningRate", dealTrainingResult.getEarningRate());
+        modelMap.put("earningAmount", dealTrainingResult.getEarningAmount());
         modelMap.put("isError", "false");
     }
 
@@ -99,20 +101,49 @@ public class BuildUpApiV1 {
                                       @RequestParam("startDate") String startDate,
                                       @RequestParam("endDate") String endDate,
                                       @RequestParam(value = "slotAmount") String slotAmount,
-                                      @RequestParam(value = "portion") String portion){
+                                      @RequestParam(value = "portion") String portion,
+                                      @RequestParam("modifyDate") String[] modifyDates,
+                                      @RequestParam(value = "sellPercent", defaultValue = "0") String[] sellPercents,
+                                      @RequestParam(value = "sellPrice", defaultValue = "0") String[] sellPrices,
+                                      @RequestParam(value = "buyPercent", defaultValue = "0") String[] buyPercents,
+                                      @RequestParam(value = "buyPrice", defaultValue = "0") String[] buyPrices){
+        List<DealModification> dealModifications = new ArrayList<>();
+
         try{
-            DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
+            for(int i = 0; i < modifyDates.length; i++){
+                if(StringUtils.isEmpty(modifyDates[i])){
+                    continue;
+                }
+
+                dealModifications.add(DealModification.builder()
+                        .modifyDate(modifyDates[i])
+                        .buyPercent(buyPercents[i])
+                        .buyPrice(buyPrices[i])
+                        .sellPercent(sellPercents[i])
+                        .sellPrice(sellPrices[i])
+                        .build());
+            }
+
+           DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
                     .companyName(companyName)
+                    .startDate(startDate)
+                    .endDate(endDate)
                     .slotAmount(Long.parseLong(slotAmount))
-                    .portion(Integer.parseInt(portion))
+                    .portion(Double.parseDouble(portion))
+                    .dealModifications(dealModifications)
                     .build();
 
             DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
 
-            DealTrainingResult dealTrainingResult = dealTrainingUseCase.initializeDailyDeal(dealTrainingSourceDTO);
+            DealTrainingResult dealTrainingResult = dealTrainingUseCase.modifyDailyDeal(dealTrainingSourceDTO);
             setModelMap(modelMap, dealTrainingResult, dealTrainingSourceDTO);
-        } catch (DealTrainingSourceException e) {
-            return createModelMapWithDealTrainingSourceException(modelMap, e.getMessage());
+
+        } catch (NumberFormatException e){
+            return createModelMapWithNumberFormatException(modelMap, "올바른 데이터 입력 형식이 아닙니다. 뒤로 돌아가서 정확한 형식으로 넣어주세요.", "buildUpResultWithModification");
+        } catch (Exception e){
+            log.error("서버 오류 발생하였습니다. : {}", e.getMessage());
+            e.printStackTrace();
+            return createModelMapWithException(modelMap, "서버 오류 발생하였습니다.", "buildUpResultWithModification");
         }
 
         return "dealTraining";

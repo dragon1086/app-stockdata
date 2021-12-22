@@ -5,4 +5,6 @@ import com.rocky.appstockdata.domain.DealTrainingSourceDTO;
 
 public interface DealTrainingUseCase {
     DealTrainingResult initializeDailyDeal(DealTrainingSourceDTO dealTrainingSourceDTO);
+
+    DealTrainingResult modifyDailyDeal(DealTrainingSourceDTO dealTrainingSourceDTO);
 }

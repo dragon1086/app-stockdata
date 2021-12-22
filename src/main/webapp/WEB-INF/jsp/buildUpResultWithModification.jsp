@@ -191,11 +191,11 @@
                                                     "<span class='input-group-text' id='basic-addon1'>수정 날짜</span>"
                                                     + "<input type='date' class='form-control' name='modifyDate' placeholder='수정하실 날짜를 선택하세요' aria-label='modifyDate' aria-describedby='basic-addon1'>"
                                                     + "<span class='input-group-text' id='basic-addon2'>매도 비중%(현시점 보유비중의 몇%)</span>"
-                                                    + "<input type='text' class='form-control' name='sellPercent' placeholder='% 제외하고 입력하세요' aria-label='sellPercent' aria-describedby='basic-addon2'>"
+                                                    + "<input type='text' class='form-control' name='sellPercent' placeholder='% 제외하고 입력하세요(소수점 제외)' aria-label='sellPercent' aria-describedby='basic-addon2'>"
                                                     + "<span class='input-group-text' id='basic-addon3'>매도 가격</span>"
                                                     + "<input type='text' class='form-control' name='sellPrice' placeholder='매도하실 금액을 입력하세요(저가와 고가 사이)' aria-label='sellPrice' aria-describedby='basic-addon3'>"
                                                     + "<span class='input-group-text' id='basic-addon4'>매수 비중%(현시점 보유비중의 몇%)</span>"
-                                                    + "<input type='text' class='form-control' name='buyPercent' placeholder='% 제외하고 입력하세요' aria-label='buyPercent' aria-describedby='basic-addon4'>"
+                                                    + "<input type='text' class='form-control' name='buyPercent' placeholder='% 제외하고 입력하세요(소수점 제외)' aria-label='buyPercent' aria-describedby='basic-addon4'>"
                                                     + "<span class='input-group-text' id='basic-addon5'>매수 가격</span>"
                                                     + "<input type='text' class='form-control' name='buyPrice' placeholder='매수하실 금액을 입력하세요(저가와 고가 사이)' aria-label='buyPrice' aria-describedby='basic-addon5'>";
 
@@ -408,11 +408,11 @@
                             <span class="input-group-text" id="basic-addon1">수정 날짜</span>
                             <input type="date" class="form-control" name="modifyDate" placeholder="수정하실 날짜를 선택하세요" aria-label="modifyDate" aria-describedby="basic-addon1">
                             <span class="input-group-text" id="basic-addon2">매도 비중%(현시점 보유비중의 몇%)</span>
-                            <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요" aria-label="sellPercent" aria-describedby="basic-addon2">
+                            <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="sellPercent" aria-describedby="basic-addon2">
                             <span class="input-group-text" id="basic-addon3">매도 가격</span>
                             <input type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
                             <span class="input-group-text" id="basic-addon4">매수 비중%(현시점 보유비중의 몇%)</span>
-                            <input type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요" aria-label="buyPercent" aria-describedby="basic-addon4">
+                            <input type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
                             <span class="input-group-text" id="basic-addon5">매수 가격</span>
                             <input type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
                         </div>

@@ -37,4 +37,9 @@ public class DealTrainingUtil {
 
         return LocalDate.of(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));
     }
+
+    public static LocalDate transformToLocalDateIncludingDash(String rawData){
+        String dashRemoved = rawData.replace("-", "");
+        return transformToLocalDate(dashRemoved);
+    }
 }

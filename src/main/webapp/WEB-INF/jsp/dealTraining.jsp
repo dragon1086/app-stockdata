@@ -52,27 +52,28 @@
 
         function additionalBuyingSellHistory(){
             <c:forEach items="${dealModifications}" var="dealModification">
-                var innerDivTag = $('<div/>', {class: 'input-group mb-3'});
-                var spanModifyDate = $('<span/>', {class: 'input-group-text'}).text("수정 날짜");
-                var inputModifyDate = $('<input/>', {readOnly: 'true', type: 'date', class: 'form-control', name: 'modifyDate', value: "<javatime:parseLocalDate value='${dealModification.modifyDate}' pattern='yyyy-MM-dd' />"});
-                var spanSellPercentHistory = $('<span/>', {class: 'input-group-text'}).text("매도 비중%(당시 보유비중의 몇%)");
-                var inputSellPercentHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'sellPercent', value: ${dealModification.sellPercent}});
-                var spanSellPriceHistory = $('<span/>', {class: 'input-group-text'}).text("매도 가격");
-                var inputSellPriceHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'sellPrice', value: ${dealModification.sellPrice}});
-                var spanBuyPercentHistory = $('<span/>', {class: 'input-group-text'}).text("매수 비중%(당시 보유비중의 몇%)");
-                var inputBuyPercentHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'buyPercent', value: ${dealModification.buyPercent}});
-                var spanBuyPriceHistory = $('<span/>', {class: 'input-group-text'}).text("매도 가격");
-                var inputBuyPriceHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'buyPrice', value: ${dealModification.buyPrice}});
+                <c:if test="${(dealModification.buyPercent != 0 && dealModification.buyPrice !=0) || (dealModification.sellPercent != 0 && dealModification.sellPrice !=0)}">
+                    var innerDivTag = $('<div/>', {class: 'input-group mb-3'});
+                    var spanModifyDate = $('<span/>', {class: 'input-group-text'}).text("수정 날짜");
+                    var inputModifyDate = $('<input/>', {readOnly: 'true', type: 'date', class: 'form-control', name: 'modifyDate', value: "<javatime:parseLocalDate value='${dealModification.modifyDate}' pattern='yyyy-MM-dd' />"});
+                    var spanSellPercentHistory = $('<span/>', {class: 'input-group-text'}).text("매도 비중%(당시 보유비중의 몇%)");
+                    var inputSellPercentHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'sellPercent', value: ${dealModification.sellPercent}});
+                    var spanSellPriceHistory = $('<span/>', {class: 'input-group-text'}).text("매도 가격");
+                    var inputSellPriceHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'sellPrice', value: ${dealModification.sellPrice}});
+                    var spanBuyPercentHistory = $('<span/>', {class: 'input-group-text'}).text("매수 비중%(당시 보유비중의 몇%)");
+                    var inputBuyPercentHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'buyPercent', value: ${dealModification.buyPercent}});
+                    var spanBuyPriceHistory = $('<span/>', {class: 'input-group-text'}).text("매수 가격");
+                    var inputBuyPriceHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'buyPrice', value: ${dealModification.buyPrice}});
 
-                var divTag = document.createElement('div');
-                divTag.className = "input-group mb-3";
+                    var divTag = document.createElement('div');
+                    divTag.className = "input-group mb-3";
 
-                innerDivTag.append(spanModifyDate, inputModifyDate, spanSellPercentHistory, inputSellPercentHistory
-                    , spanSellPriceHistory, inputSellPriceHistory, spanBuyPercentHistory, inputBuyPercentHistory, spanBuyPriceHistory, inputBuyPriceHistory);
-                divTag.append(innerDivTag.get(0));
+                    innerDivTag.append(spanModifyDate, inputModifyDate, spanSellPercentHistory, inputSellPercentHistory
+                        , spanSellPriceHistory, inputSellPriceHistory, spanBuyPercentHistory, inputBuyPercentHistory, spanBuyPriceHistory, inputBuyPriceHistory);
+                    divTag.append(innerDivTag.get(0));
 
-                document.getElementById("additionalBuyingSellHistory").appendChild(divTag);
-
+                    document.getElementById("additionalBuyingSellHistory").appendChild(divTag);
+                </c:if>
             </c:forEach>
 
         }
@@ -93,15 +94,19 @@
                             <c:otherwise>
                                 <h1>매매 현황</h1>
                                 <p></p>
-                                <h2>수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
+                                <h2>실현수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
                                 <h2>실현손익 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
                                 <h2>총 투입금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
-                                <h2>현재 비중 : <fmt:formatNumber value="${portion}"/>%</h2>
+                                <h2>총 매입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
+                                <h2>총 매도금액 : <fmt:formatNumber value="${sumOfSellingAmount}" pattern="#,###" />원</h2>
+                                <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
+                                <h2>총 매도수량 : <fmt:formatNumber value="${sumOfSellingQuantity}" pattern="#,###" />주</h2>
+                                <h2>현재 비중 : <fmt:formatNumber value="${portion}" pattern="#,###.00" />%</h2>
                                 <h2>남은 금액 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
-                                <h2>남은 비중 : <fmt:formatNumber value="${remainingPortion}" pattern="#,###" />%</h2>
+                                <h2>남은 비중 : <fmt:formatNumber value="${remainingPortion}" pattern="#,###.00" />%</h2>
                                 <h2>총 매도수수료(0.3%) : <fmt:formatNumber value="${sumOfCommission}" pattern="#,###" />원</h2>
                                 <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
-                                <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###" />%</h2>
+                                <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
                                 <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
                                 <h2>현재 종가 : <fmt:formatNumber value="${currentClosingPrice}" pattern="#,###" />원</h2>
                             </c:otherwise>
@@ -125,7 +130,9 @@
                             <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
                                 candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
                                 volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
-                                myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
+                                <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
+                                    myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
+                                </c:if>
                                 <c:if test="${dailyDealHistory.additionalBuyingQuantity != 0}">
                                     additionalBuyingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount / dailyDealHistory.additionalBuyingQuantity}]);
                                     additionalBuyingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount}]);
@@ -366,7 +373,7 @@
                                 $('input[id=inputStartDate]').attr('value',"${startDate}");
                                 $('input[id=inputEndDate]').attr('value',"${endDate}");
                                 $('input[id=inputSlotAmount]').attr('value',"${slotAmount}");
-                                $('input[id=inputPortion]').attr('value',"${portion}");
+                                $('input[id=inputPortion]').attr('value',<fmt:formatNumber value="${portion}" pattern="#,###" />);
                             </script>
                         </div>
                     </div>
@@ -380,11 +387,11 @@
                             <span class="input-group-text" id="basic-addon1">수정 날짜</span>
                             <input readonly="true" id="thisModifyDate" type="date" class="form-control" name="modifyDate" aria-label="modifyDate" aria-describedby="basic-addon1">
                             <span class="input-group-text" id="basic-addon2">매도 비중%(현시점 보유비중의 몇%)</span>
-                            <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요" aria-label="sellPercent" aria-describedby="basic-addon2">
+                            <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="sellPercent" aria-describedby="basic-addon2">
                             <span class="input-group-text" id="basic-addon3">매도 가격</span>
                             <input type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
                             <span class="input-group-text" id="basic-addon4">매수 비중%(현시점 보유비중의 몇%)</span>
-                            <input type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요" aria-label="buyPercent" aria-describedby="basic-addon4">
+                            <input type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
                             <span class="input-group-text" id="basic-addon5">매수 가격</span>
                             <input type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
                         </div>

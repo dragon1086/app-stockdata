@@ -23,4 +23,12 @@ public class DealTrainingUtilTest {
 
         assertThat(result).isEqualTo("2021-12-25");
     }
+
+    @Test
+    public void transformToLocalDateIncludingDash(){
+        String rawData = "2021-12-25";
+        LocalDate result = DealTrainingUtil.transformToLocalDateIncludingDash(rawData);
+
+        assertThat(result).isEqualTo(LocalDate.of(2021, Month.DECEMBER, 25));
+    }
 }
