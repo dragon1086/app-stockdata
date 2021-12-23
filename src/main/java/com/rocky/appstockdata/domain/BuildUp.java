@@ -19,6 +19,7 @@ public class BuildUp {
     private Integer sumOfSellingQuantity;
     private String itemName;
     private List<DailyDealHistory> dailyDealHistories;
+    private List<DailyDealHistory> dailyDealHistoriesDesc;
 
     @Builder
     public BuildUp(Double earningRate,
@@ -30,7 +31,8 @@ public class BuildUp {
                    Integer sumOfPurchaseQuantity,
                    Integer sumOfSellingQuantity,
                    String itemName,
-                   List<DailyDealHistory> dailyDealHistories) {
+                   List<DailyDealHistory> dailyDealHistories,
+                   List<DailyDealHistory> dailyDealHistoriesDesc) {
         this.earningRate = earningRate;
         this.earningAmount = earningAmount;
         this.totalAmount = totalAmount;
@@ -41,5 +43,6 @@ public class BuildUp {
         this.sumOfSellingQuantity = sumOfSellingQuantity;
         this.itemName = itemName;
         this.dailyDealHistories = dailyDealHistories;
+        this.dailyDealHistoriesDesc = dailyDealHistoriesDesc;
     }
 }

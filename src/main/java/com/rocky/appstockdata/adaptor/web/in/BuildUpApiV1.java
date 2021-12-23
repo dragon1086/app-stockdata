@@ -69,6 +69,7 @@ public class BuildUpApiV1 {
         modelMap.put("endDate", dealTrainingResult.getEndDate());
         modelMap.put("itemName", dealTrainingResult.getItemName());
         modelMap.put("dailyDealHistories", dealTrainingResult.getDailyDealHistories());
+        modelMap.put("dailyDealHistoriesDesc", dealTrainingResult.getDailyDealHistoriesDesc());
         modelMap.put("slotAmount", dealTrainingSourceDTO.getSlotAmount());
         modelMap.put("portion", 100.0 - dealTrainingResult.getRemainingPortion());
         modelMap.put("remainingSlotAmount", dealTrainingResult.getRemainingSlotAmount());
@@ -107,9 +108,6 @@ public class BuildUpApiV1 {
                                       @RequestParam(value = "sellPrice", defaultValue = "0") String[] sellPrices,
                                       @RequestParam(value = "buyPercent", defaultValue = "0") String[] buyPercents,
                                       @RequestParam(value = "buyPrice", defaultValue = "0") String[] buyPrices){
-        //TODO: 날짜별 이력 내림차순 정렬
-        //TODO: 수정칸을 그래프 위로 옮기기
-
         List<DealModification> dealModifications = new ArrayList<>();
 
         try{
@@ -197,6 +195,7 @@ public class BuildUpApiV1 {
         modelMap.put("sumOfPurchaseQuantity", buildUp.getSumOfPurchaseQuantity());
         modelMap.put("sumOfSellingQuantity", buildUp.getSumOfSellingQuantity());
         modelMap.put("dailyDealHistories", buildUp.getDailyDealHistories());
+        modelMap.put("dailyDealHistoriesDesc", buildUp.getDailyDealHistoriesDesc());
         modelMap.put("isError", "false");
     }
 
@@ -265,6 +264,7 @@ public class BuildUpApiV1 {
         modelMap.put("sumOfPurchaseQuantity", buildUp.getSumOfPurchaseQuantity());
         modelMap.put("sumOfSellingQuantity", buildUp.getSumOfSellingQuantity());
         modelMap.put("dailyDealHistories", buildUp.getDailyDealHistories());
+        modelMap.put("dailyDealHistoriesDesc", buildUp.getDailyDealHistoriesDesc());
         modelMap.put("dealModifications", buildUpModificationSourceDTO.dealModificationsForView());
         modelMap.put("isError", "false");
     }

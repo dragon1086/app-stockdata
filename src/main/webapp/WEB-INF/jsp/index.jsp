@@ -47,15 +47,15 @@
 </head>
 <body>
     <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-secondary" onclick="location.href='/deal-training'">일봉차트 매매훈련하러 가기</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='/deal-training'" style="height:50px;width:250px;font-size:18px;">일봉차트 매매훈련하러 가기</button>
     </div>
     <form action="buildup-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
-            <h1 class="display-5 fw-bold">오리지널 빌드업 시뮬레이션 계산기</h1>
-            <div class="display-5 mx-auto">
-                <p class="lead mb-4">매일 종가로 주식을 매수하면, 투입금액 대비 얼마나 수익날 지 계산하는 프로그램입니다.</p>
+            <h1 class="display-3 fw-bold">오리지널 빌드업 시뮬레이션 계산기</h1>
+            <div class="display-3 mx-auto">
+                <p class="lead mb-4 "style="font-size:17px;">매일 종가로 주식을 매수하면, 투입금액 대비 얼마나 수익날 지 계산하는 프로그램입니다.</p>
                 <p></p>
-                <p class="lead mb-4">데이터는 지금 2000.01.01 ~ 2021.12.03 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
+                <p class="lead mb-4 "style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2021.12.03 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
             </div>
             <div class="input-group mb-3">

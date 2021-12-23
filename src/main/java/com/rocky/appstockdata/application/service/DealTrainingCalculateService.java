@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.rocky.appstockdata.domain.utils.BuildUpUtil.transformDate;
+import static com.rocky.appstockdata.domain.utils.DealTrainingUtil.sortDesc;
 
 @Service
 @Slf4j
@@ -131,6 +132,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 .startDate(startDate)
                 .endDate(DealTrainingUtil.transformToLocalDate(nextTryDay.getDealDate()))
                 .dailyDealHistories(dailyDealHistories)
+                .dailyDealHistoriesDesc(sortDesc(dailyDealHistories))
                 .remainingSlotAmount(remainingSlotAmount)
                 .remainingPortion(remainingPortion)
                 .sumOfPurchaseAmount(sumOfPurchaseAmount)
@@ -347,6 +349,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 .startDate(DealTrainingUtil.transformToLocalDateIncludingDash(dealTrainingSourceDTO.getStartDate()))
                 .endDate(DealTrainingUtil.transformToLocalDate(nextTryDay.getDealDate()))
                 .dailyDealHistories(dailyDealHistories)
+                .dailyDealHistoriesDesc(sortDesc(dailyDealHistories))
                 .remainingSlotAmount(remainingSlotAmount)
                 .remainingPortion(remainingPortion)
                 .totalAmount(myTotalAmount)

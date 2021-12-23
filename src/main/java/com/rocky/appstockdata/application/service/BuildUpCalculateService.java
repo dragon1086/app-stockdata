@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static com.rocky.appstockdata.domain.utils.BuildUpUtil.transformDate;
+import static com.rocky.appstockdata.domain.utils.DealTrainingUtil.sortDesc;
 
 @Service
 @Slf4j
@@ -120,8 +121,11 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
                 .sumOfPurchaseQuantity(sumOfPurchaseQuantity)
                 .sumOfSellingQuantity(sumOfSellingQuantity)
                 .dailyDealHistories(dailyDealHistories)
+                .dailyDealHistoriesDesc(sortDesc(dailyDealHistories))
                 .build();
     }
+
+
 
     @Override
     public BuildUp calculateBuildUpModification(BuildUpModificationSourceDTO buildUpModificationSourceDTO) {
@@ -294,6 +298,7 @@ public class BuildUpCalculateService implements BuildUpCalculateUseCase {
                 .sumOfPurchaseQuantity(sumOfPurchaseQuantity)
                 .sumOfSellingQuantity(sumOfSellingQuantity)
                 .dailyDealHistories(dailyDealHistories)
+                .dailyDealHistoriesDesc(sortDesc(dailyDealHistories))
                 .build();
     }
 }

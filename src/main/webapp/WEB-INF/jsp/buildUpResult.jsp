@@ -320,7 +320,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
+                        <c:forEach items="${dailyDealHistoriesDesc}" var="dailyDealHistory">
                             <tr>
                                 <td>${dailyDealHistory.dealDate}</td>
                                 <td><fmt:formatNumber value="${dailyDealHistory.closingPrice}" pattern="#,###" /></td>

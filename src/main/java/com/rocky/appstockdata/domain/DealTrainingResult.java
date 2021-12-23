@@ -20,6 +20,7 @@ public class DealTrainingResult {
     private Integer sumOfSellingQuantity;
     private String itemName;
     private List<DailyDealHistory> dailyDealHistories;
+    private List<DailyDealHistory> dailyDealHistoriesDesc;
     private LocalDate startDate;
     private LocalDate endDate;
     private long remainingSlotAmount;
@@ -41,6 +42,7 @@ public class DealTrainingResult {
                               Integer sumOfSellingQuantity,
                               String itemName,
                               List<DailyDealHistory> dailyDealHistories,
+                              List<DailyDealHistory> dailyDealHistoriesDesc,
                               LocalDate startDate,
                               LocalDate endDate,
                               long remainingSlotAmount,
@@ -60,6 +62,7 @@ public class DealTrainingResult {
         this.sumOfSellingQuantity = sumOfSellingQuantity;
         this.itemName = itemName;
         this.dailyDealHistories = dailyDealHistories;
+        this.dailyDealHistoriesDesc = dailyDealHistoriesDesc;
         this.startDate = startDate;
         this.endDate = endDate;
         this.remainingSlotAmount = remainingSlotAmount;
