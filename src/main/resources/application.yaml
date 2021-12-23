@@ -12,6 +12,10 @@ spring:
     password: gmrfyd12
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/stock_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    hikari:
+      pool-name: stockHikariPool
+      maximum-pool-size: 150
+      connection-timeout: 10000
   devtools:
     livereload:
       enabled: true
@@ -20,6 +24,13 @@ server:
   port: 8081
   servlet:
     context-path: /
+  tomcat:
+    threads:
+      max: 250 # 생성할 수 있는 thread의 총 개수
+      min-spare: 50 # 항상 활성화 되어있는(idle) thread의 개수
+    max-connections: 8192 # 수립가능한 connection의 총 개수
+    accept-count: 200 # 작업큐의 사이즈
+    connection-timeout: 60000 # timeout 판단 기준 시간, 60초
 
 ---
 spring:

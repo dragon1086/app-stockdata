@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface StockDealRepository {
     List<DailyDeal> getDailyDeal(DailyDealRequestDTO dailyDealRequestDTO);
+
+    String getEarliestDate(String companyName);
 }

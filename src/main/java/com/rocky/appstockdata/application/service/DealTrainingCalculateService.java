@@ -4,7 +4,9 @@ import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
 import com.rocky.appstockdata.domain.*;
 import com.rocky.appstockdata.domain.utils.DealTrainingUtil;
+import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,6 +22,9 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
     //TODO: 리팩토링
     private final double MIN_MINUS_THIRTY_PERCENT = 0.77d;
     private final double MAX_PLUS_THIRTY_PERCENT = 1.42d;
+
+    private final String VALIDATION_START_DATE = "2021-12-10";
+    private final String VALIDATION_END_DATE = "2021-12-09";
 
     private StockDealRepository stockDealRepository;
     public DealTrainingCalculateService(StockDealRepository stockDealRepository) {
@@ -37,21 +42,27 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
         long finalClosingPrice = 0L;
         int sumOfMyQuantity = 0;
         String initialDealDate = "";
-
+        LocalDate endDate;
+        LocalDate startDate;
+        List<DailyDeal> dailyDealList = new ArrayList<>();
         List<DailyDealHistory> dailyDealHistories = new ArrayList<>();
 
+        //종목에 대한 데이터가 있는지 검증 한 후 가장 과거날짜를 가져옴
+        String earliestDate = validateAndGetEarliestDate(dealTrainingSourceDTO);
+
         //랜덤일자 ~ 그로부터 3년 전
-        LocalDate endDate = DealTrainingUtil.getRandomDate();
-        LocalDate startDate = endDate.minusYears(3);
+        endDate = DealTrainingUtil.getRandomDate(earliestDate);
+        startDate = endDate.minusYears(3);
 
         String endDateString = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String startDateString = startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
+        dailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
                                                                     .companyName(dealTrainingSourceDTO.getCompanyName())
                                                                     .startDate(startDateString)
                                                                     .endDate(endDateString)
                                                             .build());
+
 
         //마지막 날짜를 빼야 함. 이 마지막날은 사용자가 매수/매도를 입력할 수 있게끔 따로 구성해야 함.
         DailyDeal nextTryDay = dailyDealList.remove(dailyDealList.size() - 1);
@@ -147,6 +158,17 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                         .buyPrice(String.valueOf(myAverageUnitPrice))
                         .build()))
                 .build();
+    }
+
+    private String validateAndGetEarliestDate(DealTrainingSourceDTO dealTrainingSourceDTO) {
+        String earliestDate = stockDealRepository.getEarliestDate(dealTrainingSourceDTO.getCompanyName());
+
+        if(StringUtils.isEmpty(earliestDate)){
+            throw new NoResultDataException("조회하신 검색 결과가 없습니다. 종목명을 확인 부탁드립니다.\r\n"
+                    + "종목명은 영문표기를 한글로 변형 또는 반대로 해서 다시 입력해보시기 바랍니다.");
+        }
+
+        return earliestDate;
     }
 
     @Override

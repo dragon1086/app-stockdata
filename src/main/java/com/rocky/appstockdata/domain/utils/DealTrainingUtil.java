@@ -3,14 +3,13 @@ package com.rocky.appstockdata.domain.utils;
 import com.rocky.appstockdata.domain.DailyDealHistory;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class DealTrainingUtil {
-    public static LocalDate getRandomDate() {
-        LocalDate start = LocalDate.of(2002, Month.JANUARY, 1);
+    public static LocalDate getRandomDate(String earliestDate) {
+        LocalDate start = DealTrainingUtil.transformToLocalDate(earliestDate);
         LocalDate end = LocalDate.now();
 
         return between(start, end);

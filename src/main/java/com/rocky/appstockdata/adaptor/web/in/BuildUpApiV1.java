@@ -56,8 +56,11 @@ public class BuildUpApiV1 {
 
             DealTrainingResult dealTrainingResult = dealTrainingUseCase.initializeDailyDeal(dealTrainingSourceDTO);
             setModelMap(modelMap, dealTrainingResult, dealTrainingSourceDTO);
-        } catch (DealTrainingSourceException e) {
+        } catch (DealTrainingSourceException | NoResultDataException e) {
             return createModelMapWithDealTrainingSourceException(modelMap, e.getMessage());
+        } catch (Exception e){
+            e.printStackTrace();
+            return createModelMapWithDealTrainingSourceException(modelMap, "서버 오류 발생");
         }
 
         return "dealTraining";
