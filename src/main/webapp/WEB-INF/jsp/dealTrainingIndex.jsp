@@ -58,7 +58,7 @@
                 <p class="lead mb-4" style="font-size:17px;">이때 평균 단가는 시작시점 종가의 -30% ~ 30%로 설정되며, 여러분이 과거 특정 시점부터 관리해온 평균단가라고 가정했습니다.</p>
                 <p class="lead mb-4" style="font-size:17px;">만약 "시작 비중"을 0으로 입력하면, 처음부터 새로 시작할 수 있습니다.</p>
                 <p></p>
-                <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2021.12.03 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
+                <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2021.12.10 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
             </div>
             <div class="input-group mb-3">

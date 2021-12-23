@@ -55,7 +55,7 @@
             <div class="display-3 mx-auto">
                 <p class="lead mb-4 "style="font-size:17px;">매일 종가로 주식을 매수하면, 투입금액 대비 얼마나 수익날 지 계산하는 프로그램입니다.</p>
                 <p></p>
-                <p class="lead mb-4 "style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2021.12.03 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
+                <p class="lead mb-4 "style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2021.12.10 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
             </div>
             <div class="input-group mb-3">
