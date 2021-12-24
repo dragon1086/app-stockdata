@@ -323,8 +323,6 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 }
             }
 
-            finalClosingPrice = dailyDeal.getClosingPrice();
-
             //기본적으로 매일매일 거래이력을 남겨야 함. 거래를 하든 안하든.
             dailyDealHistories.add(DailyDealHistory.builder()
                     .dealDate(dailyDeal.getDealDate())
@@ -361,6 +359,8 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 .myAverageUnitPrice(myAverageUnitPrice)
                 .build());
 
+        //종가 기록
+        finalClosingPrice = nextTryDay.getClosingPrice();
         //현재 평가손익 기록
         currentValuationPercent = (sumOfPurchaseAmount !=0) ? Math.round((finalClosingPrice - myAverageUnitPrice)/(double)myAverageUnitPrice*100*100)/100.0 : 0.0d;
         //실현수익률 : 실현손익 총합 / (할당된 슬랏의 남은금액 + 구매한 총금액)
