@@ -316,9 +316,9 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                         sellPercentToday = dealModification.getSellPercent();
 
                         //남은 할당금액
-                        remainingSlotAmount += additionalSellingAmount;
+                        remainingSlotAmount += additionalSellingAmount - commission;
                         //남은 비중(소수점 이하 버림)
-                        remainingPortion += Math.round(additionalSellingAmount / (double)dealTrainingSourceDTO.getSlotAmount() * 100*100)/100.0;
+                        remainingPortion += Math.round(remainingSlotAmount / (double)dealTrainingSourceDTO.getSlotAmount() * 100*100)/100.0;
                     }
                 }
             }
