@@ -20,6 +20,7 @@ import static com.rocky.appstockdata.domain.utils.DealTrainingUtil.sortDesc;
 @Slf4j
 public class DealTrainingCalculateService implements DealTrainingUseCase {
     //TODO: 리팩토링
+    //TODO: 테스트케이스
     private final double MIN_MINUS_THIRTY_PERCENT = 0.77d;
     private final double MAX_PLUS_THIRTY_PERCENT = 1.42d;
 
@@ -147,6 +148,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 .remainingSlotAmount(remainingSlotAmount)
                 .remainingPortion(remainingPortion)
                 .sumOfPurchaseAmount(sumOfPurchaseAmount)
+                .sumOfPurchaseQuantity(sumOfPurchaseQuantity)
                 .totalAmount(myTotalAmount)
                 .valuationPercent(currentValuationPercent)
                 .averageUnitPrice(myAverageUnitPrice)
@@ -279,6 +281,10 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
 
                         //매도 수량 : (내림)(슬랏 할당 금액 * 매도비중 / 매도단가)
                         int additionalSellingQuantity = (int) Math.floor((dealTrainingSourceDTO.getSlotAmount() * (double)dealModification.getSellPercent()/100) / (double) dealModification.getSellPrice());
+                        //매도수량이 내가 매입한 수량보다 많으면 안되므로, 보정
+                        if((sumOfMyQuantity - additionalSellingQuantity) < 0){
+                            additionalSellingQuantity = sumOfMyQuantity;
+                        }
                         //매도 금액 : 매도 수량 * 매도 단가
                         long additionalSellingAmount = additionalSellingQuantity * dealModification.getSellPrice();
                         //매도 수수료(0.3%)
@@ -360,7 +366,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
         //실현수익률 : 실현손익 총합 / (할당된 슬랏의 남은금액 + 구매한 총금액)
         double myEarningRate = sumOfRealizedEarningAmount / (double)(remainingSlotAmount + sumOfPurchaseAmount);
         //평가 금액 : 종가 * 보유한 수량
-        long myTotalAmount = finalClosingPrice * sumOfPurchaseQuantity;
+        long myTotalAmount = finalClosingPrice * sumOfMyQuantity;
 
 
         //현재시점 결산데이터

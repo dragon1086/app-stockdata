@@ -96,14 +96,14 @@
                                 <p></p>
                                 <h2>실현수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
                                 <h2>실현손익 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
-                                <h2>총 투입금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
+                                <h2>슬랏 할당금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
+                                <h2>현재 비중 : <fmt:formatNumber value="${portion}" pattern="#,###.00" />% (전량매도 후 남으면 그만큼 손실이고, 마이너스면 이익이라는 의미입니다)</h2>
+                                <h2>슬랏 예수금 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
+                                <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion}" pattern="#,###.00" />% (전량매도 후 최초 할당금액보다 적으면 그만큼 손실이고, 많으면 이익이라는 의미입니다)</h2>
                                 <h2>총 매입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
                                 <h2>총 매도금액 : <fmt:formatNumber value="${sumOfSellingAmount}" pattern="#,###" />원</h2>
                                 <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
                                 <h2>총 매도수량 : <fmt:formatNumber value="${sumOfSellingQuantity}" pattern="#,###" />주</h2>
-                                <h2>현재 비중 : <fmt:formatNumber value="${portion}" pattern="#,###.00" />%</h2>
-                                <h2>남은 금액 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
-                                <h2>남은 비중 : <fmt:formatNumber value="${remainingPortion}" pattern="#,###.00" />%</h2>
                                 <h2>총 매도수수료(0.3%) : <fmt:formatNumber value="${sumOfCommission}" pattern="#,###" />원</h2>
                                 <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
                                 <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
