@@ -159,7 +159,7 @@
 
                     <hr style="height:3px;color:#dc874f">
 
-                    <div id="container" style="height: 800px; min-width: 310px"></div>
+                    <div id="container" style="height: 1200px; min-width: 310px"></div>
                     <script>
                         function drawCandleStickChart(){
                             //setting values
@@ -254,7 +254,7 @@
                                         title: {
                                             text: '${itemName}'
                                         },
-                                        height: '50%',
+                                        height: '65%',
                                         lineWidth: 2,
                                         resize: {
                                             enabled: true
@@ -267,8 +267,8 @@
                                         title: {
                                             text: '거래량'
                                         },
-                                        top: '55%',
-                                        height: '25%',
+                                        top: '70%',
+                                        height: '15%',
                                         offset: 0,
                                         lineWidth: 2
                                     }, {
@@ -279,8 +279,8 @@
                                         title: {
                                             text: '비중'
                                         },
-                                        top: '85%',
-                                        height: '15%',
+                                        top: '90%',
+                                        height: '10%',
                                         offset: 0,
                                         lineWidth: 2
                                     }],
