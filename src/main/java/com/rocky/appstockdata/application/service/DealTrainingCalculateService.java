@@ -367,8 +367,8 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
         finalClosingPrice = nextTryDay.getClosingPrice();
         //현재 평가손익 기록
         currentValuationPercent = (sumOfPurchaseAmount !=0) ? Math.round((finalClosingPrice - myAverageUnitPrice)/(double)myAverageUnitPrice*100*100)/100.0 : 0.0d;
-        //실현수익률 : 실현손익 총합 / (할당된 슬랏의 남은금액 + 구매한 총금액)
-        double myEarningRate = sumOfRealizedEarningAmount / (double)(remainingSlotAmount + sumOfPurchaseAmount);
+        //실현수익률 : 실현손익 총합 / 할당된 슬랏 금액
+        double myEarningRate = sumOfRealizedEarningAmount / (double)dealTrainingSourceDTO.getSlotAmount();
         //평가 금액 : 종가 * 보유한 수량
         long myTotalAmount = finalClosingPrice * sumOfMyQuantity;
 
