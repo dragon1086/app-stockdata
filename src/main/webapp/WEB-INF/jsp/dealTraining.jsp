@@ -165,6 +165,7 @@
                             //setting values
                             var candleStickDataList = [];
                             var volumeList = [];
+                            var portionList = [];
                             var myAverageUnitPriceList = [];
                             var additionalBuyingPrice = [];
                             var additionalSellingPrice = [];
@@ -176,6 +177,7 @@
                                 <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
                                     candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
                                     volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
+                                    portionList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.portion}])
                                     <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
                                         myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
                                     </c:if>
@@ -235,13 +237,10 @@
                                     },
                                     legend: {
                                         enabled: true,
-                                        align: 'right',
+                                        align: 'center',
                                         backgroundColor: '#FCFFC5',
                                         borderColor: 'black',
                                         borderWidth: 2,
-                                        layout: 'vertical',
-                                        verticalAlign: 'top',
-                                        y: 100,
                                         shadow: true
                                     },
                                     rangeSelector: {
@@ -278,7 +277,7 @@
                                             x: -3
                                         },
                                         title: {
-                                            text: '매수/매도 금액'
+                                            text: '비중'
                                         },
                                         top: '85%',
                                         height: '15%',
@@ -287,7 +286,7 @@
                                     }],
                                     plotOptions: {
                                         candlestick: {
-                                            downColor: 'blue',
+                                            color: 'blue',
                                             upColor: 'red'
                                         }
                                     },
@@ -320,6 +319,7 @@
                                         dataGrouping: {
                                             units: groupingUnits
                                         },
+                                        color: '#b4aa36',
                                         onSeries: 'candle'
                                     }, {
                                         type: 'scatter',
@@ -328,6 +328,7 @@
                                         dataGrouping: {
                                             units: groupingUnits
                                         },
+                                        color: '#afa400',
                                         onSeries: 'candle',
                                         dataLabels: {
                                             enabled: true,
@@ -348,6 +349,7 @@
                                         dataGrouping: {
                                             units: groupingUnits
                                         },
+                                        color: '#007eff',
                                         onSeries: 'candle',
                                         dataLabels: {
                                             enabled: true,
@@ -362,25 +364,16 @@
                                             radius: 10
                                         }
                                     }, {
-                                        type: 'column',
-                                        id: 'buyingAmount',
-                                        name: '매수 금액',
-                                        data: additionalBuyingAmount,
+                                        type: 'line',
+                                        id: 'portion',
+                                        name: '비중',
+                                        data: portionList,
                                         dataGrouping: {
                                             units: groupingUnits
                                         },
                                         yAxis: 2,
-                                        color: '#FF0000'
-                                    }, {
-                                        type: 'column',
-                                        name: '매도 금액',
-                                        data: additionalSellingAmount,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        },
-                                        yAxis: 2,
-                                        color: '#0022ff',
-                                        onSeries: 'buyingAmount'
+                                        color: '#000000',
+                                        onSeries: 'candle'
                                     }],
                                     responsive: {
                                         rules: [{

@@ -30,6 +30,7 @@ public class DailyDealHistory {
     private long sellPrice;
     private int buyPercent;
     private long buyPrice;
+    private double portion;
 
     @Builder
     public DailyDealHistory(long closingPrice,
@@ -52,7 +53,8 @@ public class DailyDealHistory {
                             int sellPercent,
                             long sellPrice,
                             int buyPercent,
-                            long buyPrice) {
+                            long buyPrice,
+                            double portion) {
         this.closingPrice = closingPrice;
         this.myAverageUnitPrice = myAverageUnitPrice;
         this.dealDate = dealDate;
@@ -74,5 +76,6 @@ public class DailyDealHistory {
         this.sellPrice = sellPrice;
         this.buyPercent = buyPercent;
         this.buyPrice = buyPrice;
+        this.portion = portion;
     }
 }

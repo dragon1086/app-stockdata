@@ -117,6 +117,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                         .buyPrice(initialAverageUnitPrice)
                         .buyPercent((int)Math.round(dealTrainingSourceDTO.getPortion()))
                         .remainingAmount(remainingSlotAmount)
+                        .portion(100.0 - remainingPortion)
                         .build());
             }
         }
@@ -131,6 +132,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 .lowPrice(nextTryDay.getLowPrice())
                 .tradeVolume(nextTryDay.getTradeVolume())
                 .myAverageUnitPrice(myAverageUnitPrice)
+                .portion(100.0 - remainingPortion)
                 .build());
 
         //현재 평가손익 기록
@@ -318,7 +320,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                         //남은 할당금액
                         remainingSlotAmount += additionalSellingAmount - commission;
                         //남은 비중(소수점 이하 버림)
-                        remainingPortion += Math.round(remainingSlotAmount / (double)dealTrainingSourceDTO.getSlotAmount() * 100*100)/100.0;
+                        remainingPortion = Math.round(remainingSlotAmount / (double)dealTrainingSourceDTO.getSlotAmount() * 100*100)/100.0;
                     }
                 }
             }
@@ -344,6 +346,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                     .sellPercent(sellPercentToday)
                     .commission(sumOfCommissionForToday)
                     .realizedEarningAmount(sumOfRealizedEarningAmountForToday)
+                    .portion(100.0 - remainingPortion)
                     .build());
         }
 
@@ -357,6 +360,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 .lowPrice(nextTryDay.getLowPrice())
                 .tradeVolume(nextTryDay.getTradeVolume())
                 .myAverageUnitPrice(myAverageUnitPrice)
+                .portion(100.0 - remainingPortion)
                 .build());
 
         //종가 기록
