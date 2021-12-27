@@ -122,6 +122,8 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
             }
         }
 
+        //종가 갱신
+        finalClosingPrice = nextTryDay.getClosingPrice();
         //차트에 마지막 일봉 추가 -> 이걸로 사용자는 살지 말지 판단할 수 있음
         dailyDealHistories.add(DailyDealHistory.builder()
                 .dealDate(nextTryDay.getDealDate())
