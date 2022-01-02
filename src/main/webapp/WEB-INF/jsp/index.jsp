@@ -14,10 +14,10 @@
     <!-- End Google Tag Manager -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="빌드업 계산기">
+    <meta name="description" content="주식 매매가상훈련기">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.1">
-    <title>빌드업 계산기</title>
+    <title>매일종가매수 시뮬레이션기</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
@@ -58,7 +58,7 @@
     </div>
     <form action="buildup-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
-            <h1 class="display-3 fw-bold">오리지널 빌드업 시뮬레이션 계산기</h1>
+            <h1 class="display-3 fw-bold">매일종가매수 시뮬레이션기</h1>
             <div class="display-3 mx-auto">
                 <p class="lead mb-4 "style="font-size:17px;">매일 종가로 주식을 매수하면, 투입금액 대비 얼마나 수익날 지 계산하는 프로그램입니다.</p>
                 <p></p>
