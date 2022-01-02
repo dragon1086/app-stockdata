@@ -118,7 +118,7 @@
                 </div>
 
                 <hr style="height:3px;color:#dc874f">
-                <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+                <canvas class="my-4 w-100" id="myChart" width="900" height="700"></canvas>
 
                 <hr style="height:3px;color:#dc874f">
                 <div id="container" style="height: 1200px; min-width: 310px"></div>
