@@ -398,6 +398,8 @@
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="input-addon2">시작 날짜</span>
                                 <input readonly="true" type="date" id="inputStartDate" class="form-control" name="startDate" aria-label="startDate" aria-describedby="input-addon2" value="">
+                            </div>
+                            <div class="input-group mb-3">
                                 <span class="input-group-text" id="input-addon3">매도 날짜</span>
                                 <input readonly="true" type="date" id="inputEndDate" class="form-control" name="endDate" aria-label="endDate" aria-describedby="input-addon3" value="">
                             </div>
