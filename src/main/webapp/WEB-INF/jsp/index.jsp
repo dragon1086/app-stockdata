@@ -44,6 +44,11 @@
     </style>
     <!-- Custom styles for this template -->
     <link href="/resources/css/buildup.css" rel="stylesheet">
+    <script>
+        $(function(){
+            document.cookie = "SameSite=None; Secure";
+        });
+    </script>
 </head>
 <body>
     <div class="px-4 py-5 my-5 text-center">

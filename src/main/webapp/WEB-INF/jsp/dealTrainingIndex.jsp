@@ -44,6 +44,11 @@
     </style>
     <!-- Custom styles for this template -->
     <link href="/resources/css/buildup.css" rel="stylesheet">
+    <script>
+        $(function(){
+            document.cookie = "SameSite=None; Secure";
+        });
+    </script>
 </head>
 <body>
     <form action="deal-calculate" method="post" name="calculateRequestFrom">

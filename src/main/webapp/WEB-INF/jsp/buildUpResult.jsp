@@ -44,6 +44,11 @@
     </style>
     <!-- Custom styles for this template -->
     <link href="/resources/css/buildup.css" rel="stylesheet">
+    <script>
+        $(function(){
+            document.cookie = "SameSite=None; Secure";
+        });
+    </script>
 </head>
 <body>
 <div class="container">
@@ -77,7 +82,7 @@
                 <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
 
                 <hr style="height:3px;color:#dc874f">
-                <div id="container" style="height: 800px; min-width: 310px"></div>
+                <div id="container" style="height: 1200px; min-width: 310px"></div>
                 <script>
                     function drawCandleStickChart(){
                         //setting values
@@ -144,16 +149,16 @@
 
                                                 // Then add the content (a new input box) of the element.
                                                 newModificationForm.innerHTML =
-                                                    "<span class='input-group-text' id='basic-addon1'>수정 날짜</span>"
-                                                    + "<input type='date' class='form-control' name='modifyDate' placeholder='수정하실 날짜를 선택하세요' aria-label='modifyDate' aria-describedby='basic-addon1'>"
-                                                    + "<span class='input-group-text' id='basic-addon2'>매도 비중%(현시점 보유비중의 몇%)</span>"
+                                                    "<div class='input-group mb-3'><span class='input-group-text' id='basic-addon1'>수정 날짜</span>"
+                                                    + "<input type='date' class='form-control' name='modifyDate' placeholder='수정하실 날짜를 선택하세요' aria-label='modifyDate' aria-describedby='basic-addon1'></div>"
+                                                    + "<div class='input-group mb-3'><span class='input-group-text' id='basic-addon2'>매도 비중%(현시점 보유비중의 몇%)</span>"
                                                     + "<input type='text' class='form-control' name='sellPercent' placeholder='% 제외하고 입력하세요(소수점 제외)' aria-label='sellPercent' aria-describedby='basic-addon2'>"
                                                     + "<span class='input-group-text' id='basic-addon3'>매도 가격</span>"
-                                                    + "<input type='text' class='form-control' name='sellPrice' placeholder='매도하실 금액을 입력하세요(저가와 고가 사이)' aria-label='sellPrice' aria-describedby='basic-addon3'>"
-                                                    + "<span class='input-group-text' id='basic-addon4'>매수 비중%(현시점 보유비중의 몇%)</span>"
+                                                    + "<input type='text' class='form-control' name='sellPrice' placeholder='매도하실 금액을 입력하세요(저가와 고가 사이)' aria-label='sellPrice' aria-describedby='basic-addon3'></div>"
+                                                    + "<div class='input-group mb-3'><span class='input-group-text' id='basic-addon4'>매수 비중%(현시점 보유비중의 몇%)</span>"
                                                     + "<input type='text' class='form-control' name='buyPercent' placeholder='% 제외하고 입력하세요(소수점 제외)' aria-label='buyPercent' aria-describedby='basic-addon4'>"
                                                     + "<span class='input-group-text' id='basic-addon5'>매수 가격</span>"
-                                                    + "<input type='text' class='form-control' name='buyPrice' placeholder='매수하실 금액을 입력하세요(저가와 고가 사이)' aria-label='buyPrice' aria-describedby='basic-addon5'>";
+                                                    + "<input type='text' class='form-control' name='buyPrice' placeholder='매수하실 금액을 입력하세요(저가와 고가 사이)' aria-label='buyPrice' aria-describedby='basic-addon5'></div>";
 
                                                 // Finally put it where it is supposed to appear.
                                                 document.getElementById("parentDivForModifiyCalculation").appendChild(newModificationForm);
@@ -167,13 +172,10 @@
                                 },
                                 legend: {
                                     enabled: true,
-                                    align: 'right',
+                                    align: 'center',
                                     backgroundColor: '#FCFFC5',
                                     borderColor: 'black',
                                     borderWidth: 2,
-                                    layout: 'vertical',
-                                    verticalAlign: 'top',
-                                    y: 100,
                                     shadow: true
                                 },
                                 rangeSelector: {
@@ -187,7 +189,7 @@
                                     title: {
                                         text: '${itemName}'
                                     },
-                                    height: '75%',
+                                    height: '80%',
                                     lineWidth: 2,
                                     resize: {
                                         enabled: true
@@ -200,14 +202,14 @@
                                     title: {
                                         text: '거래량'
                                     },
-                                    top: '80%',
-                                    height: '20%',
+                                    top: '85%',
+                                    height: '15%',
                                     offset: 0,
                                     lineWidth: 2
                                 }],
                                 plotOptions: {
                                     candlestick: {
-                                        downColor: 'blue',
+                                        color: 'blue',
                                         upColor: 'red'
                                     }
                                 },
@@ -240,6 +242,7 @@
                                     dataGrouping: {
                                         units: groupingUnits
                                     },
+                                    color: '#b4aa36',
                                     onSeries: 'candle'
                                 }],
                                 responsive: {
@@ -262,15 +265,21 @@
                 <form id="modifyCalculation" action="buildup-calculate-modify" method="post" name="calculateRequestFrom">
                     <div class="px-4 py-5 my-5 text-center">
                         <h3>최초 입력 요청값</h3>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text" id="input-addon1">기업 이름</span>
-                            <input readonly="true" type="text" id="inputCompanyName" class="form-control" name="companyName" aria-label="companyName" aria-describedby="input-addon1" value="">
-                            <span class="input-group-text" id="input-addon2">시작 날짜</span>
-                            <input readonly="true" type="date" id="inputStartDate" class="form-control" name="startDate" aria-label="startDate" aria-describedby="input-addon2" value="">
-                            <span class="input-group-text" id="input-addon3">매도 날짜</span>
-                            <input readonly="true" type="date" id="inputEndDate" class="form-control" name="endDate" aria-label="endDate" aria-describedby="input-addon3" value="">
-                            <span class="input-group-text" id="input-addon4">빌드업 금액</span>
-                            <input readonly="true" type="text" id="inputBuildupAmount" class="form-control" name="buildupAmount" aria-label="buildupAmount" aria-describedby="input-addon4" value="">
+                        <div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="input-addon1">기업 이름</span>
+                                <input readonly="true" type="text" id="inputCompanyName" class="form-control" name="companyName" aria-label="companyName" aria-describedby="input-addon1" value="">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="input-addon2">시작 날짜</span>
+                                <input readonly="true" type="date" id="inputStartDate" class="form-control" name="startDate" aria-label="startDate" aria-describedby="input-addon2" value="">
+                                <span class="input-group-text" id="input-addon3">매도 날짜</span>
+                                <input readonly="true" type="date" id="inputEndDate" class="form-control" name="endDate" aria-label="endDate" aria-describedby="input-addon3" value="">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="input-addon4">빌드업 금액</span>
+                                <input readonly="true" type="text" id="inputBuildupAmount" class="form-control" name="buildupAmount" aria-label="buildupAmount" aria-describedby="input-addon4" value="">
+                            </div>
 
                             <script>
                                 $('input[id=inputCompanyName]').attr('value',"${companyName}");
@@ -289,16 +298,22 @@
                         <h3>날짜가 없는 행은 계산에서 제외됩니다.</h3>
                         <h3>매도 시 매도금액의 0.3%를 수수료차원에서 실현손익에서 뺍니다.</h3>
                         <div class="input-group mb-3" id= "modifyInputGroup">
-                            <span class="input-group-text" id="basic-addon1">수정 날짜</span>
-                            <input type="date" class="form-control" name="modifyDate" placeholder="수정하실 날짜를 선택하세요" aria-label="modifyDate" aria-describedby="basic-addon1">
-                            <span class="input-group-text" id="basic-addon2">매도 비중%(현시점 보유비중의 몇%)</span>
-                            <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="sellPercent" aria-describedby="basic-addon2">
-                            <span class="input-group-text" id="basic-addon3">매도 가격</span>
-                            <input type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
-                            <span class="input-group-text" id="basic-addon4">매수 비중%(현시점 보유비중의 몇%)</span>
-                            <input type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
-                            <span class="input-group-text" id="basic-addon5">매수 가격</span>
-                            <input type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">수정 날짜</span>
+                                <input type="date" class="form-control" name="modifyDate" placeholder="수정하실 날짜를 선택하세요" aria-label="modifyDate" aria-describedby="basic-addon1">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon2">매도 비중%(수정시점비중)</span>
+                                <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="sellPercent" aria-describedby="basic-addon2">
+                                <span class="input-group-text" id="basic-addon3">매도 가격</span>
+                                <input type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon4">매수 비중%(수정시점비중)</span>
+                                <input type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
+                                <span class="input-group-text" id="basic-addon5">매수 가격</span>
+                                <input type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
+                            </div>
                         </div>
                     </div>
                     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
