@@ -42,7 +42,7 @@
             }
         }
 
-        input[type='date'] { font-size: 8px; }
+        input[type='date'] { font-size: 12px; }
     </style>
     <!-- Custom styles for this template -->
     <link href="/resources/css/buildup.css" rel="stylesheet">
