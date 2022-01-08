@@ -1,4 +1,4 @@
-package com.rocky.appstockdata.application;
+package com.rocky.appstockdata.application.service;
 
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
 import com.rocky.appstockdata.application.service.BuildUpCalculateService;
