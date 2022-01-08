@@ -65,7 +65,7 @@
                                 <h1>${errorMessage}</h1>
                             </c:when>
                             <c:otherwise>
-                                <h1>시뮬레이션 결과</h1>
+                                <h1><strong>시뮬레이션 결과</strong></h1>
                                 <p></p>
                                 <h2>수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
                                 <h2>실현손익 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
@@ -84,7 +84,7 @@
                 <canvas class="my-4 w-100" id="myChart" width="900" height="700"></canvas>
 
                 <hr style="height:3px;color:#dc874f">
-                <div id="container" style="height: 1200px; min-width: 310px"></div>
+                <div id="container" style="height: 1000px; min-width: 310px"></div>
                 <script>
                     function drawCandleStickChart(){
                         //setting values
@@ -265,9 +265,44 @@
                     drawCandleStickChart();
                 </script>
                 <form id="modifyCalculation" action="buildup-calculate-modify" method="post" name="calculateRequestFrom">
-                    <div class="px-4 py-5 my-5 text-center">
-                        <h3>최초 입력 요청값</h3>
-                        <div>
+                    <div class="px-4 py-5 my-5 text-center" id="parentDivForModifiyCalculation">
+                        <div class="input-group mb-3" id= "modifyInputGroup">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">수정 날짜</span>
+                                <input type="date" class="form-control" name="modifyDate" placeholder="수정하실 날짜를 선택하세요" aria-label="modifyDate" aria-describedby="basic-addon1">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon2">매도 비중%(수정시점비중)</span>
+                                <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="sellPercent" aria-describedby="basic-addon2">
+                                <span class="input-group-text" id="basic-addon3">매도 가격</span>
+                                <input type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon4">매수 비중%(수정시점비중)</span>
+                                <input type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
+                                <span class="input-group-text" id="basic-addon5">매수 가격</span>
+                                <input type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                            <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">수정 전송</button>
+                        </div>
+
+                        <div class="row g-1 text-left" style="padding:20px">
+                            <h5>그래프의 배경을 클릭하시면, 수정할 수 있는 행이 추가됩니다. </h5>
+                            <p></p>
+                            <h5>1개 행에 매수/매도 다 입력해도 되고, 한쪽만 입력해도 됩니다.</h5>
+                            <h5>단, 매수/매도 비중을 입력했으면 매수/매도 단가도 필수입니다. 비중과 단가 중 하나라도 미입력 시 계산 무시합니다.</h5>
+                            <h5>같은날짜에 더 매수/매도 하고 싶으시면, 행을 더 추가하시면 됩니다.</h5>
+                            <h5>날짜가 없는 행은 계산에서 제외됩니다.</h5>
+                            <h5>매도 시 매도금액의 0.3%를 수수료차원에서 실현손익에서 뺍니다.</h5>
+                        </div>
+                    </div>
+
+                    <hr style="height:3px;color:#dc874f">
+                    <div class="px-4 my-5 text-left">
+                        <h2><strong>최초 입력 요청값</strong></h2>
+                        <div style="padding:10px">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="input-addon1">기업 이름</span>
                                 <input readonly="true" type="text" id="inputCompanyName" class="form-control" name="companyName" aria-label="companyName" aria-describedby="input-addon1" value="">
@@ -293,63 +328,35 @@
                             </script>
                         </div>
                     </div>
-                    <div class="px-4 py-5 my-5 text-center" id="parentDivForModifiyCalculation">
-                        <h1>그래프의 배경을 클릭하시면, 수정할 수 있는 행이 추가됩니다. </h1>
-                        <p></p>
-                        <h3>1개 행에 매수/매도 다 입력해도 되고, 한쪽만 입력해도 됩니다.</h3>
-                        <h3>단, 매수/매도 비중을 입력했으면 매수/매도 단가도 필수입니다. 비중과 단가 중 하나라도 미입력 시 계산 무시합니다.</h3>
-                        <h3>같은날짜에 더 매수/매도 하고 싶으시면, 행을 더 추가하시면 됩니다.</h3>
-                        <h3>날짜가 없는 행은 계산에서 제외됩니다.</h3>
-                        <h3>매도 시 매도금액의 0.3%를 수수료차원에서 실현손익에서 뺍니다.</h3>
-                        <div class="input-group mb-3" id= "modifyInputGroup">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon1">수정 날짜</span>
-                                <input type="date" class="form-control" name="modifyDate" placeholder="수정하실 날짜를 선택하세요" aria-label="modifyDate" aria-describedby="basic-addon1">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon2">매도 비중%(수정시점비중)</span>
-                                <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="sellPercent" aria-describedby="basic-addon2">
-                                <span class="input-group-text" id="basic-addon3">매도 가격</span>
-                                <input type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon4">매수 비중%(수정시점비중)</span>
-                                <input type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
-                                <span class="input-group-text" id="basic-addon5">매수 가격</span>
-                                <input type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                        <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">수정 전송</button>
-                    </div>
                 </form>
 
                 <hr style="height:3px;color:#dc874f">
-                <h2>매매 이력</h2>
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm">
-                        <thead>
-                        <tr>
-                            <th scope="col">거래일</th>
-                            <th scope="col">종가</th>
-                            <th scope="col">구매수량</th>
-                            <th scope="col">내 평단</th>
-                            <th scope="col">예수금</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <c:forEach items="${dailyDealHistoriesDesc}" var="dailyDealHistory">
+                <div class="px-4 my-5 text-left">
+                    <h2><strong>매매 이력</strong></h2>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
                             <tr>
-                                <td>${dailyDealHistory.dealDate}</td>
-                                <td><fmt:formatNumber value="${dailyDealHistory.closingPrice}" pattern="#,###" /></td>
-                                <td><fmt:formatNumber value="${dailyDealHistory.closingPurchaseQuantity}" pattern="#,###" /></td>
-                                <td><fmt:formatNumber value="${dailyDealHistory.myAverageUnitPrice}" pattern="#,###" /></td>
-                                <td><fmt:formatNumber value="${dailyDealHistory.remainingAmount}" pattern="#,###" /></td>
+                                <th scope="col">거래일</th>
+                                <th scope="col">종가</th>
+                                <th scope="col">구매수량</th>
+                                <th scope="col">내 평단</th>
+                                <th scope="col">예수금</th>
                             </tr>
-                        </c:forEach>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            <c:forEach items="${dailyDealHistoriesDesc}" var="dailyDealHistory">
+                                <tr>
+                                    <td>${dailyDealHistory.dealDate}</td>
+                                    <td><fmt:formatNumber value="${dailyDealHistory.closingPrice}" pattern="#,###" /></td>
+                                    <td><fmt:formatNumber value="${dailyDealHistory.closingPurchaseQuantity}" pattern="#,###" /></td>
+                                    <td><fmt:formatNumber value="${dailyDealHistory.myAverageUnitPrice}" pattern="#,###" /></td>
+                                    <td><fmt:formatNumber value="${dailyDealHistory.remainingAmount}" pattern="#,###" /></td>
+                                </tr>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </main>
         </div>

@@ -104,7 +104,7 @@
                                 <h1>${errorMessage}</h1>
                             </c:when>
                             <c:otherwise>
-                                <h1>매매 현황</h1>
+                                <h1><strong>매매 현황</strong></h1>
                                 <p></p>
                                 <h2>실현수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
                                 <h2>실현손익 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
@@ -128,13 +128,15 @@
 
                 <hr style="height:3px;color:#dc874f">
                 <form id="modifyCalculation" action="deal-calculate-modify" method="post" name="calculateRequestFrom">
-                    <div class="px-4 py-5 my-5 text-center" id="parentDivForModifiyCalculation">
-                        <h1>아래 그래프를 보시고, 매수/매도/기다림을 선택하세요. </h1>
-                        <h1>매수/매도 하고 싶으시면 단가와 비중 입력 후 "다음", 그냥 넘기고 싶으시면 "다음"버튼 눌러주세요. </h1>
-                        <h3>1개 행에 매수/매도 다 입력해도 되고, 한쪽만 입력해도 됩니다.</h3>
-                        <h3>단, 매수/매도 비중을 입력했으면 매수/매도 단가도 필수입니다. 비중과 단가 중 하나라도 미입력 시 계산 무시합니다.</h3>
-                        <h3>날짜가 없으면 계산에서 제외됩니다.</h3>
-                        <h3>매도 시 매도금액의 0.3%를 수수료차원에서 실현손익에서 뺍니다.</h3>
+                    <div class="px-4 py-5 my-5 text-left" id="parentDivForModifiyCalculation">
+                        <h2><strong>사용법 설명</strong></h2>
+                        <p></p>
+                        <h4>아래 그래프를 보시고, 매수/매도/기다림을 선택하세요. </h4>
+                        <h4>매수/매도 하고 싶으시면 단가와 비중 입력 후 "다음", 그냥 넘기고 싶으시면 "다음"버튼 눌러주세요. </h4>
+                        <h4>1개 행에 매수/매도 다 입력해도 되고, 한쪽만 입력해도 됩니다.</h4>
+                        <h4>단, 매수/매도 비중을 입력했으면 매수/매도 단가도 필수입니다. 비중과 단가 중 하나라도 미입력 시 계산 무시합니다.</h4>
+                        <h4>날짜가 없으면 계산에서 제외됩니다.</h4>
+                        <h4>매도 시 매도금액의 0.3%를 수수료차원에서 실현손익에서 뺍니다.</h4>
                         <div></div>
                         <div class="input-group mb-3" id= "modifyInputGroup">
                             <div class="input-group mb-3">
@@ -159,9 +161,10 @@
                         <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">다음</button>
                     </div>
                     <div></div>
-                    <div class="px-4 py-5 my-5 text-center">
-                        <h1>일봉차트 관찰 훈련도 해보세요.</h1>
-                        <h3>훈련을 위해 다음날 예상되는 시가/종가/저가/고가를 입력해보세요. 계산에는 영향을 안미칩니다.</h3>
+                    <div class="px-4 py-5 my-5 text-left">
+                        <h2><strong>일봉차트 관찰 훈련도 해보세요.</strong></h2>
+                        <p></p>
+                        <h4>훈련을 위해 다음날 예상되는 시가/종가/저가/고가를 입력해보세요. 계산에는 영향을 안미칩니다.</h4>
                         <div></div>
                         <div class="input-group mb-3">
                             <span class="input-group-text" id="training1">시가</span>
@@ -177,7 +180,7 @@
 
                     <hr style="height:3px;color:#dc874f">
 
-                    <div id="container" style="height: 1200px; min-width: 310px"></div>
+                    <div id="container" style="height: 1000px; min-width: 310px"></div>
                     <script>
                         function drawCandleStickChart(){
                             //setting values
@@ -411,8 +414,9 @@
                         drawCandleStickChart();
                     </script>
 
-                    <div class="px-4 py-5 my-5 text-center">
-                        <h3>최초 입력 요청값</h3>
+                    <hr style="height:3px;color:#dc874f">
+                    <div class="px-4 py-5 my-5 text-left">
+                        <h2><strong>최초 입력 요청값</strong></h2>
                         <div class="input-group mb-3">
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="input-addon1">기업 이름</span>
@@ -444,54 +448,56 @@
                     </div>
 
                     <hr style="height:3px;color:#dc874f">
-                    <div class="px-4 py-5 my-5 text-center" id="additionalBuyingSellHistory">
-                        <h2>추가 매수/매도 이력</h2>
+                    <div class="px-4 py-5 my-5 text-left" id="additionalBuyingSellHistory">
+                        <h2><strong>추가 매수/매도 이력</strong></h2>
                     </div>
                 </form>
 
                 <hr style="height:3px;color:#dc874f">
-                <h2>날짜별 전체 이력</h2>
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm">
-                        <thead>
-                        <tr>
-                            <th scope="col">거래일</th>
-                            <th scope="col">매수단가</th>
-                            <th scope="col">매수비중</th>
-                            <th scope="col">매도단가</th>
-                            <th scope="col">매도비중</th>
-                            <th scope="col">내 평단</th>
-                            <th scope="col">추가 구매수량</th>
-                            <th scope="col">추가 구매금액</th>
-                            <th scope="col">추가 매도수량</th>
-                            <th scope="col">추가 매도금액</th>
-                            <th scope="col">매도 시 수수료</th>
-                            <th scope="col">매도 시 실현손익</th>
-                            <th scope="col">예수금</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <c:forEach items="${dailyDealHistoriesDesc}" var="dailyDealHistory">
-                            <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
-                                <tr>
-                                    <td>${dailyDealHistory.dealDate}</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.buyPrice}" pattern="#,###" />원</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.buyPercent}" pattern="#,###" />%</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.sellPrice}" pattern="#,###" />원</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.sellPercent}" pattern="#,###" />%</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.myAverageUnitPrice}" pattern="#,###" />원</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.additionalBuyingQuantity}" pattern="#,###" />주</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.additionalBuyingAmount}" pattern="#,###" />원</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.additionalSellingQuantity}" pattern="#,###" />주</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.additionalSellingAmount}" pattern="#,###" />원</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.commission}" pattern="#,###" />원</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.realizedEarningAmount}" pattern="#,###" />원</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.remainingAmount}" pattern="#,###" />원</td>
-                                </tr>
-                            </c:if>
-                        </c:forEach>
-                        </tbody>
-                    </table>
+                <div class="px-4 my-5 text-left">
+                    <h2><strong>날짜별 전체 이력</strong></h2>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                            <tr>
+                                <th scope="col">거래일</th>
+                                <th scope="col">매수단가</th>
+                                <th scope="col">매수비중</th>
+                                <th scope="col">매도단가</th>
+                                <th scope="col">매도비중</th>
+                                <th scope="col">내 평단</th>
+                                <th scope="col">추가 구매수량</th>
+                                <th scope="col">추가 구매금액</th>
+                                <th scope="col">추가 매도수량</th>
+                                <th scope="col">추가 매도금액</th>
+                                <th scope="col">매도 시 수수료</th>
+                                <th scope="col">매도 시 실현손익</th>
+                                <th scope="col">예수금</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <c:forEach items="${dailyDealHistoriesDesc}" var="dailyDealHistory">
+                                <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
+                                    <tr>
+                                        <td>${dailyDealHistory.dealDate}</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.buyPrice}" pattern="#,###" />원</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.buyPercent}" pattern="#,###" />%</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.sellPrice}" pattern="#,###" />원</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.sellPercent}" pattern="#,###" />%</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.myAverageUnitPrice}" pattern="#,###" />원</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.additionalBuyingQuantity}" pattern="#,###" />주</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.additionalBuyingAmount}" pattern="#,###" />원</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.additionalSellingQuantity}" pattern="#,###" />주</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.additionalSellingAmount}" pattern="#,###" />원</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.commission}" pattern="#,###" />원</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.realizedEarningAmount}" pattern="#,###" />원</td>
+                                        <td><fmt:formatNumber value="${dailyDealHistory.remainingAmount}" pattern="#,###" />원</td>
+                                    </tr>
+                                </c:if>
+                            </c:forEach>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </main>
         </div>
