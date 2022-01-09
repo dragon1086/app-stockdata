@@ -105,8 +105,8 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 remainingPortion -= dealTrainingSourceDTO.getPortion();
                 sumOfPurchaseAmount += purchaseAmount;
                 sumOfPurchaseQuantity += initialBuyingQuantity;
-                sumOfMyQuantity += initialBuyingQuantity;
                 myAverageUnitPrice = Math.round(((myAverageUnitPrice * sumOfMyQuantity) + (initialAverageUnitPrice * initialBuyingQuantity)) / (double)(sumOfMyQuantity + initialBuyingQuantity));
+                sumOfMyQuantity += initialBuyingQuantity;
 
                 finalClosingPrice = dailyDeal.getClosingPrice();
 
