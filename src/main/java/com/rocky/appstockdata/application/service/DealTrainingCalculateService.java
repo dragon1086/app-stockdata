@@ -19,54 +19,62 @@ import static com.rocky.appstockdata.domain.utils.DealTrainingUtil.sortDesc;
 @Service
 @Slf4j
 public class DealTrainingCalculateService implements DealTrainingUseCase {
-    //TODO: 리팩토링
-    //TODO: 테스트케이스
-    private final double MIN_MINUS_THIRTY_PERCENT = 0.77d;
-    private final double MAX_PLUS_THIRTY_PERCENT = 1.42d;
+    private final StockDealRepository stockDealRepository;
 
-    private final String VALIDATION_START_DATE = "2021-12-10";
-    private final String VALIDATION_END_DATE = "2021-12-09";
-
-    private StockDealRepository stockDealRepository;
     public DealTrainingCalculateService(StockDealRepository stockDealRepository) {
         this.stockDealRepository = stockDealRepository;
     }
 
     @Override
     public DealTrainingResult initializeDailyDeal(DealTrainingSourceDTO dealTrainingSourceDTO) {
+        final int THREE_YEAR = 3;
+
+        //랜덤일자 ~ 그로부터 3년 전
+        LocalDate endDate = DealTrainingUtil.getRandomDate(validateAndGetEarliestDate(dealTrainingSourceDTO));
+        LocalDate startDate = endDate.minusYears(THREE_YEAR);
+
+        List<DailyDeal> dailyDealList = getInitializedDailyDealList(dealTrainingSourceDTO, startDate, endDate);
+        //마지막 날짜를 빼야 함. 이 마지막날은 사용자가 매수/매도를 입력할 수 있게끔 따로 구성해야 함.
+        DailyDeal nextTryDay = dailyDealList.remove(dailyDealList.size() - 1);
+
+        DailyDealHistoryAggregation dailyDealHistoryAggregation = createInitialDailyDealHistoryAggregation(dealTrainingSourceDTO, dailyDealList);
+        addFinalDailyDealForNextTryWith(dailyDealHistoryAggregation, nextTryDay);
+
+        return getInitializedDealTrainingResult(dealTrainingSourceDTO, startDate, nextTryDay, dailyDealHistoryAggregation);
+    }
+
+    private List<DailyDeal> getInitializedDailyDealList(DealTrainingSourceDTO dealTrainingSourceDTO, LocalDate startDate, LocalDate endDate) {
+        String endDateString = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String startDateString = startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        return stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
+                .companyName(dealTrainingSourceDTO.getCompanyName())
+                .startDate(startDateString)
+                .endDate(endDateString)
+                .build());
+    }
+
+    private String validateAndGetEarliestDate(DealTrainingSourceDTO dealTrainingSourceDTO) {
+        String earliestDate = stockDealRepository.getEarliestDate(dealTrainingSourceDTO.getCompanyName());
+
+        if(StringUtils.isEmpty(earliestDate)){
+            throw new NoResultDataException("조회하신 검색 결과가 없습니다. 종목명을 확인 부탁드립니다.\r\n"
+                    + "종목명은 영문표기를 한글로 변형 또는 반대로 해서 다시 입력해보시기 바랍니다.");
+        }
+
+        return earliestDate;
+    }
+
+    private DailyDealHistoryAggregation createInitialDailyDealHistoryAggregation(DealTrainingSourceDTO dealTrainingSourceDTO, List<DailyDeal> dailyDealList) {
         long sumOfPurchaseAmount = 0;
         int sumOfPurchaseQuantity = 0;
         long remainingSlotAmount = dealTrainingSourceDTO.getSlotAmount();
         double remainingPortion = 100;
-        double currentValuationPercent = 0.0d;
         long myAverageUnitPrice = 0L;
         long finalClosingPrice = 0L;
         int sumOfMyQuantity = 0;
         String initialDealDate = "";
-        LocalDate endDate;
-        LocalDate startDate;
-        List<DailyDeal> dailyDealList = new ArrayList<>();
         List<DailyDealHistory> dailyDealHistories = new ArrayList<>();
-
-        //종목에 대한 데이터가 있는지 검증 한 후 가장 과거날짜를 가져옴
-        String earliestDate = validateAndGetEarliestDate(dealTrainingSourceDTO);
-
-        //랜덤일자 ~ 그로부터 3년 전
-        endDate = DealTrainingUtil.getRandomDate(earliestDate);
-        startDate = endDate.minusYears(3);
-
-        String endDateString = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String startDateString = startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        dailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
-                                                                    .companyName(dealTrainingSourceDTO.getCompanyName())
-                                                                    .startDate(startDateString)
-                                                                    .endDate(endDateString)
-                                                            .build());
-
-
-        //마지막 날짜를 빼야 함. 이 마지막날은 사용자가 매수/매도를 입력할 수 있게끔 따로 구성해야 함.
-        DailyDeal nextTryDay = dailyDealList.remove(dailyDealList.size() - 1);
 
         Iterator<DailyDeal> dailyDeals = dailyDealList.iterator();
         while(dailyDeals.hasNext()){
@@ -85,7 +93,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
             if(!dailyDeals.hasNext()){
                 initialDealDate = dailyDeal.getDealDate();
                 Random random = new Random();
-                double valuationPercent = MIN_MINUS_THIRTY_PERCENT + (MAX_PLUS_THIRTY_PERCENT - MIN_MINUS_THIRTY_PERCENT) * random.nextDouble();
+                double valuationPercent = DealTrainingUtil.MIN_MINUS_THIRTY_PERCENT + (DealTrainingUtil.MAX_PLUS_THIRTY_PERCENT - DealTrainingUtil.MIN_MINUS_THIRTY_PERCENT) * random.nextDouble();
 
                 long initialAverageUnitPrice = Math.round(dailyDeal.getClosingPrice() * valuationPercent);
 
@@ -97,6 +105,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 remainingPortion -= dealTrainingSourceDTO.getPortion();
                 sumOfPurchaseAmount += purchaseAmount;
                 sumOfPurchaseQuantity += initialBuyingQuantity;
+                sumOfMyQuantity += initialBuyingQuantity;
                 myAverageUnitPrice = Math.round(((myAverageUnitPrice * sumOfMyQuantity) + (initialAverageUnitPrice * initialBuyingQuantity)) / (double)(sumOfMyQuantity + initialBuyingQuantity));
 
                 finalClosingPrice = dailyDeal.getClosingPrice();
@@ -122,10 +131,25 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
             }
         }
 
+        return DailyDealHistoryAggregation.builder()
+                .dailyDealHistories(dailyDealHistories)
+                .finalClosingPrice(finalClosingPrice)
+                .myAverageUnitPrice(myAverageUnitPrice)
+                .remainingPortion(remainingPortion)
+                .remainingSlotAmount(remainingSlotAmount)
+                .sumOfMyQuantity(sumOfMyQuantity)
+                .sumOfPurchaseAmount(sumOfPurchaseAmount)
+                .sumOfPurchaseQuantity(sumOfPurchaseQuantity)
+                .initialDealDate(initialDealDate)
+                .build();
+    }
+
+    private void addFinalDailyDealForNextTryWith(DailyDealHistoryAggregation dailyDealHistoryAggregation, DailyDeal nextTryDay) {
         //종가 갱신
-        finalClosingPrice = nextTryDay.getClosingPrice();
+        dailyDealHistoryAggregation.updateFinalClosingPrice(nextTryDay.getClosingPrice());
+
         //차트에 마지막 일봉 추가 -> 이걸로 사용자는 살지 말지 판단할 수 있음
-        dailyDealHistories.add(DailyDealHistory.builder()
+        dailyDealHistoryAggregation.addDailyDealHistory(DailyDealHistory.builder()
                 .dealDate(nextTryDay.getDealDate())
                 .dealDateForTimestamp(transformDate(nextTryDay.getDealDate()))
                 .closingPrice(nextTryDay.getClosingPrice())
@@ -133,75 +157,62 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 .highPrice(nextTryDay.getHighPrice())
                 .lowPrice(nextTryDay.getLowPrice())
                 .tradeVolume(nextTryDay.getTradeVolume())
-                .myAverageUnitPrice(myAverageUnitPrice)
-                .portion(100.0 - remainingPortion)
+                .myAverageUnitPrice(dailyDealHistoryAggregation.getMyAverageUnitPrice())
+                .portion(100.0 - dailyDealHistoryAggregation.getRemainingPortion())
                 .build());
+    }
 
+
+    private DealTrainingResult getInitializedDealTrainingResult(DealTrainingSourceDTO dealTrainingSourceDTO, LocalDate startDate, DailyDeal nextTryDay, DailyDealHistoryAggregation dailyDealHistoryAggregation) {
         //현재 평가손익 기록
-        currentValuationPercent = (sumOfPurchaseAmount !=0) ? Math.round((finalClosingPrice - myAverageUnitPrice)/(double)myAverageUnitPrice*100*100)/100.0 : 0.0d;
+        double currentValuationPercent = (dailyDealHistoryAggregation.getSumOfPurchaseAmount() !=0) ?
+                Math.round((dailyDealHistoryAggregation.getFinalClosingPrice() - dailyDealHistoryAggregation.getMyAverageUnitPrice())/(double) dailyDealHistoryAggregation.getMyAverageUnitPrice()*100*100)/100.0 : 0.0d;
         //평가 금액 : 종가 * 보유한 수량
-        long myTotalAmount = finalClosingPrice * sumOfPurchaseQuantity;
+        long myTotalAmount = dailyDealHistoryAggregation.getFinalClosingPrice() * dailyDealHistoryAggregation.getSumOfPurchaseQuantity();
 
         //최초 시작시점 결산데이터
         return DealTrainingResult.builder()
                 .itemName(dealTrainingSourceDTO.getCompanyName())
                 .startDate(startDate)
                 .endDate(DealTrainingUtil.transformToLocalDate(nextTryDay.getDealDate()))
-                .dailyDealHistories(dailyDealHistories)
-                .dailyDealHistoriesDesc(sortDesc(dailyDealHistories))
-                .remainingSlotAmount(remainingSlotAmount)
-                .remainingPortion(remainingPortion)
-                .sumOfPurchaseAmount(sumOfPurchaseAmount)
-                .sumOfPurchaseQuantity(sumOfPurchaseQuantity)
+                .dailyDealHistories(dailyDealHistoryAggregation.getDailyDealHistories())
+                .dailyDealHistoriesDesc(sortDesc(dailyDealHistoryAggregation.getDailyDealHistories()))
+                .remainingSlotAmount(dailyDealHistoryAggregation.getRemainingSlotAmount())
+                .remainingPortion(dailyDealHistoryAggregation.getRemainingPortion())
+                .sumOfPurchaseAmount(dailyDealHistoryAggregation.getSumOfPurchaseAmount())
+                .sumOfPurchaseQuantity(dailyDealHistoryAggregation.getSumOfPurchaseQuantity())
                 .totalAmount(myTotalAmount)
                 .valuationPercent(currentValuationPercent)
-                .averageUnitPrice(myAverageUnitPrice)
-                .currentClosingPrice(finalClosingPrice)
+                .averageUnitPrice(dailyDealHistoryAggregation.getMyAverageUnitPrice())
+                .currentClosingPrice(dailyDealHistoryAggregation.getFinalClosingPrice())
                 .nextTryDate(DealTrainingUtil.transformToDateFormat(nextTryDay.getDealDate()))
                 .dealModifications(Collections.singletonList(DealModification.builder()
-                        .modifyDate(DealTrainingUtil.transformToDateFormat(initialDealDate))
+                        .modifyDate(DealTrainingUtil.transformToDateFormat(dailyDealHistoryAggregation.getInitialDealDate()))
                         .buyPercent(String.valueOf(Math.round(dealTrainingSourceDTO.getPortion())))
-                        .buyPrice(String.valueOf(myAverageUnitPrice))
+                        .buyPrice(String.valueOf(dailyDealHistoryAggregation.getMyAverageUnitPrice()))
                         .build()))
                 .build();
     }
 
-    private String validateAndGetEarliestDate(DealTrainingSourceDTO dealTrainingSourceDTO) {
-        String earliestDate = stockDealRepository.getEarliestDate(dealTrainingSourceDTO.getCompanyName());
-
-        if(StringUtils.isEmpty(earliestDate)){
-            throw new NoResultDataException("조회하신 검색 결과가 없습니다. 종목명을 확인 부탁드립니다.\r\n"
-                    + "종목명은 영문표기를 한글로 변형 또는 반대로 해서 다시 입력해보시기 바랍니다.");
-        }
-
-        return earliestDate;
-    }
-
     @Override
     public DealTrainingResult modifyDailyDeal(DealTrainingSourceDTO dealTrainingSourceDTO) {
-        long sumOfPurchaseAmount = 0;
-        int sumOfPurchaseQuantity = 0;
-        long sumOfSellingAmount = 0L;
-        int sumOfSellingQuantity = 0;
-        long sumOfCommission = 0L;
-        long sumOfRealizedEarningAmount = 0L;
-        long remainingSlotAmount = dealTrainingSourceDTO.getSlotAmount();
-        double remainingPortion = 100;
-        double currentValuationPercent = 0.0d;
-        long myAverageUnitPrice = 0L;
-        long finalClosingPrice = 0L;
-        int sumOfMyQuantity = 0;
+        List<DailyDeal> finalDailyDealList = getDailyDealsWithOneDayAfter(dealTrainingSourceDTO);
+        //마지막 날짜를 빼야 함. 이 마지막날은 사용자가 매수/매도를 입력할 수 있게끔 따로 구성해야 함.
+        DailyDeal nextTryDay = finalDailyDealList.remove(finalDailyDealList.size() - 1);
 
-        List<DailyDealHistory> dailyDealHistories = new ArrayList<>();
-        List<DailyDeal> finalDailyDealList = new ArrayList<>();
+        DailyDealHistoryAggregation dailyDealHistoryAggregation = createModifiedDailyDealHistoryAggregation(dealTrainingSourceDTO, finalDailyDealList);
+        addFinalDailyDealForNextTryWith(dailyDealHistoryAggregation, nextTryDay);
 
+        return getModifiedDealTrainingResult(dealTrainingSourceDTO, nextTryDay, dailyDealHistoryAggregation);
+    }
+
+    private List<DailyDeal> getDailyDealsWithOneDayAfter(DealTrainingSourceDTO dealTrainingSourceDTO) {
+        List<DailyDeal> finalDailyDealList;
         //하루 뒤로 시도
         LocalDate endDate = DealTrainingUtil.transformToLocalDateIncludingDash(dealTrainingSourceDTO.getEndDate()).plusDays(1);
 
-        int count = 0;
         //최종 endDate를 선정해야 함.(다음 날짜가 휴일일 경우, 다음주로 건너뛰기 위함. startDate는 고정)
         while(true){
-            count++;
             String endDateString = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
             List<DailyDeal> lastDailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
@@ -223,15 +234,24 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
 
             endDate = endDate.plusDays(1);
         }
+        return finalDailyDealList;
+    }
 
-        List<DealModification> allDealModifications = dealTrainingSourceDTO.getDealModifications();
-        //마지막 날짜를 빼야 함. 이 마지막날은 사용자가 매수/매도를 입력할 수 있게끔 따로 구성해야 함.
-        DailyDeal nextTryDay = finalDailyDealList.remove(finalDailyDealList.size() - 1);
+    private DailyDealHistoryAggregation createModifiedDailyDealHistoryAggregation(DealTrainingSourceDTO dealTrainingSourceDTO, List<DailyDeal> dailyDealList) {
+        long sumOfPurchaseAmount = 0;
+        int sumOfPurchaseQuantity = 0;
+        long sumOfSellingAmount = 0L;
+        int sumOfSellingQuantity = 0;
+        long sumOfCommission = 0L;
+        long sumOfRealizedEarningAmount = 0L;
+        long remainingSlotAmount = dealTrainingSourceDTO.getSlotAmount();
+        double remainingPortion = 100.0d;
+        long myAverageUnitPrice = 0L;
+        int sumOfMyQuantity = 0;
 
-        Iterator<DailyDeal> dailyDeals = finalDailyDealList.iterator();
-        while(dailyDeals.hasNext()){
-            DailyDeal dailyDeal = dailyDeals.next();
+        List<DailyDealHistory> dailyDealHistories = new ArrayList<>();
 
+        for (DailyDeal dailyDeal : dailyDealList) {
             int sumOfAdditionalBuyingQuantityForToday = 0;
             int sumOfAdditionalSellingQuantityForToday = 0;
             long sumOfAdditionalBuyingAmountForToday = 0L;
@@ -246,19 +266,19 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
             //아래는 '추가' 매수/매도 관련 로직
             //매도하면 실현수익은 매도액의 0.3%를 제외한다.
             //같은 행에 추가 매수/매도가 같이 있으면, 먼저 매수 후 매도를 원칙으로 삼는다.
-            for(DealModification dealModification : allDealModifications){
-                if(dailyDeal.getDealDate().equals(dealModification.getModifyDate().replace("-", ""))){
-                    if(dealModification.getBuyPercent() != 0 && dealModification.getBuyPrice() != 0L){
+            for (DealModification dealModification : dealTrainingSourceDTO.getDealModifications()) {
+                if (dailyDeal.getDealDate().equals(dealModification.getModifyDate().replace("-", ""))) {
+                    if (dealModification.getBuyPercent() != 0 && dealModification.getBuyPrice() != 0L) {
                         //추가매수 실시. 매수 기록 리스트 형태로 남겨야 함.
 
                         //매수 수량 : (내림)(슬랏 할당 금액 * 구매비중 / 매수단가)
-                        int additionalBuyingQuantity = (int) Math.floor((dealTrainingSourceDTO.getSlotAmount() * (double)dealModification.getBuyPercent()/100) / (double) dealModification.getBuyPrice());
+                        int additionalBuyingQuantity = (int) Math.floor((dealTrainingSourceDTO.getSlotAmount() * (double) dealModification.getBuyPercent() / 100) / (double) dealModification.getBuyPrice());
                         //매수 금액 : 매수 수량 * 매수 단가
                         long additionalBuyingAmount = additionalBuyingQuantity * dealModification.getBuyPrice();
 
                         //매입 평단 수정 : ((기존 평단 * 내 보유 수량) + (매수가 * 신규 매수 수량)) / (내 보유수량 + 신규 매수 수량) ->이동평균 계산법
                         // (추가매수와 추가매도가 같은 날에 있을 경우, 추가매도의 평단은 곧 추가매수의 평단이 된다. 왜냐하면 매수 먼저 하니까.)
-                        myAverageUnitPrice = Math.round(((myAverageUnitPrice * sumOfMyQuantity) + (dealModification.getBuyPrice() * additionalBuyingQuantity))  / (double)(sumOfMyQuantity + additionalBuyingQuantity));
+                        myAverageUnitPrice = Math.round(((myAverageUnitPrice * sumOfMyQuantity) + (dealModification.getBuyPrice() * additionalBuyingQuantity)) / (double) (sumOfMyQuantity + additionalBuyingQuantity));
                         //총 구매개수 누적
                         sumOfPurchaseQuantity += additionalBuyingQuantity;
                         //총 보유수량 누적
@@ -277,16 +297,16 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                         //남은 할당금액
                         remainingSlotAmount -= additionalBuyingAmount;
                         //남은 비중(소수점 둘째자리)
-                        remainingPortion -= Math.round(additionalBuyingAmount / (double)dealTrainingSourceDTO.getSlotAmount() * 100*100)/100.0;
+                        remainingPortion -= Math.round(additionalBuyingAmount / (double) dealTrainingSourceDTO.getSlotAmount() * 100 * 100) / 100.0;
 
                     }
-                    if(dealModification.getSellPercent() != 0 && dealModification.getSellPrice() != 0L){
+                    if (dealModification.getSellPercent() != 0 && dealModification.getSellPrice() != 0L) {
                         //추가매도 실시. 매도 기록 리스트 형태로 남겨야 함.
 
                         //매도 수량 : (내림)(슬랏 할당 금액 * 매도비중 / 매도단가)
-                        int additionalSellingQuantity = (int) Math.floor((dealTrainingSourceDTO.getSlotAmount() * (double)dealModification.getSellPercent()/100) / (double) dealModification.getSellPrice());
+                        int additionalSellingQuantity = (int) Math.floor((dealTrainingSourceDTO.getSlotAmount() * (double) dealModification.getSellPercent() / 100) / (double) dealModification.getSellPrice());
                         //매도수량이 내가 매입한 수량보다 많으면 안되므로, 보정
-                        if((sumOfMyQuantity - additionalSellingQuantity) < 0){
+                        if ((sumOfMyQuantity - additionalSellingQuantity) < 0) {
                             additionalSellingQuantity = sumOfMyQuantity;
                         }
                         //매도 금액 : 매도 수량 * 매도 단가
@@ -322,7 +342,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                         //남은 할당금액
                         remainingSlotAmount += additionalSellingAmount - commission;
                         //남은 비중(소수점 이하 버림)
-                        remainingPortion = Math.round(remainingSlotAmount / (double)dealTrainingSourceDTO.getSlotAmount() * 100*100)/100.0;
+                        remainingPortion = Math.round(remainingSlotAmount / (double) dealTrainingSourceDTO.getSlotAmount() * 100 * 100) / 100.0;
                     }
                 }
             }
@@ -352,51 +372,54 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                     .build());
         }
 
-        //차트에 아까전에 빼놨던 마지막 일봉 추가 -> 이걸로 사용자는 살지 말지 판단할 수 있음
-        dailyDealHistories.add(DailyDealHistory.builder()
-                .dealDate(nextTryDay.getDealDate())
-                .dealDateForTimestamp(transformDate(nextTryDay.getDealDate()))
-                .closingPrice(nextTryDay.getClosingPrice())
-                .startPrice(nextTryDay.getStartPrice())
-                .highPrice(nextTryDay.getHighPrice())
-                .lowPrice(nextTryDay.getLowPrice())
-                .tradeVolume(nextTryDay.getTradeVolume())
+        return DailyDealHistoryAggregation.builder()
+                .dailyDealHistories(dailyDealHistories)
                 .myAverageUnitPrice(myAverageUnitPrice)
-                .portion(100.0 - remainingPortion)
-                .build());
+                .remainingPortion(remainingPortion)
+                .remainingSlotAmount(remainingSlotAmount)
+                .sumOfMyQuantity(sumOfMyQuantity)
+                .sumOfPurchaseAmount(sumOfPurchaseAmount)
+                .sumOfPurchaseQuantity(sumOfPurchaseQuantity)
+                .sumOfSellingAmount(sumOfSellingAmount)
+                .sumOfSellingQuantity(sumOfSellingQuantity)
+                .sumOfCommission(sumOfCommission)
+                .sumOfRealizedEarningAmount(sumOfRealizedEarningAmount)
+                .build();
+    }
 
-        //종가 기록
-        finalClosingPrice = nextTryDay.getClosingPrice();
+
+    private DealTrainingResult getModifiedDealTrainingResult(DealTrainingSourceDTO dealTrainingSourceDTO, DailyDeal nextTryDay, DailyDealHistoryAggregation dailyDealHistoryAggregation) {
         //현재 평가손익 기록
-        currentValuationPercent = (sumOfPurchaseAmount !=0) ? Math.round((finalClosingPrice - myAverageUnitPrice)/(double)myAverageUnitPrice*100*100)/100.0 : 0.0d;
+        double currentValuationPercent = (dailyDealHistoryAggregation.getSumOfPurchaseAmount() !=0) ?
+                Math.round((dailyDealHistoryAggregation.getFinalClosingPrice() - dailyDealHistoryAggregation.getMyAverageUnitPrice())/(double) dailyDealHistoryAggregation.getMyAverageUnitPrice()*100*100)/100.0 : 0.0d;
         //실현수익률 : 실현손익 총합 / 할당된 슬랏 금액
-        double myEarningRate = sumOfRealizedEarningAmount / (double)dealTrainingSourceDTO.getSlotAmount();
+        double myEarningRate = dailyDealHistoryAggregation.getSumOfRealizedEarningAmount() / (double) dealTrainingSourceDTO.getSlotAmount();
         //평가 금액 : 종가 * 보유한 수량
-        long myTotalAmount = finalClosingPrice * sumOfMyQuantity;
+        long myTotalAmount = dailyDealHistoryAggregation.getFinalClosingPrice() * dailyDealHistoryAggregation.getSumOfMyQuantity();
 
 
         //현재시점 결산데이터
         return DealTrainingResult.builder()
                 .itemName(dealTrainingSourceDTO.getCompanyName())
                 .earningRate(Double.parseDouble(String.format("%.2f",myEarningRate * 100)))
-                .earningAmount(sumOfRealizedEarningAmount)
+                .earningAmount(dailyDealHistoryAggregation.getSumOfRealizedEarningAmount())
                 .startDate(DealTrainingUtil.transformToLocalDateIncludingDash(dealTrainingSourceDTO.getStartDate()))
                 .endDate(DealTrainingUtil.transformToLocalDate(nextTryDay.getDealDate()))
-                .dailyDealHistories(dailyDealHistories)
-                .dailyDealHistoriesDesc(sortDesc(dailyDealHistories))
-                .remainingSlotAmount(remainingSlotAmount)
-                .remainingPortion(remainingPortion)
+                .dailyDealHistories(dailyDealHistoryAggregation.getDailyDealHistories())
+                .dailyDealHistoriesDesc(sortDesc(dailyDealHistoryAggregation.getDailyDealHistories()))
+                .remainingSlotAmount(dailyDealHistoryAggregation.getRemainingSlotAmount())
+                .remainingPortion(dailyDealHistoryAggregation.getRemainingPortion())
                 .totalAmount(myTotalAmount)
                 .valuationPercent(currentValuationPercent)
-                .averageUnitPrice(myAverageUnitPrice)
-                .currentClosingPrice(finalClosingPrice)
+                .averageUnitPrice(dailyDealHistoryAggregation.getMyAverageUnitPrice())
+                .currentClosingPrice(dailyDealHistoryAggregation.getFinalClosingPrice())
                 .nextTryDate(DealTrainingUtil.transformToDateFormat(nextTryDay.getDealDate()))
-                .sumOfPurchaseAmount(sumOfPurchaseAmount)
-                .sumOfSellingAmount(sumOfSellingAmount)
-                .sumOfCommission(sumOfCommission)
-                .sumOfPurchaseQuantity(sumOfPurchaseQuantity)
-                .sumOfSellingQuantity(sumOfSellingQuantity)
-                .dealModifications(allDealModifications)
+                .sumOfPurchaseAmount(dailyDealHistoryAggregation.getSumOfPurchaseAmount())
+                .sumOfSellingAmount(dailyDealHistoryAggregation.getSumOfSellingAmount())
+                .sumOfCommission(dailyDealHistoryAggregation.getSumOfCommission())
+                .sumOfPurchaseQuantity(dailyDealHistoryAggregation.getSumOfPurchaseQuantity())
+                .sumOfSellingQuantity(dailyDealHistoryAggregation.getSumOfSellingQuantity())
+                .dealModifications(dealTrainingSourceDTO.getDealModifications())
                 .build();
     }
 }
