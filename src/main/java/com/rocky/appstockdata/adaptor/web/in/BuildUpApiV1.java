@@ -35,6 +35,11 @@ public class BuildUpApiV1 {
         return "index";
     }
 
+    @GetMapping("/buildupManual")
+    public String buildupManual(){
+        return "buildupManual";
+    }
+
     @GetMapping("/deal-training")
     public String dealTrainingMain(){
         return "dealTrainingIndex";

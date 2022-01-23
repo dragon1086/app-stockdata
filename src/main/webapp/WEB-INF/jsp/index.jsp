@@ -54,6 +54,9 @@
 </head>
 <body>
     <div class="px-4 py-5 my-5 text-center">
+        <button type="button" class="btn btn-info" onclick="location.href='/buildupManual'" style="height:30px;width:280px;font-size:14px;">매일종가매수 시뮬레이션기 메뉴얼</button>
+    </div>
+    <div class="px-4 py-5 my-5 text-center">
         <button type="button" class="btn btn-secondary" onclick="location.href='/deal-training'" style="height:50px;width:250px;font-size:18px;">일봉차트 매매훈련하러 가기</button>
     </div>
     <form action="buildup-calculate" method="post" name="calculateRequestFrom">
@@ -78,7 +81,7 @@
                 <input type="date" class="form-control"  name="endDate" placeholder="endDate" aria-label="endDate" aria-describedby="basic-addon3">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon4">빌드업 금액</span>
+                <span class="input-group-text" id="basic-addon4">매일 매수 할 금액</span>
                 <input type="text" class="form-control"  name="buildupAmount" placeholder="하루에 적립할 금액을 입력하세요" aria-label="buildupAmount" aria-describedby="basic-addon4">
             </div>
 
