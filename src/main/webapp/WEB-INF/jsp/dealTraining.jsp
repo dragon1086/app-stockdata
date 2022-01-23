@@ -275,7 +275,7 @@
                                         title: {
                                             text: '${itemName}'
                                         },
-                                        height: '65%',
+                                        height: '55%',
                                         lineWidth: 2,
                                         resize: {
                                             enabled: true
@@ -288,8 +288,8 @@
                                         title: {
                                             text: '거래량'
                                         },
-                                        top: '70%',
-                                        height: '15%',
+                                        top: '60%',
+                                        height: '10%',
                                         offset: 0,
                                         lineWidth: 2
                                     }, {
@@ -299,6 +299,18 @@
                                         },
                                         title: {
                                             text: '비중'
+                                        },
+                                        top: '75%',
+                                        height: '10%',
+                                        offset: 0,
+                                        lineWidth: 2
+                                    }, {
+                                        labels: {
+                                            align: 'right',
+                                            x: -3
+                                        },
+                                        title: {
+                                            text: '매수/매도 금액'
                                         },
                                         top: '90%',
                                         height: '10%',
@@ -395,6 +407,26 @@
                                         yAxis: 2,
                                         color: '#000000',
                                         onSeries: 'candle'
+                                    }, {
+                                        type: 'column',
+                                        id: 'buyingAmount',
+                                        name: '매수 금액',
+                                        data: additionalBuyingAmount,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        yAxis: 3,
+                                        color: '#FF0000'
+                                    }, {
+                                        type: 'column',
+                                        name: '매도 금액',
+                                        data: additionalSellingAmount,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        yAxis: 3,
+                                        color: '#0022ff',
+                                        onSeries: 'buyingAmount'
                                     }],
                                     responsive: {
                                         rules: [{
