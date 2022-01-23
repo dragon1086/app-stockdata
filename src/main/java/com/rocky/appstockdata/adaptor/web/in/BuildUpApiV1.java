@@ -31,18 +31,8 @@ public class BuildUpApiV1 {
     }
 
     @GetMapping("/")
-    public String index(){
-        return "index";
-    }
-
-    @GetMapping("/buildupManual")
-    public String buildupManual(){
-        return "buildupManual";
-    }
-
-    @GetMapping("/deal-training")
     public String dealTrainingMain(){
-        return "dealTrainingIndex";
+        return "index";
     }
 
     @PostMapping("/deal-calculate")
@@ -78,6 +68,7 @@ public class BuildUpApiV1 {
         modelMap.put("itemName", dealTrainingResult.getItemName());
         modelMap.put("dailyDealHistories", dealTrainingResult.getDailyDealHistories());
         modelMap.put("dailyDealHistoriesDesc", dealTrainingResult.getDailyDealHistoriesDesc());
+        modelMap.put("initialPortion", dealTrainingSourceDTO.getPortion());
         modelMap.put("slotAmount", dealTrainingSourceDTO.getSlotAmount());
         modelMap.put("portion", 100.0 - dealTrainingResult.getRemainingPortion());
         modelMap.put("remainingSlotAmount", dealTrainingResult.getRemainingSlotAmount());
@@ -156,6 +147,16 @@ public class BuildUpApiV1 {
         }
 
         return "dealTraining";
+    }
+
+    @GetMapping("/buildup")
+    public String index(){
+        return "buildUpIndex";
+    }
+
+    @GetMapping("/buildupManual")
+    public String buildupManual(){
+        return "buildupManual";
     }
 
     @PostMapping(value = "buildup-calculate")

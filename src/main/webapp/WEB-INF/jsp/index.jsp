@@ -14,10 +14,10 @@
     <!-- End Google Tag Manager -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="주식 매매가상훈련기">
+    <meta name="description" content="주식 일봉매매 시뮬레이션">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.1">
-    <title>매일종가매수 시뮬레이션기</title>
+    <title>주식 일봉매매 시뮬레이션</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
@@ -54,18 +54,21 @@
 </head>
 <body>
     <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-info" onclick="location.href='/buildupManual'" style="height:30px;width:280px;font-size:14px;">매일종가매수 시뮬레이션기 메뉴얼</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='/buildup'" style="height:50px;width:330px;font-size:18px;">매일 종가매수 시뮬레이션 하러 가기</button>
     </div>
-    <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-secondary" onclick="location.href='/deal-training'" style="height:50px;width:250px;font-size:18px;">일봉차트 매매훈련하러 가기</button>
-    </div>
-    <form action="buildup-calculate" method="post" name="calculateRequestFrom">
+    <form action="deal-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
-            <h1 class="display-3 fw-bold">매일종가매수 시뮬레이션기</h1>
+            <h1 class="display-3 fw-bold">주식 일봉매매 시뮬레이션</h1>
             <div class="display-3 mx-auto">
-                <p class="lead mb-4 "style="font-size:17px;">매일 종가로 주식을 매수하면, 투입금액 대비 얼마나 수익날 지 계산하는 프로그램입니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">일봉 기준으로 종목을 관찰하고 매매를 시뮬레이션 해보는 프로그램입니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">하루하루 다음 일봉을 예상해보며, 매매와 기다림을 선택해가며 주어진 환경에서 실현수익을 만드는 것이 목표입니다.</p>
                 <p></p>
-                <p class="lead mb-4 "style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.01.07 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
+                <p class="lead mb-4" style="font-size:17px;">"종목", "종목에 배분할 총금액", "시작 비중"을 입력하면, 랜덤하게 3년치의 일봉차트가 보여집니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">시작 시점, 평균 단가, 평가 손익은 랜덤으로 정해집니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">이때 평균 단가는 시작시점 종가의 -30% ~ 30%로 설정되며, 여러분이 과거 특정 시점부터 관리해온 평균단가라고 가정했습니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">만약 "시작 비중"을 0으로 입력하면, 처음부터 새로 시작할 수 있습니다.</p>
+                <p></p>
+                <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.01.07 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
             </div>
             <div class="input-group mb-3">
@@ -73,20 +76,16 @@
                 <input type="text" class="form-control"  name="companyName" placeholder="기업명을 입력하세요" aria-label="companyName" aria-describedby="basic-addon1">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon2">시작 날짜</span>
-                <input type="date" class="form-control"  name="startDate" placeholder="startDate" aria-label="startDate" aria-describedby="basic-addon2">
+                <span class="input-group-text" id="basic-addon2">종목에 배분할 금액</span>
+                <input type="text" class="form-control"  name="slotAmount" placeholder="배분할 총금액을 입력하세요" aria-label="slotAmount" aria-describedby="basic-addon2">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon3">매도 날짜</span>
-                <input type="date" class="form-control"  name="endDate" placeholder="endDate" aria-label="endDate" aria-describedby="basic-addon3">
-            </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon4">매일 매수 할 금액</span>
-                <input type="text" class="form-control"  name="buildupAmount" placeholder="하루에 적립할 금액을 입력하세요" aria-label="buildupAmount" aria-describedby="basic-addon4">
+                <span class="input-group-text" id="basic-addon3">시작 비중(%)</span>
+                <input type="text" class="form-control"  name="portion" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="portion" aria-describedby="basic-addon3">
             </div>
 
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">전송</button>
+                <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">훈련 시작</button>
             </div>
         </div>
     </form>

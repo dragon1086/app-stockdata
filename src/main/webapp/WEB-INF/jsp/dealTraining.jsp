@@ -16,10 +16,10 @@
     <!-- End Google Tag Manager -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="주식 매매가상훈련기">
+    <meta name="description" content="주식 일봉매매 시뮬레이션">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.1">
-    <title>일봉차트 매매 훈련</title>
+    <title>주식 일봉매매 시뮬레이션</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
@@ -465,7 +465,7 @@
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="input-addon4">설정 금액</span>
                                 <input readonly="true" type="text" id="inputSlotAmount" class="form-control" name="slotAmount" aria-label="slotAmount" aria-describedby="input-addon4" value="">
-                                <span class="input-group-text" id="input-addon5">시작 비중</span>
+                                <span class="input-group-text" id="input-addon5">시작 비중%</span>
                                 <input readonly="true" type="text" id="inputPortion" class="form-control" name="portion" aria-label="portion" aria-describedby="input-addon5" value="">
                             </div>
 
@@ -474,7 +474,7 @@
                                 $('input[id=inputStartDate]').attr('value',"${startDate}");
                                 $('input[id=inputEndDate]').attr('value',"${endDate}");
                                 $('input[id=inputSlotAmount]').attr('value',"${slotAmount}");
-                                $('input[id=inputPortion]').attr('value',<fmt:formatNumber value="${portion}" pattern="#,###" />);
+                                $('input[id=inputPortion]').attr('value',<fmt:formatNumber value="${initialPortion}" pattern="#,###" />);
                             </script>
                         </div>
                     </div>
