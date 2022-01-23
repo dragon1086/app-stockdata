@@ -106,21 +106,42 @@
                             <c:otherwise>
                                 <h1><strong>매매 현황</strong></h1>
                                 <p></p>
-                                <h2>실현수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
-                                <h2>실현손익 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
-                                <h2>슬랏 할당금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
-                                <h2>현재 비중 : <fmt:formatNumber value="${portion}" pattern="#,###.00" />% (전량매도 후 남으면 그만큼 손실이고, 마이너스면 이익이라는 의미입니다)</h2>
-                                <h2>슬랏 예수금 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
-                                <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion}" pattern="#,###.00" />% (전량매도 후 최초 할당금액보다 적으면 그만큼 손실이고, 많으면 이익이라는 의미입니다)</h2>
-                                <h2>총 매입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
-                                <h2>총 매도금액 : <fmt:formatNumber value="${sumOfSellingAmount}" pattern="#,###" />원</h2>
-                                <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
-                                <h2>총 매도수량 : <fmt:formatNumber value="${sumOfSellingQuantity}" pattern="#,###" />주</h2>
-                                <h2>총 매도수수료(0.3%) : <fmt:formatNumber value="${sumOfCommission}" pattern="#,###" />원</h2>
-                                <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
-                                <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
-                                <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
-                                <h2>현재 종가 : <fmt:formatNumber value="${currentClosingPrice}" pattern="#,###" />원</h2>
+                                <c:choose>
+                                <c:when test="${empty earningRate}" >
+                                    <h2>실현수익률 : 0%</h2>
+                                    <h2>실현손익 : 0원</h2>
+                                    <h2>슬랏 할당금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
+                                    <h2>현재 비중 : <fmt:formatNumber value="${portion}" pattern="#,###.00" />% (전량매도 후 남으면 그만큼 손실이고, 마이너스면 이익이라는 의미입니다)</h2>
+                                    <h2>슬랏 예수금 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
+                                    <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion}" pattern="#,###.00" />% (전량매도 후 최초 할당금액보다 적으면 그만큼 손실이고, 많으면 이익이라는 의미입니다)</h2>
+                                    <h2>총 매입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
+                                    <h2>총 매도금액 : 0원</h2>
+                                    <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
+                                    <h2>총 매도수량 : 0주</h2>
+                                    <h2>총 매도수수료(0.3%) : 0원</h2>
+                                    <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
+                                    <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
+                                    <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
+                                    <h2>현재 종가 : <fmt:formatNumber value="${currentClosingPrice}" pattern="#,###" />원</h2>
+                                </c:when>
+                                <c:otherwise>
+                                    <h2>실현수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
+                                    <h2>실현손익 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
+                                    <h2>슬랏 할당금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
+                                    <h2>현재 비중 : <fmt:formatNumber value="${portion}" pattern="#,###.00" />% (전량매도 후 남으면 그만큼 손실이고, 마이너스면 이익이라는 의미입니다)</h2>
+                                    <h2>슬랏 예수금 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
+                                    <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion}" pattern="#,###.00" />% (전량매도 후 최초 할당금액보다 적으면 그만큼 손실이고, 많으면 이익이라는 의미입니다)</h2>
+                                    <h2>총 매입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
+                                    <h2>총 매도금액 : <fmt:formatNumber value="${sumOfSellingAmount}" pattern="#,###" />원</h2>
+                                    <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
+                                    <h2>총 매도수량 : <fmt:formatNumber value="${sumOfSellingQuantity}" pattern="#,###" />주</h2>
+                                    <h2>총 매도수수료(0.3%) : <fmt:formatNumber value="${sumOfCommission}" pattern="#,###" />원</h2>
+                                    <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
+                                    <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
+                                    <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
+                                    <h2>현재 종가 : <fmt:formatNumber value="${currentClosingPrice}" pattern="#,###" />원</h2>
+                                </c:otherwise>
+                                </c:choose>
                             </c:otherwise>
                         </c:choose>
                     </div>
@@ -135,7 +156,6 @@
                         <h4>매수/매도 하고 싶으시면 단가와 비중 입력 후 "다음", 그냥 넘기고 싶으시면 "다음"버튼 눌러주세요. </h4>
                         <h4>1개 행에 매수/매도 다 입력해도 되고, 한쪽만 입력해도 됩니다.</h4>
                         <h4>단, 매수/매도 비중을 입력했으면 매수/매도 단가도 필수입니다. 비중과 단가 중 하나라도 미입력 시 계산 무시합니다.</h4>
-                        <h4>날짜가 없으면 계산에서 제외됩니다.</h4>
                         <h4>매도 시 매도금액의 0.3%를 수수료차원에서 실현손익에서 뺍니다.</h4>
                         <div></div>
                         <div class="input-group mb-3" id= "modifyInputGroup">
@@ -162,7 +182,7 @@
                     </div>
                     <div></div>
                     <div class="px-4 py-5 my-5 text-left">
-                        <h2><strong>일봉차트 관찰 훈련도 해보세요.</strong></h2>
+                        <h2><strong>일봉차트 관찰 훈련도 해보세요. (필수 아님)</strong></h2>
                         <p></p>
                         <h4>훈련을 위해 다음날 예상되는 시가/종가/저가/고가를 입력해보세요. 계산에는 영향을 안미칩니다.</h4>
                         <div></div>

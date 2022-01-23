@@ -54,6 +54,9 @@
 </head>
 <body>
     <div class="px-4 py-5 my-5 text-center">
+        <button type="button" class="btn btn-info" onclick="location.href='/dealTrainingManual'" style="height:30px;width:280px;font-size:14px;">주식 일봉매매 시뮬레이션 메뉴얼</button>
+    </div>
+    <div class="px-4 py-5 my-5 text-center">
         <button type="button" class="btn btn-secondary" onclick="location.href='/buildup'" style="height:50px;width:330px;font-size:18px;">매일 종가매수 시뮬레이션 하러 가기</button>
     </div>
     <form action="deal-calculate" method="post" name="calculateRequestFrom">

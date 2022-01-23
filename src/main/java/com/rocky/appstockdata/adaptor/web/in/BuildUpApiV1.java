@@ -149,6 +149,11 @@ public class BuildUpApiV1 {
         return "dealTraining";
     }
 
+    @GetMapping("/dealTrainingManual")
+    public String dealTrainingManual(){
+        return "dealTrainingManual";
+    }
+
     @GetMapping("/buildup")
     public String index(){
         return "buildUpIndex";

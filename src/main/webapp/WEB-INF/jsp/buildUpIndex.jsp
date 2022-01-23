@@ -54,7 +54,7 @@
 </head>
 <body>
     <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-info" onclick="location.href='/buildupManual'" style="height:30px;width:280px;font-size:14px;">매일종가매수 시뮬레이션기 메뉴얼</button>
+        <button type="button" class="btn btn-info" onclick="location.href='/buildupManual'" style="height:30px;width:280px;font-size:14px;">매일종가매수 시뮬레이션 메뉴얼</button>
     </div>
     <div class="px-4 py-5 my-5 text-center">
         <button type="button" class="btn btn-secondary" onclick="location.href='/'" style="height:50px;width:250px;font-size:18px;">일봉차트 매매훈련하러 가기</button>

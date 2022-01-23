@@ -14,7 +14,7 @@
     <!-- End Google Tag Manager -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="주식 매매가상훈련기">
+    <meta name="description" content="매일종가매수 시뮬레이션기">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.1">
     <title>매일종가매수 시뮬레이션기 메뉴얼</title>
@@ -61,16 +61,16 @@
         <button type="button" class="btn btn-dark" onclick="location.href='/'">초기화면 돌아가기</button>
     </div>
     <div class="px-4 py-5 my-5 text-center">
-        <h1 class="display-3 fw-bold">매일종가매수 시뮬레이션기</h1>
+        <h1 class="display-3 fw-bold">매일종가매수 시뮬레이션</h1>
         <h1 class="display-3 fw-bold">사용메뉴얼</h1>
         <h3 class="pb-4 mb-4 fst-italic border-bottom">
-            계좌의 뒤를 지켜줄 든든한 시드를 성장시키고 책임지는 역할
+            계좌의 뒤를 지켜줄 든든한 시드를 성장시켜보아요
         </h3>
 
         <article class="blog-post">
             <h2><strong>만든 배경</strong></h2>
             <h4 class="blog-post-meta">2022년 1월 13일 by 주식시뮬레이션 훈련하는 개발자</h4>
-            <p>머나먼 옛날 초보투자자 시절 때인 불과 1년 전. 저는 가치투자를 한답시고, 나름 저평가된 주식을 찾아서 바로 다음날 몰빵을 했습니다.</p>
+            <p>아무것도 모르던 불과 1년 전. 저는 가치투자를 한답시고, 나름 저평가된 주식을 찾아서 바로 다음날 몰빵을 했습니다.</p>
             <p>2021년에 시장이 좋을 때에는, 성공률이 꽤나 높았습니다. 하지만 하반기부터 하락이 시작된 이후부터는 물려있을 수 밖에 없더군요.</p>
             <p>그리고 남들에게 주식을 배우기 시작하며, 깨달았습니다. 아, 우리나라 주식은 하락이 일반적인 경우구나..!! 그럼에도 수익을 내야 하는구나.</p>
             <p>제가 배운 계좌의 중심을 만드는 방법은 내가 목표한 주식을 매일매일 1번씩 매수를 하면서 적금처럼 모아가는 것입니다.</p>
@@ -80,7 +80,9 @@
             <hr>
             <h2><strong>기능 설명</strong></h2>
             <h4 class="blog-post-meta">2022년 1월 20일 by 주식시뮬레이션 훈련하는 개발자</h4>
-            <p>우선 메인화면에서 종가매수 할 시뮬레이션 종목명, 시작날짜, 종료 및 전량매도날짜, 매일 매수 할 금액을 입력하고 "전송"을 클릭합니다.</p>
+            <p>우선 메인화면에서 "매일 종가매수 시뮬레이션 하러 가기"를 클릭합니다.</p>
+            <img src="resources/images/buildUpMain2.png" style="width:60%;margin: auto" loading="lazy">
+            <p>이후 종가매수 할 시뮬레이션 종목명, 시작날짜, 종료 및 전량매도날짜, 매일 매수 할 금액을 입력하고 "전송"을 클릭합니다.</p>
             <img src="resources/images/buildUpMain.png" style="width:60%;margin: auto" loading="lazy">
             <p>처음으로 마주 할 결과 화면입니다. 매일 종가로 매수하다가 마지막 날 전량매도 시 결과데이터가 보입니다.</p>
             <p>그리고 간단한 꺾은선 그래프인 종가,평균단가 그래프가 보입니다.</p>
