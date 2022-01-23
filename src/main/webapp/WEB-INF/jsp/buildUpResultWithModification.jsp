@@ -121,7 +121,7 @@
                 <canvas class="my-4 w-100" id="myChart" width="900" height="700"></canvas>
 
                 <hr style="height:3px;color:#dc874f">
-                <div id="container" style="height: 1000px; min-width: 310px"></div>
+                <div id="container" style="height: 800px; min-width: 310px"></div>
                 <script>
                     function drawCandleStickChart(){
                         //setting values
