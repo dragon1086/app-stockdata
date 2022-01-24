@@ -48,7 +48,7 @@ public class BuildUpApiV1 {
                     .slotAmount(Long.parseLong(slotAmount))
                     .portion(Double.parseDouble(portion))
                     .startDate(startDate)
-                    .valuationPercent(Double.parseDouble(valuationPercent))
+                    .valuationPercent((valuationPercent != null) ? Double.parseDouble(valuationPercent) : null)
                     .build();
 
             DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
