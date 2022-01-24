@@ -39,12 +39,16 @@ public class BuildUpApiV1 {
     public String dealCalculate(ModelMap modelMap,
                                 @RequestParam(value = "companyName", required = false) String companyName,
                                 @RequestParam(value = "slotAmount", required = false) String slotAmount,
-                                @RequestParam(value = "portion", required = false) String portion){
+                                @RequestParam(value = "portion", required = false) String portion,
+                                @RequestParam(value = "startDate", required = false) String startDate,
+                                @RequestParam(value = "valuationPercent", required = false) String valuationPercent){
         try{
             DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
                     .companyName(companyName)
                     .slotAmount(Long.parseLong(slotAmount))
                     .portion(Double.parseDouble(portion))
+                    .startDate(startDate)
+                    .valuationPercent(Double.parseDouble(valuationPercent))
                     .build();
 
             DealTrainingSourceValidator.validate(dealTrainingSourceDTO);

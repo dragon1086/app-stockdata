@@ -15,6 +15,7 @@ public class DealTrainingSourceDTO {
     private List<DealModification> dealModifications;
     private String startDate;
     private String endDate;
+    private Double valuationPercent;
 
     @Builder
     public DealTrainingSourceDTO(String companyName,
@@ -22,12 +23,14 @@ public class DealTrainingSourceDTO {
                                  Double portion,
                                  List<DealModification> dealModifications,
                                  String startDate,
-                                 String endDate) {
+                                 String endDate,
+                                 Double valuationPercent) {
         this.companyName = companyName;
         this.slotAmount = slotAmount;
         this.portion = portion;
         this.dealModifications = dealModifications;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.valuationPercent = valuationPercent;
     }
 }

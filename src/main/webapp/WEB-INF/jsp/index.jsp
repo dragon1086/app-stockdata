@@ -50,6 +50,28 @@
         $(function(){
             document.cookie = "SameSite=None; Secure";
         });
+
+        function startDateOnOff(){
+            var startDateCheckbox = document.getElementById("startDateCheck");
+
+
+            if (startDateCheckbox.checked == true){
+                document.getElementById("startDate").disabled = false;
+            } else {
+                document.getElementById("startDate").disabled = true;
+            }
+        }
+
+        function valuationPercentOnOff(){
+            var valuationPercentCheckbox = document.getElementById("valuationPercentCheck");
+
+
+            if (valuationPercentCheckbox.checked == true){
+                document.getElementById("valuationPercent").disabled = false;
+            } else {
+                document.getElementById("valuationPercent").disabled = true;
+            }
+        }
     </script>
 </head>
 <body>
@@ -85,6 +107,18 @@
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon3">시작 비중(%)</span>
                 <input type="text" class="form-control"  name="portion" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="portion" aria-describedby="basic-addon3">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon4">시작 날짜</span>
+                <input type="date" id="startDate" class="form-control"  name="startDate" placeholder="훈련 시작 날짜를 입력하세요" aria-label="startDate" aria-describedby="basic-addon4" disabled>
+                <input type="checkbox" id="startDateCheck" name="startDateCheck" onclick="startDateOnOff()">
+                <label for="startDateCheck" style="margin: auto">시작일 설정</label>
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon5">시작 평가손익(%)</span>
+                <input type="text" id="valuationPercent" class="form-control"  name="valuationPercent" placeholder="초기 평가손익을 입력하세요" aria-label="valuationPercent" aria-describedby="basic-addon5" disabled>
+                <input type="checkbox" id="valuationPercentCheck" name="valuationPercentCheck" onclick="valuationPercentOnOff()">
+                <label for="valuationPercentCheck" style="margin: auto">시작평가손익 설정</label>
             </div>
 
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">

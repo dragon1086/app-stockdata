@@ -29,18 +29,28 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
     public DealTrainingResult initializeDailyDeal(DealTrainingSourceDTO dealTrainingSourceDTO) {
         final int THREE_YEAR = 3;
 
-        //랜덤일자 ~ 그로부터 3년 전
-        LocalDate endDate = DealTrainingUtil.getRandomDate(validateAndGetEarliestDate(dealTrainingSourceDTO));
+        LocalDate endDate = createEndDate(dealTrainingSourceDTO);
         LocalDate startDate = endDate.minusYears(THREE_YEAR);
+
 
         List<DailyDeal> dailyDealList = getInitializedDailyDealList(dealTrainingSourceDTO, startDate, endDate);
         //마지막 날짜를 빼야 함. 이 마지막날은 사용자가 매수/매도를 입력할 수 있게끔 따로 구성해야 함.
         DailyDeal nextTryDay = dailyDealList.remove(dailyDealList.size() - 1);
 
-        DailyDealHistoryAggregation dailyDealHistoryAggregation = createInitialDailyDealHistoryAggregation(dealTrainingSourceDTO, dailyDealList);
+        DailyDealHistoryAggregation dailyDealHistoryAggregation = createInitialDailyDealHistoryAggregation(dealTrainingSourceDTO, dailyDealList, nextTryDay);
         addFinalDailyDealForNextTryWith(dailyDealHistoryAggregation, nextTryDay);
 
         return getInitializedDealTrainingResult(dealTrainingSourceDTO, startDate, nextTryDay, dailyDealHistoryAggregation);
+    }
+
+    private LocalDate createEndDate(DealTrainingSourceDTO dealTrainingSourceDTO) {
+        //랜덤일자 ~ 그로부터 3년 전
+        LocalDate endDate = DealTrainingUtil.getRandomDate(validateAndGetEarliestDate(dealTrainingSourceDTO));
+        //시작일자 지정 시 날짜범위는 시작일자 ~ 그로부터 3년 전
+        if(StringUtils.isNotEmpty(dealTrainingSourceDTO.getStartDate())){
+            endDate = DealTrainingUtil.transformToLocalDateIncludingDash(dealTrainingSourceDTO.getStartDate());
+        }
+        return endDate;
     }
 
     private List<DailyDeal> getInitializedDailyDealList(DealTrainingSourceDTO dealTrainingSourceDTO, LocalDate startDate, LocalDate endDate) {
@@ -65,7 +75,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
         return earliestDate;
     }
 
-    private DailyDealHistoryAggregation createInitialDailyDealHistoryAggregation(DealTrainingSourceDTO dealTrainingSourceDTO, List<DailyDeal> dailyDealList) {
+    private DailyDealHistoryAggregation createInitialDailyDealHistoryAggregation(DealTrainingSourceDTO dealTrainingSourceDTO, List<DailyDeal> dailyDealList, DailyDeal nextTryDay) {
         long sumOfPurchaseAmount = 0;
         int sumOfPurchaseQuantity = 0;
         long remainingSlotAmount = dealTrainingSourceDTO.getSlotAmount();
@@ -94,8 +104,11 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 initialDealDate = dailyDeal.getDealDate();
                 Random random = new Random();
                 double valuationPercent = DealTrainingUtil.MIN_MINUS_THIRTY_PERCENT + (DealTrainingUtil.MAX_PLUS_THIRTY_PERCENT - DealTrainingUtil.MIN_MINUS_THIRTY_PERCENT) * random.nextDouble();
-
                 long initialAverageUnitPrice = Math.round(dailyDeal.getClosingPrice() * valuationPercent);
+                if(dealTrainingSourceDTO.getValuationPercent() != null){
+                    valuationPercent = 1 / ((dealTrainingSourceDTO.getValuationPercent()/100) + 1);
+                    initialAverageUnitPrice = Math.round(nextTryDay.getClosingPrice() * valuationPercent);
+                }
 
                 long initialAmount = Math.round((double)dealTrainingSourceDTO.getSlotAmount() * dealTrainingSourceDTO.getPortion() / 100);
                 int initialBuyingQuantity = (int) Math.floor(initialAmount / (double)initialAverageUnitPrice);
