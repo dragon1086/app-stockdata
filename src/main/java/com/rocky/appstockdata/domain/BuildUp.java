@@ -18,6 +18,7 @@ public class BuildUp {
     private Integer sumOfPurchaseQuantity;
     private Integer sumOfSellingQuantity;
     private String itemName;
+    private String simulationMode;
     private List<DailyDealHistory> dailyDealHistories;
     private List<DailyDealHistory> dailyDealHistoriesDesc;
 
@@ -31,6 +32,7 @@ public class BuildUp {
                    Integer sumOfPurchaseQuantity,
                    Integer sumOfSellingQuantity,
                    String itemName,
+                   String simulationMode,
                    List<DailyDealHistory> dailyDealHistories,
                    List<DailyDealHistory> dailyDealHistoriesDesc) {
         this.earningRate = earningRate;
@@ -42,6 +44,7 @@ public class BuildUp {
         this.sumOfPurchaseQuantity = sumOfPurchaseQuantity;
         this.sumOfSellingQuantity = sumOfSellingQuantity;
         this.itemName = itemName;
+        this.simulationMode = simulationMode;
         this.dailyDealHistories = dailyDealHistories;
         this.dailyDealHistoriesDesc = dailyDealHistoriesDesc;
     }

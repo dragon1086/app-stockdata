@@ -1,7 +1,6 @@
 package com.rocky.appstockdata.application.service;
 
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
-import com.rocky.appstockdata.application.service.BuildUpCalculateService;
 import com.rocky.appstockdata.domain.*;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import org.assertj.core.api.Assertions;
@@ -17,15 +16,15 @@ import static java.util.Arrays.asList;
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Profile("local")
-class BuildUpCalculateServiceTest {
+class DailyClosingPriceBuildUpServiceTest {
     @Autowired
     StockDealRepository stockDealRepository;
 
-    BuildUpCalculateService buildUpCalculateService;
+    DailyClosingPriceBuildUpService dailyClosingPriceBuildUpService;
 
     @BeforeAll
     public void setup(){
-        buildUpCalculateService = new BuildUpCalculateService(stockDealRepository);
+        dailyClosingPriceBuildUpService = new DailyClosingPriceBuildUpService(stockDealRepository);
     }
 
     @Test
@@ -84,7 +83,7 @@ class BuildUpCalculateServiceTest {
                                 .build()))
                 .build();
 
-        BuildUp buildUp = buildUpCalculateService.calculateBuildUp(buildUpSourceDTO);
+        BuildUp buildUp = dailyClosingPriceBuildUpService.calculateBuildUp(buildUpSourceDTO);
 
         Assertions.assertThat(buildUp.getEarningAmount()).isEqualTo(expectedResult.getEarningAmount());
         Assertions.assertThat(buildUp.getEarningRate()).isEqualTo(expectedResult.getEarningRate());
@@ -105,7 +104,7 @@ class BuildUpCalculateServiceTest {
         Exception resultException = null;
 
         try{
-            BuildUp buildUp = buildUpCalculateService.calculateBuildUp(buildUpSourceDTO);
+            BuildUp buildUp = dailyClosingPriceBuildUpService.calculateBuildUp(buildUpSourceDTO);
         }catch(NoResultDataException e){
             resultException = e;
         }
@@ -190,7 +189,7 @@ class BuildUpCalculateServiceTest {
                                 .build()))
                 .build();
 
-        BuildUp buildUp = buildUpCalculateService.calculateBuildUpModification(buildUpModificationSourceDTO);
+        BuildUp buildUp = dailyClosingPriceBuildUpService.calculateBuildUpModification(buildUpModificationSourceDTO);
 
         Assertions.assertThat(buildUp.getEarningAmount()).isEqualTo(expectedResult.getEarningAmount());
         Assertions.assertThat(buildUp.getEarningRate()).isEqualTo(expectedResult.getEarningRate());

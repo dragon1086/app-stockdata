@@ -170,6 +170,7 @@ public class BuildUpApiV1 {
 
     @PostMapping(value = "buildup-calculate")
     public String buildUpResultController(ModelMap modelMap,
+                                          @RequestParam(value = "simulationMode", required = false) String simulationMode,
                                           @RequestParam(value = "companyName", required = false) String companyName,
                                           @RequestParam(value = "buildupAmount", required = false) String buildupAmount,
                                           @RequestParam(value = "startDate", required = false) String startDate,
@@ -177,6 +178,7 @@ public class BuildUpApiV1 {
 
         try{
             BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
+                    .simulationMode(simulationMode)
                     .companyName(companyName)
                     .buildupAmount(Long.parseLong(buildupAmount))
                     .startDate(startDate)
@@ -204,6 +206,7 @@ public class BuildUpApiV1 {
         modelMap.put("startDate", buildUpSourceDTO.getStartDate());
         modelMap.put("endDate", buildUpSourceDTO.getEndDate());
         modelMap.put("itemName", buildUp.getItemName());
+        modelMap.put("simulationMode", buildUp.getSimulationMode());
         modelMap.put("earningRate", buildUp.getEarningRate());
         modelMap.put("earningAmount", buildUp.getEarningAmount());
         modelMap.put("totalAmount", buildUp.getTotalAmount());
@@ -219,6 +222,7 @@ public class BuildUpApiV1 {
 
     @PostMapping(value = "buildup-calculate-modify")
     public String buildUpModificationController(ModelMap modelMap,
+                                                @RequestParam("simulationMode") String simulationMode,
                                                 @RequestParam("companyName") String inputCompanyName,
                                                 @RequestParam("startDate") String startDate,
                                                 @RequestParam("endDate") String endDate,
@@ -252,6 +256,7 @@ public class BuildUpApiV1 {
         }
 
         BuildUpModificationSourceDTO buildUpModificationSourceDTO = BuildUpModificationSourceDTO.builder()
+                .simulationMode(simulationMode)
                 .companyName(inputCompanyName)
                 .startDate(startDate)
                 .endDate(endDate)
@@ -273,6 +278,7 @@ public class BuildUpApiV1 {
         modelMap.put("startDate", buildUpModificationSourceDTO.getStartDate());
         modelMap.put("endDate", buildUpModificationSourceDTO.getEndDate());
         modelMap.put("itemName", buildUp.getItemName());
+        modelMap.put("simulationMode", buildUp.getSimulationMode());
         modelMap.put("earningRate", buildUp.getEarningRate());
         modelMap.put("earningAmount", buildUp.getEarningAmount());
         modelMap.put("totalAmount", buildUp.getTotalAmount());

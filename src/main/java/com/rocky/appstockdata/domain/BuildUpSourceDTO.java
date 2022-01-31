@@ -11,12 +11,18 @@ public class BuildUpSourceDTO {
     private Long buildupAmount;
     private String startDate;
     private String endDate;
+    private String simulationMode;
 
     @Builder
-    public BuildUpSourceDTO(String companyName, Long buildupAmount, String startDate, String endDate) {
+    public BuildUpSourceDTO(String companyName,
+                            Long buildupAmount,
+                            String startDate,
+                            String endDate,
+                            String simulationMode) {
         this.companyName = companyName;
         this.buildupAmount = buildupAmount;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.simulationMode = simulationMode;
     }
 }

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 public class BuildUpModificationSourceDTO {
+    private String simulationMode;
     private String companyName;
     private Long buildupAmount;
     private String startDate;
@@ -17,11 +18,14 @@ public class BuildUpModificationSourceDTO {
     private List<DealModification> dealModifications;
 
     @Builder
-    public BuildUpModificationSourceDTO(String companyName,
+    public BuildUpModificationSourceDTO(
+                                        String simulationMode,
+                                        String companyName,
                                         Long buildupAmount,
                                         String startDate,
                                         String endDate,
                                         List<DealModification> dealModifications) {
+        this.simulationMode = simulationMode;
         this.companyName = companyName;
         this.buildupAmount = buildupAmount;
         this.startDate = startDate;

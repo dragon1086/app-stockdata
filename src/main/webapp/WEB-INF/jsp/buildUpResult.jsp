@@ -97,7 +97,9 @@
                             <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
                                 candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
                                 volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
+                            <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
                                 myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
+                            </c:if>
                             </c:forEach>
                         </c:if>
 
@@ -304,6 +306,14 @@
                         <h2><strong>최초 입력 요청값</strong></h2>
                         <div style="padding:10px">
                             <div class="input-group mb-3">
+                                <span class="input-group-text mb-3" id="basic-addon0">시뮬레이션 모드</span>
+                                <select id="inputSimulationMode" class="form-select form-select-lg mb-3" name="simulationMode" aria-label="simulationMode" aria-describedby="basic-addon0"
+                                 onfocus="this.initialSelect=this.selectedIndex;" onchange="this.selectedIndex=this.initialSelect;">
+                                    <option value="dailyClosingPrice" selected>매일종가매수</option>
+                                    <option value="minusCandle">음봉일 때만 매수</option>
+                                </select>
+                            </div>
+                            <div class="input-group mb-3">
                                 <span class="input-group-text" id="input-addon1">기업 이름</span>
                                 <input readonly="true" type="text" id="inputCompanyName" class="form-control" name="companyName" aria-label="companyName" aria-describedby="input-addon1" value="">
                             </div>
@@ -321,6 +331,7 @@
                             </div>
 
                             <script>
+                                $('#inputSimulationMode').val("${simulationMode}");
                                 $('input[id=inputCompanyName]').attr('value',"${companyName}");
                                 $('input[id=inputStartDate]').attr('value',"${startDate}");
                                 $('input[id=inputEndDate]').attr('value',"${endDate}");
@@ -376,11 +387,13 @@
 
     <c:if test="${isError == 'false'}">
         <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
-            dealDateList.push("${dailyDealHistory.dealDate}");
-            closingPriceList.push("${dailyDealHistory.closingPrice}");
-            myAverageUnitPriceList.push("${dailyDealHistory.myAverageUnitPrice}");
+            <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
+                dealDateList.push("${dailyDealHistory.dealDate}");
+                closingPriceList.push("${dailyDealHistory.closingPrice}");
+                myAverageUnitPriceList.push("${dailyDealHistory.myAverageUnitPrice}");
 
-            candleStickDataList.push(["${dailyDealHistory.dealDate}", "${dailyDealHistory.startPrice}", "${dailyDealHistory.highPrice}", "${dailyDealHistory.lowPrice}", "${dailyDealHistory.closingPrice}"]);
+                candleStickDataList.push(["${dailyDealHistory.dealDate}", "${dailyDealHistory.startPrice}", "${dailyDealHistory.highPrice}", "${dailyDealHistory.lowPrice}", "${dailyDealHistory.closingPrice}"]);
+            </c:if>
         </c:forEach>
     </c:if>
 

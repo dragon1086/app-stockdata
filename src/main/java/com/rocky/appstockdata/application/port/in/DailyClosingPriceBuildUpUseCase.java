@@ -3,11 +3,10 @@ package com.rocky.appstockdata.application.port.in;
 import com.rocky.appstockdata.domain.BuildUp;
 import com.rocky.appstockdata.domain.BuildUpModificationSourceDTO;
 import com.rocky.appstockdata.domain.BuildUpSourceDTO;
-import com.rocky.appstockdata.exceptions.BuildUpSourceException;
 
-public interface BuildUpCalculateUseCase {
+public interface DailyClosingPriceBuildUpUseCase {
 
-    BuildUp calculateBuildUp(BuildUpSourceDTO buildUpSourceDTO) throws BuildUpSourceException;
+    BuildUp calculateBuildUp(BuildUpSourceDTO buildUpSourceDTO);
 
     BuildUp calculateBuildUpModification(BuildUpModificationSourceDTO buildUpModificationSourceDTO);
 }

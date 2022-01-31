@@ -15,7 +15,7 @@ public class DailyDealHistory {
     private long lowPrice;
     private long tradeVolume;
     private long tradeMoney;
-    private long myAverageUnitPrice;
+    private Long myAverageUnitPrice;
     private String dealDate;
     private long dealDateForTimestamp;
     private long remainingAmount;
@@ -34,7 +34,7 @@ public class DailyDealHistory {
 
     @Builder
     public DailyDealHistory(long closingPrice,
-                            long myAverageUnitPrice,
+                            Long myAverageUnitPrice,
                             String dealDate,
                             long dealDateForTimestamp,
                             int closingPurchaseQuantity,

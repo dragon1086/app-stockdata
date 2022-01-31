@@ -14,9 +14,9 @@
     <!-- End Google Tag Manager -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="매일종가매수 시뮬레이션기">
+    <meta name="description" content="룰 적용 시뮬레이션기">
     <meta name="author" content="펭수르">
-    <meta name="generator" content="stock-buildup 0.0.1">
+    <meta name="generator" content="stock-buildup 0.0.2">
     <title>매일종가매수 시뮬레이션기</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -61,12 +61,22 @@
     </div>
     <form action="buildup-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
-            <h1 class="display-3 fw-bold">매일종가매수 시뮬레이션기</h1>
+            <h1 class="display-3 fw-bold">룰 적용 시뮬레이션기</h1>
             <div class="display-3 mx-auto">
-                <p class="lead mb-4 "style="font-size:17px;">매일 종가로 주식을 매수하면, 투입금액 대비 얼마나 수익날 지 계산하는 프로그램입니다.</p>
+                <p class="lead mb-4 "style="font-size:17px;">일정한 규칙을 정해서 매수/매도를 하면, 투입금액 대비 얼마나 수익날 지 시뮬레이션하는 프로그램입니다.</p>
+                <p class="lead mb-4 "style="font-size:17px;">시뮬레이션 모드는 현재 2가지가 있습니다.</p>
+                <p class="lead mb-4 "style="font-size:17px;">1. 매일종가매수 및 마지막날 전량매도</p>
+                <p class="lead mb-4 "style="font-size:17px;">2. 음봉일때만 매수 및 마지막날 전량매도</p>
                 <p></p>
                 <p class="lead mb-4 "style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.01.07 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text mb-3" id="basic-addon0">시뮬레이션 모드</span>
+                <select class="form-select form-select-lg mb-3" name="simulationMode" aria-label="simulationMode" aria-describedby="basic-addon0">
+                    <option value="dailyClosingPrice" selected>매일종가매수</option>
+                    <option value="minusCandle">음봉일 때만 매수</option>
+                </select>
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">기업 이름</span>
