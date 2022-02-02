@@ -8,8 +8,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class DealTrainingUtil {
-    public static double MIN_MINUS_THIRTY_PERCENT = 0.77d;
-    public static double MAX_PLUS_THIRTY_PERCENT = 1.42d;
+    public static double MIN_MINUS_THIRTY_PERCENT = 0.769231;
+    public static double MAX_PLUS_THIRTY_PERCENT = 1.428571;
 
     public static LocalDate getRandomDate(String earliestDate) {
         LocalDate start = DealTrainingUtil.transformToLocalDate(earliestDate);
