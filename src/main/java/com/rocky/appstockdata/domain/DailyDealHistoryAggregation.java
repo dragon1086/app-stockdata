@@ -12,19 +12,19 @@ import java.util.List;
 @Setter
 @ToString
 public class DailyDealHistoryAggregation {
-    long sumOfPurchaseAmount;
-    int sumOfPurchaseQuantity;
-    long sumOfSellingAmount;
-    int sumOfSellingQuantity;
-    long sumOfCommission;
-    long sumOfRealizedEarningAmount;
-    long remainingSlotAmount;
-    double remainingPortion;
-    long myAverageUnitPrice;
-    long finalClosingPrice;
-    int sumOfMyQuantity;
-    String initialDealDate;
-    List<DailyDealHistory> dailyDealHistories;
+    private long sumOfPurchaseAmount;
+    private int sumOfPurchaseQuantity;
+    private long sumOfSellingAmount;
+    private int sumOfSellingQuantity;
+    private long sumOfCommission;
+    private long sumOfRealizedEarningAmount;
+    private long remainingSlotAmount;
+    private double remainingPortion;
+    private long myAverageUnitPrice;
+    private long finalClosingPrice;
+    private int sumOfMyQuantity;
+    private String initialDealDate;
+    private List<DailyDealHistory> dailyDealHistories;
 
     @Builder
     public DailyDealHistoryAggregation(long sumOfPurchaseAmount,
