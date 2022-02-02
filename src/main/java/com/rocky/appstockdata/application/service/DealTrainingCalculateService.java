@@ -98,6 +98,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                     .highPrice(dailyDeal.getHighPrice())
                     .lowPrice(dailyDeal.getLowPrice())
                     .tradeVolume(dailyDeal.getTradeVolume())
+                    .myAverageUnitPrice(myAverageUnitPrice)
                     .build());
 
             if(!dailyDeals.hasNext()){
