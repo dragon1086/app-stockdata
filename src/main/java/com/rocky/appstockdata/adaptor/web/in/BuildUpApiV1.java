@@ -249,26 +249,30 @@ public class BuildUpApiV1 {
                         .sellPrice(sellPrices[i])
                         .build());
             }
+
+
+            BuildUpModificationSourceDTO buildUpModificationSourceDTO = BuildUpModificationSourceDTO.builder()
+                    .simulationMode(simulationMode)
+                    .companyName(inputCompanyName)
+                    .startDate(startDate)
+                    .endDate(endDate)
+                    .buildupAmount(Long.parseLong(buildupAmount))
+                    .dealModifications(dealModifications)
+                    .build();
+
+            log.info("dealModification :" + dealModifications.toString());
+
+            BuildUp buildUp = buildUpCalculateUseCase.calculateBuildUpModification(buildUpModificationSourceDTO);
+
+            setModificationModelMap(modelMap, buildUp, buildUpModificationSourceDTO);
+
         } catch (NumberFormatException e){
             return createModelMapWithNumberFormatException(modelMap, "올바른 데이터 입력 형식이 아닙니다. 뒤로 돌아가서 정확한 형식으로 넣어주세요.", "buildUpResultWithModification");
+        } catch (BuildUpSourceException e){
+            return createModelMapWithException(modelMap, e.getMessage(), "buildUpResultWithModification");
         } catch (Exception e){
             return createModelMapWithException(modelMap, "서버 오류 발생하였습니다.", "buildUpResultWithModification");
         }
-
-        BuildUpModificationSourceDTO buildUpModificationSourceDTO = BuildUpModificationSourceDTO.builder()
-                .simulationMode(simulationMode)
-                .companyName(inputCompanyName)
-                .startDate(startDate)
-                .endDate(endDate)
-                .buildupAmount(Long.parseLong(buildupAmount))
-                .dealModifications(dealModifications)
-                .build();
-
-        log.info("dealModification :" + dealModifications.toString());
-
-        BuildUp buildUp = buildUpCalculateUseCase.calculateBuildUpModification(buildUpModificationSourceDTO);
-
-        setModificationModelMap(modelMap, buildUp, buildUpModificationSourceDTO);
         return "buildUpResultWithModification";
     }
 

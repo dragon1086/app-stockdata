@@ -1,6 +1,6 @@
 package com.rocky.appstockdata.application.service;
 
-import com.rocky.appstockdata.application.port.in.DailyClosingPriceBuildUpUseCase;
+import com.rocky.appstockdata.application.port.in.BuildUpService;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
 import com.rocky.appstockdata.domain.*;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
@@ -16,13 +16,18 @@ import static com.rocky.appstockdata.domain.utils.DealTrainingUtil.sortDesc;
 
 @Service
 @Slf4j
-public class DailyClosingPriceBuildUpService implements DailyClosingPriceBuildUpUseCase {
+public class DailyClosingPriceBuildUpService implements BuildUpService {
     final StockDealRepository stockDealRepository;
 
     public DailyClosingPriceBuildUpService(StockDealRepository stockDealRepository) {
         this.stockDealRepository = stockDealRepository;
     }
 
+
+    @Override
+    public BuildUpType getBuildUpType() {
+        return BuildUpType.DAILY_CLOSING;
+    }
 
     @Override
     public BuildUp calculateBuildUp(BuildUpSourceDTO buildUpSourceDTO) {

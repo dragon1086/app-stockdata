@@ -1,7 +1,7 @@
 package com.rocky.appstockdata.application.service;
 
 import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
-import com.rocky.appstockdata.application.port.in.DailyClosingPriceBuildUpUseCase;
+import com.rocky.appstockdata.config.BuildUpServiceFactory;
 import com.rocky.appstockdata.domain.BuildUp;
 import com.rocky.appstockdata.domain.BuildUpModificationSourceDTO;
 import com.rocky.appstockdata.domain.BuildUpSourceDTO;
@@ -12,28 +12,24 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class BuildUpCalculateService implements BuildUpCalculateUseCase {
-    final DailyClosingPriceBuildUpUseCase dailyClosingPriceBuildUpUseCase;
-    final MinusCandleBuildUpService minusCandleBuildUpService;
+    final BuildUpServiceFactory buildUpServiceFactory;
 
-    public BuildUpCalculateService(DailyClosingPriceBuildUpUseCase dailyClosingPriceBuildUpUseCase,
-                                   MinusCandleBuildUpService minusCandleBuildUpService) {
-        this.dailyClosingPriceBuildUpUseCase = dailyClosingPriceBuildUpUseCase;
-        this.minusCandleBuildUpService = minusCandleBuildUpService;
+    public BuildUpCalculateService(BuildUpServiceFactory buildUpServiceFactory) {
+        this.buildUpServiceFactory = buildUpServiceFactory;
     }
+
 
     @Override
     public BuildUp calculateBuildUp(BuildUpSourceDTO buildUpSourceDTO) throws BuildUpSourceException {
-        if("dailyClosingPrice".equals(buildUpSourceDTO.getSimulationMode())){
-            return dailyClosingPriceBuildUpUseCase.calculateBuildUp(buildUpSourceDTO);
-        }
-        if("minusCandle".equals(buildUpSourceDTO.getSimulationMode())){
-            return minusCandleBuildUpService.calculateBuildUp(buildUpSourceDTO);
-        }
-        throw new BuildUpSourceException("선택하신 시뮬레이션 모드가 존재하지 않습니다.");
+        return buildUpServiceFactory.getService(BuildUpType.get(buildUpSourceDTO.getSimulationMode())
+                                                        .orElseThrow(() -> new BuildUpSourceException("선택하신 시뮬레이션 모드가 존재하지 않습니다.")))
+                .calculateBuildUp(buildUpSourceDTO);
     }
 
     @Override
-    public BuildUp calculateBuildUpModification(BuildUpModificationSourceDTO buildUpModificationSourceDTO) {
-        return dailyClosingPriceBuildUpUseCase.calculateBuildUpModification(buildUpModificationSourceDTO);
+    public BuildUp calculateBuildUpModification(BuildUpModificationSourceDTO buildUpModificationSourceDTO) throws BuildUpSourceException {
+        return buildUpServiceFactory.getService(BuildUpType.get(buildUpModificationSourceDTO.getSimulationMode())
+                                                        .orElseThrow(() -> new BuildUpSourceException("선택하신 시뮬레이션 모드가 존재하지 않습니다.")))
+                .calculateBuildUpModification(buildUpModificationSourceDTO);
     }
 }
