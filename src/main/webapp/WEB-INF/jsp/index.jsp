@@ -89,12 +89,28 @@
                 <p class="lead mb-4" style="font-size:17px;">하루하루 다음 일봉을 예상해보며, 매매와 기다림을 선택해가며 주어진 환경에서 실현수익을 만드는 것이 목표입니다.</p>
                 <p></p>
                 <p class="lead mb-4" style="font-size:17px;">"종목", "종목에 배분할 총금액", "시작 비중"을 입력하면, 랜덤하게 3년치의 일봉차트가 보여집니다.</p>
-                <p class="lead mb-4" style="font-size:17px;">시작 시점, 평균 단가, 평가 손익은 랜덤으로 정해집니다.</p>
-                <p class="lead mb-4" style="font-size:17px;">이때 평균 단가는 시작시점 종가의 -30% ~ 30%로 설정되며, 여러분이 과거 특정 시점부터 관리해온 평균단가라고 가정했습니다.</p>
-                <p class="lead mb-4" style="font-size:17px;">만약 "시작 비중"을 0으로 입력하면, 처음부터 새로 시작할 수 있습니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">일봉차트를 참고하셔서 어떤 상황에서도 수익을 만들어보는 경험을 체험해보세요!</p>
                 <p></p>
-                <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.01.07 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
+                <p class="lead mb-4" style="font-size:17px;">시작 시점, 평균 단가, 평가 손익은 랜덤으로 정해집니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">평가 손익은 난이도에 따라 다르게 설정되며, 여러분이 과거 특정 시점부터 관리해온 손익이라고 가정했습니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">만약 "시작 비중"을 0으로 입력하면, 난이도에 상관없이 처음부터 새로 시작할 수 있습니다.</p>
+                <p></p>
+                <p class="lead mb-4" style="font-size:17px;">고수일수록 소위 "똥"이라고 불리는, 물린 종목을 잘 풀어내서 수익으로 마무리 지을 수 있어야 합니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">그런 의미에서 난이도는 고수로 올라갈수록 평가 손익의 범위를 크게 설정했습니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">난이도를 "주린이"로 선택하시면 평가손익의 범위는 -20% ~ +20% 입니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">난이도를 "중수"로 선택하시면 평가손익의 범위는 -50% ~ +50% 입니다.</p>
+                <p class="lead mb-4" style="font-size:17px;">난이도를 "초고수"로 선택하시면 평가손익의 범위는 -80% ~ +80% 입니다.</p>
+                <p></p>
+                <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.02.04 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text mb-1" id="basic-addon0">난이도 선택(시작비중 있을때만 적용)</span>
+                <select class="form-select form-select-lg mb-1" name="level" aria-label="level" aria-describedby="basic-addon0">
+                    <option value="beginner" selected>주린이</option>
+                    <option value="intermediate">중수</option>
+                    <option value="master">초고수</option>
+                </select>
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">기업 이름</span>

@@ -104,7 +104,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
             if(!dailyDeals.hasNext()){
                 initialDealDate = dailyDeal.getDealDate();
                 Random random = new Random();
-                double valuationPercent = DealTrainingUtil.MIN_MINUS_THIRTY_PERCENT + (DealTrainingUtil.MAX_PLUS_THIRTY_PERCENT - DealTrainingUtil.MIN_MINUS_THIRTY_PERCENT) * random.nextDouble();
+                double valuationPercent = DealTrainingUtil.minMinusPercent(dealTrainingSourceDTO.getLevel()) + (DealTrainingUtil.maxPlusPercent(dealTrainingSourceDTO.getLevel()) - DealTrainingUtil.minMinusPercent(dealTrainingSourceDTO.getLevel())) * random.nextDouble();
                 long initialAverageUnitPrice = Math.round(dailyDeal.getClosingPrice() * valuationPercent);
                 if(dealTrainingSourceDTO.getValuationPercent() != null){
                     valuationPercent = 1 / ((dealTrainingSourceDTO.getValuationPercent()/100) + 1);

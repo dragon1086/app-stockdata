@@ -8,9 +8,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class DealTrainingUtil {
-    public static double MIN_MINUS_THIRTY_PERCENT = 0.769231;
-    public static double MAX_PLUS_THIRTY_PERCENT = 1.428571;
-
     public static LocalDate getRandomDate(String earliestDate) {
         LocalDate start = DealTrainingUtil.transformToLocalDate(earliestDate);
         LocalDate end = LocalDate.now();
@@ -67,5 +64,43 @@ public class DealTrainingUtil {
                     return result;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public static double minMinusPercent(String level) {
+        double MIN_MINUS_TWENTY_PERCENT = 0.833333;
+        double MIN_MINUS_THIRTY_PERCENT = 0.769231;
+        double MIN_MINUS_FIFTY_PERCENT = 0.666667;
+        double MIN_MINUS_EIGHTY_PERCENT = 0.555556;
+
+        if("beginner".equals(level)){
+            return MIN_MINUS_TWENTY_PERCENT;
+        }
+        if("intermediate".equals(level)){
+            return MIN_MINUS_FIFTY_PERCENT;
+        }
+        if("master".equals(level)){
+            return MIN_MINUS_EIGHTY_PERCENT;
+        }
+
+        return MIN_MINUS_THIRTY_PERCENT;
+    }
+
+    public static double maxPlusPercent(String level) {
+        double MAX_PLUS_TWENTY_PERCENT = 1.25;
+        double MAX_PLUS_THIRTY_PERCENT = 1.428571;
+        double MAX_PLUS_FIFTY_PERCENT = 2;
+        double MAX_PLUS_EIGHTY_PERCENT = 5;
+
+        if("beginner".equals(level)){
+            return MAX_PLUS_TWENTY_PERCENT;
+        }
+        if("intermediate".equals(level)){
+            return MAX_PLUS_FIFTY_PERCENT;
+        }
+        if("master".equals(level)){
+            return MAX_PLUS_EIGHTY_PERCENT;
+        }
+
+        return MAX_PLUS_THIRTY_PERCENT;
     }
 }

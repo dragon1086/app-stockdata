@@ -41,7 +41,8 @@ public class BuildUpApiV1 {
                                 @RequestParam(value = "slotAmount", required = false) String slotAmount,
                                 @RequestParam(value = "portion", required = false) String portion,
                                 @RequestParam(value = "startDate", required = false) String startDate,
-                                @RequestParam(value = "valuationPercent", required = false) String valuationPercent){
+                                @RequestParam(value = "valuationPercent", required = false) String valuationPercent,
+                                @RequestParam(value = "level", required = false) String level){
         try{
             DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
                     .companyName(companyName)
@@ -49,6 +50,7 @@ public class BuildUpApiV1 {
                     .portion(Double.parseDouble(portion))
                     .startDate(startDate)
                     .valuationPercent((valuationPercent != null) ? Double.parseDouble(valuationPercent) : null)
+                    .level(level)
                     .build();
 
             DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
