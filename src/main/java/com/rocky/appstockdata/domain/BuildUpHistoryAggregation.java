@@ -63,12 +63,12 @@ public class BuildUpHistoryAggregation {
         this.dailyDealHistories = dailyDealHistories;
     }
 
-    public BuildUpHistoryAggregation updateSumForMinusCandleBuildUp(int sumOfPurchaseQuantity,
-                                                                    int sumOfMyQuantity,
-                                                                    long sumOfPurchaseAmount,
-                                                                    double myAverageUnitPrice,
-                                                                    long finalRemainingAmount,
-                                                                    List<DailyDealHistory> dailyDealHistories){
+    public BuildUpHistoryAggregation updateSum(int sumOfPurchaseQuantity,
+                                               int sumOfMyQuantity,
+                                               long sumOfPurchaseAmount,
+                                               double myAverageUnitPrice,
+                                               long finalRemainingAmount,
+                                               List<DailyDealHistory> dailyDealHistories){
         this.sumOfPurchaseQuantity = sumOfPurchaseQuantity;
         this.sumOfMyQuantity = sumOfMyQuantity;
         this.sumOfPurchaseAmount = sumOfPurchaseAmount;
@@ -79,10 +79,10 @@ public class BuildUpHistoryAggregation {
         return this;
     }
 
-    public BuildUpHistoryAggregation updateSellingSumForMinusCandleBuildUp(int sumOfSellingQuantity,
-                                                                            long sumOfSellingAmount,
-                                                                            long sumOfCommission,
-                                                                            long sumOfRealizedEarningAmount){
+    public BuildUpHistoryAggregation updateSellingSum(int sumOfSellingQuantity,
+                                                      long sumOfSellingAmount,
+                                                      long sumOfCommission,
+                                                      long sumOfRealizedEarningAmount){
         this.sumOfSellingQuantity = sumOfSellingQuantity;
         this.sumOfSellingAmount = sumOfSellingAmount;
         this.sumOfCommission = sumOfCommission;

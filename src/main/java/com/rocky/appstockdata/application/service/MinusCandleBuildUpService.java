@@ -149,12 +149,12 @@ public class MinusCandleBuildUpService implements BuildUpService {
             //남아있는 예수금 갱신
             long finalRemainingAmount = buildupAmount - purchaseAmount;
 
-            return buildUpHistoryAggregation.updateSumForMinusCandleBuildUp(sumOfPurchaseQuantity,
-                                                                            sumOfMyQuantity,
-                                                                            sumOfPurchaseAmount,
-                                                                            myAverageUnitPrice,
-                                                                            finalRemainingAmount,
-                                                                            dailyDealHistories);
+            return buildUpHistoryAggregation.updateSum(sumOfPurchaseQuantity,
+                                                        sumOfMyQuantity,
+                                                        sumOfPurchaseAmount,
+                                                        myAverageUnitPrice,
+                                                        finalRemainingAmount,
+                                                        dailyDealHistories);
         } else {
             dailyDealHistories.add(DailyDealHistory.builder()
                     .dealDate(dailyDeal.getDealDate())
@@ -199,7 +199,7 @@ public class MinusCandleBuildUpService implements BuildUpService {
         //총 실현손익 누적
         long sumOfRealizedEarningAmount = buildUpHistoryAggregation.getSumOfRealizedEarningAmount() + realizedEarningAmount;
 
-        return buildUpHistoryAggregation.updateSellingSumForMinusCandleBuildUp(sumOfSellingQuantity, sumOfSellingAmount, sumOfCommission, sumOfRealizedEarningAmount);
+        return buildUpHistoryAggregation.updateSellingSum(sumOfSellingQuantity, sumOfSellingAmount, sumOfCommission, sumOfRealizedEarningAmount);
     }
 
     @Override
