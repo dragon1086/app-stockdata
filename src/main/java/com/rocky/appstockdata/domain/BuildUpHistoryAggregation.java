@@ -79,6 +79,44 @@ public class BuildUpHistoryAggregation {
         return this;
     }
 
+    public BuildUpHistoryAggregation updateSumForAdditionalBuy(int sumOfPurchaseQuantity,
+                                                               int sumOfMyQuantity,
+                                                               long sumOfPurchaseAmount,
+                                                               double myAverageUnitPrice,
+                                                               int sumOfAdditionalBuyingQuantityForToday,
+                                                               long sumOfAdditionalBuyingAmountForToday){
+        this.sumOfPurchaseQuantity = sumOfPurchaseQuantity;
+        this.sumOfMyQuantity = sumOfMyQuantity;
+        this.sumOfPurchaseAmount = sumOfPurchaseAmount;
+        this.myAverageUnitPrice = myAverageUnitPrice;
+        this.sumOfAdditionalBuyingQuantityForToday = sumOfAdditionalBuyingQuantityForToday;
+        this.sumOfAdditionalBuyingAmountForToday = sumOfAdditionalBuyingAmountForToday;
+
+        return this;
+    }
+
+    public BuildUpHistoryAggregation updateSumForAdditionalSell(int sumOfSellingQuantity,
+                                                                int sumOfMyQuantity,
+                                                                long sumOfSellingAmount,
+                                                                long sumOfCommission,
+                                                                long sumOfRealizedEarningAmount,
+                                                                int sumOfAdditionalSellingQuantityForToday,
+                                                                long sumOfAdditionalSellingAmountForToday,
+                                                                long sumOfCommissionForToday,
+                                                                long sumOfRealizedEarningAmountForToday){
+        this.sumOfSellingQuantity = sumOfSellingQuantity;
+        this.sumOfMyQuantity = sumOfMyQuantity;
+        this.sumOfSellingAmount = sumOfSellingAmount;
+        this.sumOfCommission = sumOfCommission;
+        this.sumOfRealizedEarningAmount = sumOfRealizedEarningAmount;
+        this.sumOfAdditionalSellingQuantityForToday = sumOfAdditionalSellingQuantityForToday;
+        this.sumOfAdditionalSellingAmountForToday = sumOfAdditionalSellingAmountForToday;
+        this.sumOfCommissionForToday = sumOfCommissionForToday;
+        this.sumOfRealizedEarningAmountForToday = sumOfRealizedEarningAmountForToday;
+
+        return this;
+    }
+
     public BuildUpHistoryAggregation updateSellingSum(int sumOfSellingQuantity,
                                                       long sumOfSellingAmount,
                                                       long sumOfCommission,
@@ -114,5 +152,14 @@ public class BuildUpHistoryAggregation {
         this.sumOfCommissionForToday = buildUpHistoryAggregation.getSumOfCommissionForToday();
         this.sumOfRealizedEarningAmountForToday = buildUpHistoryAggregation.getSumOfRealizedEarningAmountForToday();
         this.dailyDealHistories = buildUpHistoryAggregation.getDailyDealHistories();
+    }
+
+    public void initializeSumForToday() {
+        this.sumOfAdditionalBuyingQuantityForToday = 0;
+        this.sumOfAdditionalSellingQuantityForToday = 0;
+        this.sumOfAdditionalBuyingAmountForToday = 0L;
+        this.sumOfAdditionalSellingAmountForToday = 0L;
+        this.sumOfCommissionForToday = 0L;
+        this.sumOfRealizedEarningAmountForToday = 0L;
     }
 }

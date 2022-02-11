@@ -52,4 +52,14 @@ public class BuildUpModificationSourceDTO {
                 })
                 .collect(Collectors.toList());
     }
+
+    public BuildUpSourceDTO transformToBuildUpSourceDTO(){
+        return BuildUpSourceDTO.builder()
+                .companyName(this.companyName)
+                .buildupAmount(this.buildupAmount)
+                .startDate(this.startDate)
+                .endDate(this.endDate)
+                .simulationMode(this.simulationMode)
+                .build();
+    }
 }
