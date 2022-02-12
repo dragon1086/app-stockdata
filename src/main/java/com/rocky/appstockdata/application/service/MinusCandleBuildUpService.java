@@ -186,17 +186,13 @@ public class MinusCandleBuildUpService implements BuildUpService {
 
         List<DailyDeal> existingDailyDealList = getExistingDailyDeals(buildUpModificationSourceDTO);
 
-        List<DealModification> allDealModifications = buildUpModificationSourceDTO.getDealModifications();
-
         Iterator<DailyDeal> dailyDeals = existingDailyDealList.iterator();
         while(dailyDeals.hasNext()){
             DailyDeal dailyDeal = dailyDeals.next();
 
             //아래는 '추가' 매수/매도 관련 로직
-            //당일에 여러개의 추가매수가 있으면 매수 하고, 추가매도가 있으면 매도 하면 됨. 매도하면 실현수익은 매도액의 0.3%를 제외한다.
-            //같은 행에 추가 매수/매도가 같이 있으면, 먼저 매수 후 매도를 원칙으로 삼는다.
             buildUpHistoryAggregation = buildUpHistoryAggregation.initializeSumForToday();
-            buildUpHistoryAggregation = buildUpHistoryAggregation.additionalBuyAndSell(buildUpHistoryAggregation, allDealModifications, dailyDeal);
+            buildUpHistoryAggregation = buildUpHistoryAggregation.additionalBuyAndSell(buildUpHistoryAggregation, buildUpModificationSourceDTO.getDealModifications(), dailyDeal);
 
             //아래는 음봉일 때만 매수 로직
             buildUpHistoryAggregation = buyOnlyForMinusCandle(buildUpHistoryAggregation, buildUpModificationSourceDTO.transformToBuildUpSourceDTO(), dailyDeal);

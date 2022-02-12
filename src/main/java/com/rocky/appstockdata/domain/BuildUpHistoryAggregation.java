@@ -256,6 +256,8 @@ public class BuildUpHistoryAggregation {
 
 
     public BuildUpHistoryAggregation additionalBuyAndSell(BuildUpHistoryAggregation buildUpHistoryAggregation, List<DealModification> allDealModifications, DailyDeal dailyDeal) {
+        //당일에 여러개의 추가매수가 있으면 매수 하고, 추가매도가 있으면 매도 하면 됨. 매도하면 실현수익은 매도액의 0.3%를 제외한다.
+        //같은 행에 추가 매수/매도가 같이 있으면, 먼저 매수 후 매도를 원칙으로 삼는다.
         BuildUpHistoryAggregation copiedBuildUpHistoryAggregation = buildUpHistoryAggregation.copy();
         for(DealModification dealModification : allDealModifications){
             if(dailyDeal.getDealDate().equals(dealModification.getModifyDate().replace("-", ""))){
