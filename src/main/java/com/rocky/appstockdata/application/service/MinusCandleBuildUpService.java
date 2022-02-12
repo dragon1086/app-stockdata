@@ -31,7 +31,31 @@ public class MinusCandleBuildUpService implements BuildUpService {
 
     @Override
     public BuildUp calculateBuildUp(BuildUpSourceDTO buildUpSourceDTO) {
-        BuildUpHistoryAggregation buildUpHistoryAggregation = BuildUpHistoryAggregation.builder()
+        BuildUpHistoryAggregation buildUpHistoryAggregation = createBuildUpHistoryAggregation();
+
+        List<DailyDeal> dailyDealList = getDailyDeals(buildUpSourceDTO);
+
+        Iterator<DailyDeal> dailyDeals = dailyDealList.iterator();
+        while(dailyDeals.hasNext()){
+            DailyDeal dailyDeal = dailyDeals.next();
+
+            BuildUpHistoryAggregation aggregationAfterBuyingForMinusCandle = buyOnlyForMinusCandle(buildUpHistoryAggregation, buildUpSourceDTO, dailyDeal);
+            //후처리로 합산과정 추가
+            buildUpHistoryAggregation.updateAggregations(aggregationAfterBuyingForMinusCandle);
+
+            //종가매수 마지막날 전량매도
+            if(!dailyDeals.hasNext()){
+                BuildUpHistoryAggregation aggregationAfterAllSell = sellAll(buildUpHistoryAggregation, dailyDeal.getClosingPrice());
+                //후처리로 합산과정 추가
+                buildUpHistoryAggregation.updateAggregations(aggregationAfterAllSell);
+            }
+        }
+        return calculateFinalSummary(buildUpHistoryAggregation, dailyDealList.get(0).getItemName(), buildUpSourceDTO.getSimulationMode());
+
+    }
+
+    private BuildUpHistoryAggregation createBuildUpHistoryAggregation() {
+        return BuildUpHistoryAggregation.builder()
                 .sumOfPurchaseAmount(0L)
                 .sumOfSellingAmount(0L)
                 .sumOfCommission(0L)
@@ -49,28 +73,6 @@ public class MinusCandleBuildUpService implements BuildUpService {
                 .sumOfRealizedEarningAmountForToday(0L)
                 .dailyDealHistories(new ArrayList<>())
                 .build();
-
-        List<DailyDeal> dailyDealList = getDailyDeals(buildUpSourceDTO);
-
-        Iterator<DailyDeal> dailyDeals = dailyDealList.iterator();
-        while(dailyDeals.hasNext()){
-            DailyDeal dailyDeal = dailyDeals.next();
-
-            Long closingPrice = dailyDeal.getClosingPrice();
-
-            BuildUpHistoryAggregation aggregationAfterBuyingForMinusCandle = buyOnlyForMinusCandle(buildUpHistoryAggregation, buildUpSourceDTO, dailyDeal);
-            //후처리로 합산과정 추가
-            buildUpHistoryAggregation.updateAggregations(aggregationAfterBuyingForMinusCandle);
-
-            //종가매수 마지막날 전량매도
-            if(!dailyDeals.hasNext()){
-                BuildUpHistoryAggregation aggregationAfterAllSell = sellAll(buildUpHistoryAggregation, closingPrice);
-                //후처리로 합산과정 추가
-                buildUpHistoryAggregation.updateAggregations(aggregationAfterAllSell);
-            }
-        }
-        return calculateFinalSummary(buildUpHistoryAggregation, dailyDealList.get(0).getItemName(), buildUpSourceDTO.getSimulationMode());
-
     }
 
     private BuildUp calculateFinalSummary(BuildUpHistoryAggregation buildUpHistoryAggregation, String itemName, String simulationMode) {
@@ -207,24 +209,7 @@ public class MinusCandleBuildUpService implements BuildUpService {
 
     @Override
     public BuildUp calculateBuildUpModification(BuildUpModificationSourceDTO buildUpModificationSourceDTO) {
-        BuildUpHistoryAggregation buildUpHistoryAggregation = BuildUpHistoryAggregation.builder()
-                .sumOfPurchaseAmount(0L)
-                .sumOfSellingAmount(0L)
-                .sumOfCommission(0L)
-                .sumOfRealizedEarningAmount(0L)
-                .sumOfPurchaseQuantity(0)
-                .sumOfSellingQuantity(0)
-                .sumOfMyQuantity(0)
-                .myAverageUnitPrice(0.0d)
-                .finalRemainingAmount(0L)
-                .sumOfAdditionalBuyingQuantityForToday(0)
-                .sumOfAdditionalSellingQuantityForToday(0)
-                .sumOfAdditionalBuyingAmountForToday(0L)
-                .sumOfAdditionalSellingAmountForToday(0L)
-                .sumOfCommissionForToday(0L)
-                .sumOfRealizedEarningAmountForToday(0L)
-                .dailyDealHistories(new ArrayList<>())
-                .build();
+        BuildUpHistoryAggregation buildUpHistoryAggregation = createBuildUpHistoryAggregation();
 
         List<DailyDeal> existingDailyDealList = getExistingDailyDeals(buildUpModificationSourceDTO);
 
@@ -233,8 +218,6 @@ public class MinusCandleBuildUpService implements BuildUpService {
         Iterator<DailyDeal> dailyDeals = existingDailyDealList.iterator();
         while(dailyDeals.hasNext()){
             DailyDeal dailyDeal = dailyDeals.next();
-
-            Long closingPrice = dailyDeal.getClosingPrice();
 
             //아래는 '추가' 매수/매도 관련 로직
             //당일에 여러개의 추가매수가 있으면 매수 하고, 추가매도가 있으면 매도 하면 됨. 매도하면 실현수익은 매도액의 0.3%를 제외한다.
@@ -252,7 +235,7 @@ public class MinusCandleBuildUpService implements BuildUpService {
 
             //종가매수 마지막날 전량매도
             if(!dailyDeals.hasNext()){
-                BuildUpHistoryAggregation aggregationAfterAllSell = sellAll(buildUpHistoryAggregation, closingPrice);
+                BuildUpHistoryAggregation aggregationAfterAllSell = sellAll(buildUpHistoryAggregation, dailyDeal.getClosingPrice());
                 //후처리로 합산과정 추가
                 buildUpHistoryAggregation.updateAggregations(aggregationAfterAllSell);
             }
