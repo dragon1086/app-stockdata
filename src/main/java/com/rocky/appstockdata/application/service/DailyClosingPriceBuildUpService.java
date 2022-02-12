@@ -69,16 +69,20 @@ public class DailyClosingPriceBuildUpService implements BuildUpService {
                 buildUpHistoryAggregation.updateAggregations(aggregationAfterAllSell);
             }
         }
+        return calculateFinalSummary(buildUpHistoryAggregation, dailyDealList.get(0).getItemName(), buildUpSourceDTO.getSimulationMode());
 
+    }
+
+    private BuildUp calculateFinalSummary(BuildUpHistoryAggregation buildUpHistoryAggregation, String itemName, String simulationMode) {
         //수익률 : 실현손익 총합 / (남은금액 + 구매한 총금액)
-        double myEarningRate =  buildUpHistoryAggregation.getSumOfRealizedEarningAmount() / (double)(buildUpHistoryAggregation.getFinalRemainingAmount() + buildUpHistoryAggregation.getSumOfPurchaseAmount());
+        double myEarningRate = buildUpHistoryAggregation.getSumOfRealizedEarningAmount() / (double) (buildUpHistoryAggregation.getFinalRemainingAmount() + buildUpHistoryAggregation.getSumOfPurchaseAmount());
         //최종적으로 손에 든 금액 : 남은금액 + 구매한 총금액 + 실현손익
         long myTotalAmount = buildUpHistoryAggregation.getFinalRemainingAmount() + buildUpHistoryAggregation.getSumOfPurchaseAmount() + buildUpHistoryAggregation.getSumOfRealizedEarningAmount();
 
         return BuildUp.builder()
-                .simulationMode(buildUpSourceDTO.getSimulationMode())
-                .itemName(dailyDealList.get(0).getItemName())
-                .earningRate(Double.parseDouble(String.format("%.2f",myEarningRate * 100)))
+                .simulationMode(simulationMode)
+                .itemName(itemName)
+                .earningRate(Double.parseDouble(String.format("%.2f", myEarningRate * 100)))
                 .earningAmount(buildUpHistoryAggregation.getSumOfRealizedEarningAmount())
                 .totalAmount(myTotalAmount)
                 .sumOfPurchaseAmount(buildUpHistoryAggregation.getSumOfPurchaseAmount())
@@ -229,25 +233,7 @@ public class DailyClosingPriceBuildUpService implements BuildUpService {
             }
         }
 
-        //수익률 : 실현손익 총합 / (남은금액 + 구매한 총금액)
-        double myEarningRate = buildUpHistoryAggregation.getSumOfRealizedEarningAmount() / (double)(buildUpHistoryAggregation.getFinalRemainingAmount() + buildUpHistoryAggregation.getSumOfPurchaseAmount());
-        //최종적으로 손에 든 금액 : 남은금액 + 구매한 총금액 + 실현손익
-        long myTotalAmount = buildUpHistoryAggregation.getFinalRemainingAmount() + buildUpHistoryAggregation.getSumOfPurchaseAmount() + buildUpHistoryAggregation.getSumOfRealizedEarningAmount();
-
-        return BuildUp.builder()
-                .simulationMode(buildUpModificationSourceDTO.getSimulationMode())
-                .itemName(existingDailyDealList.get(0).getItemName())
-                .earningRate(Double.parseDouble(String.format("%.2f",myEarningRate * 100)))
-                .earningAmount(buildUpHistoryAggregation.getSumOfRealizedEarningAmount())
-                .totalAmount(myTotalAmount)
-                .sumOfPurchaseAmount(buildUpHistoryAggregation.getSumOfPurchaseAmount())
-                .sumOfSellingAmount(buildUpHistoryAggregation.getSumOfSellingAmount())
-                .sumOfCommission(buildUpHistoryAggregation.getSumOfCommission())
-                .sumOfPurchaseQuantity(buildUpHistoryAggregation.getSumOfPurchaseQuantity())
-                .sumOfSellingQuantity(buildUpHistoryAggregation.getSumOfSellingQuantity())
-                .dailyDealHistories(buildUpHistoryAggregation.getDailyDealHistories())
-                .dailyDealHistoriesDesc(sortDesc(buildUpHistoryAggregation.getDailyDealHistories()))
-                .build();
+        return calculateFinalSummary(buildUpHistoryAggregation, existingDailyDealList.get(0).getItemName(), buildUpModificationSourceDTO.getSimulationMode());
     }
 
     private BuildUpHistoryAggregation additionalBuyAndSell(BuildUpHistoryAggregation buildUpHistoryAggregation, List<DealModification> allDealModifications, DailyDeal dailyDeal) {
