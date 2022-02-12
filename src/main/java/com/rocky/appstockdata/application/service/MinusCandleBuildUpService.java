@@ -43,7 +43,7 @@ public class MinusCandleBuildUpService implements BuildUpService {
 
             //종가매수 마지막날 전량매도
             if(!dailyDeals.hasNext()){
-                buildUpHistoryAggregation = sellAll(buildUpHistoryAggregation, dailyDeal.getClosingPrice());
+                buildUpHistoryAggregation = buildUpHistoryAggregation.sellAll(buildUpHistoryAggregation, dailyDeal.getClosingPrice());
             }
         }
         return calculateFinalSummary(buildUpHistoryAggregation, dailyDealList.get(0).getItemName(), buildUpSourceDTO.getSimulationMode());
@@ -180,29 +180,6 @@ public class MinusCandleBuildUpService implements BuildUpService {
         }
     }
 
-
-    private BuildUpHistoryAggregation sellAll(BuildUpHistoryAggregation buildUpHistoryAggregation, Long closingPrice) {
-        //전량매도 수량 : (이전까지 총 구매수량 - 이전까지 총 매도수량)
-        int finalSellingQuantity = buildUpHistoryAggregation.getSumOfPurchaseQuantity() - buildUpHistoryAggregation.getSumOfSellingQuantity();
-        //전량매도 금액 : 전량매도 수량 * 종가
-        long additionalSellingAmount = finalSellingQuantity * closingPrice;
-        //매도 수수료(0.3%)
-        long commission = Math.round(additionalSellingAmount * 0.003);
-        //실현 손익 (전량매도 금액 - 수수료 - (반올림)(현재평단 * 매도개수))
-        long realizedEarningAmount = additionalSellingAmount - commission - Math.round(buildUpHistoryAggregation.getMyAverageUnitPrice() * finalSellingQuantity);
-
-        //총 매도개수 누적
-        int sumOfSellingQuantity = buildUpHistoryAggregation.getSumOfSellingQuantity() + finalSellingQuantity;
-        //총 매도액 누적
-        long sumOfSellingAmount = buildUpHistoryAggregation.getSumOfSellingAmount() + additionalSellingAmount;
-        //총 수수료 누적
-        long sumOfCommission = buildUpHistoryAggregation.getSumOfCommission() + commission;
-        //총 실현손익 누적
-        long sumOfRealizedEarningAmount = buildUpHistoryAggregation.getSumOfRealizedEarningAmount() + realizedEarningAmount;
-
-        return buildUpHistoryAggregation.updateSellingSum(sumOfSellingQuantity, sumOfSellingAmount, sumOfCommission, sumOfRealizedEarningAmount);
-    }
-
     @Override
     public BuildUp calculateBuildUpModification(BuildUpModificationSourceDTO buildUpModificationSourceDTO) {
         BuildUpHistoryAggregation buildUpHistoryAggregation = createBuildUpHistoryAggregation();
@@ -219,99 +196,19 @@ public class MinusCandleBuildUpService implements BuildUpService {
             //당일에 여러개의 추가매수가 있으면 매수 하고, 추가매도가 있으면 매도 하면 됨. 매도하면 실현수익은 매도액의 0.3%를 제외한다.
             //같은 행에 추가 매수/매도가 같이 있으면, 먼저 매수 후 매도를 원칙으로 삼는다.
             buildUpHistoryAggregation = buildUpHistoryAggregation.initializeSumForToday();
-            buildUpHistoryAggregation = additionalBuyAndSell(buildUpHistoryAggregation, allDealModifications, dailyDeal);
+            buildUpHistoryAggregation = buildUpHistoryAggregation.additionalBuyAndSell(buildUpHistoryAggregation, allDealModifications, dailyDeal);
 
             //아래는 음봉일 때만 매수 로직
             buildUpHistoryAggregation = buyOnlyForMinusCandle(buildUpHistoryAggregation, buildUpModificationSourceDTO.transformToBuildUpSourceDTO(), dailyDeal);
 
             //종가매수 마지막날 전량매도
             if(!dailyDeals.hasNext()){
-                buildUpHistoryAggregation = sellAll(buildUpHistoryAggregation, dailyDeal.getClosingPrice());
+                buildUpHistoryAggregation = buildUpHistoryAggregation.sellAll(buildUpHistoryAggregation, dailyDeal.getClosingPrice());
             }
         }
 
         //수익률 : 실현손익 총합 / (남은금액 + 구매한 총금액)
         return calculateFinalSummary(buildUpHistoryAggregation, existingDailyDealList.get(0).getItemName(), buildUpModificationSourceDTO.getSimulationMode());
-    }
-
-    private BuildUpHistoryAggregation additionalBuyAndSell(BuildUpHistoryAggregation buildUpHistoryAggregation, List<DealModification> allDealModifications, DailyDeal dailyDeal) {
-        BuildUpHistoryAggregation copiedBuildUpHistoryAggregation = buildUpHistoryAggregation.copy();
-        for(DealModification dealModification : allDealModifications){
-            if(dailyDeal.getDealDate().equals(dealModification.getModifyDate().replace("-", ""))){
-                if(dealModification.getBuyPercent() != 0 && dealModification.getBuyPrice() != 0L){
-                    //추가매수 실시. 매수 기록 리스트 형태로 남겨야 함.
-
-                    //매수 수량 : (내림)(이전까지 총 구매금액 * 구매비중 / 매수단가)
-                    int additionalBuyingQuantity = (int) Math.floor((copiedBuildUpHistoryAggregation.getSumOfPurchaseAmount() * (double)dealModification.getBuyPercent()/100) / (double) dealModification.getBuyPrice());
-                    //매수 금액 : 매수 수량 * 매수 단가
-                    long additionalBuyingAmount = additionalBuyingQuantity * dealModification.getBuyPrice();
-
-                    //매입 평단 수정 : ((기존 평단 * 내 보유 수량) + (매수가 * 신규 매수 수량)) / (내 보유수량 + 신규 매수 수량) ->이동평균 계산법
-                    // (추가매수와 추가매도가 같은 날에 있을 경우, 추가매도의 평단은 곧 추가매수의 평단이 된다. 왜냐하면 매수 먼저 하니까.)
-                    double myAverageUnitPrice = Math.round(((copiedBuildUpHistoryAggregation.getMyAverageUnitPrice() * copiedBuildUpHistoryAggregation.getSumOfMyQuantity()) + (dealModification.getBuyPrice() * additionalBuyingQuantity))  / (double)(copiedBuildUpHistoryAggregation.getSumOfMyQuantity() + additionalBuyingQuantity));
-                    //총 구매개수 누적
-                    int sumOfPurchaseQuantity = copiedBuildUpHistoryAggregation.getSumOfPurchaseQuantity() + additionalBuyingQuantity;
-                    //총 보유수량 누적
-                    int sumOfMyQuantity = copiedBuildUpHistoryAggregation.getSumOfMyQuantity() + additionalBuyingQuantity;
-                    //총 매수금액 누적
-                    long sumOfPurchaseAmount = copiedBuildUpHistoryAggregation.getSumOfPurchaseAmount() + additionalBuyingAmount;
-                    //당일 추가 매수 수량 합계
-                    int sumOfAdditionalBuyingQuantityForToday = additionalBuyingQuantity;
-                    //당일 추가 매수 금액 합계
-                    long sumOfAdditionalBuyingAmountForToday = additionalBuyingAmount;
-
-                    copiedBuildUpHistoryAggregation = copiedBuildUpHistoryAggregation.updateSumForAdditionalBuy(sumOfPurchaseQuantity,
-                                                                                                                sumOfMyQuantity,
-                                                                                                                sumOfPurchaseAmount,
-                                                                                                                myAverageUnitPrice,
-                                                                                                                sumOfAdditionalBuyingQuantityForToday,
-                                                                                                                sumOfAdditionalBuyingAmountForToday);
-                }
-                if(dealModification.getSellPercent() != 0 && dealModification.getSellPrice() != 0L){
-                    //추가매도 실시. 매도 기록 리스트 형태로 남겨야 함.
-
-                    //매도 수량 : (내림)(이전까지 총 구매금액 * 매도비중 / 매도단가)
-                    int additionalSellingQuantity = (int) Math.floor((copiedBuildUpHistoryAggregation.getSumOfPurchaseAmount() * (double)dealModification.getSellPercent()/100) / (double) dealModification.getSellPrice());
-                    //매도 금액 : 매도 수량 * 매도 단가
-                    long additionalSellingAmount = additionalSellingQuantity * dealModification.getSellPrice();
-                    //매도 수수료(0.3%)
-                    long commission = Math.round(additionalSellingAmount * 0.003);
-                    //실현 손익 (매도금액 - 수수료 - (반올림)(현재평단 * 매도개수))
-                    long realizedEarningAmount = additionalSellingAmount - commission - Math.round(copiedBuildUpHistoryAggregation.getMyAverageUnitPrice() * additionalSellingQuantity);
-
-                    //총 매도개수 누적
-                    int sumOfSellingQuantity = copiedBuildUpHistoryAggregation.getSumOfSellingQuantity() + additionalSellingQuantity;
-                    //총 보유수량 누적
-                    int sumOfMyQuantity = copiedBuildUpHistoryAggregation.getSumOfMyQuantity() - additionalSellingQuantity;
-                    //총 매도액 누적
-                    long sumOfSellingAmount = copiedBuildUpHistoryAggregation.getSumOfSellingAmount() + additionalSellingAmount;
-                    //총 수수료 누적
-                    long sumOfCommission = copiedBuildUpHistoryAggregation.getSumOfCommission() + commission;
-                    //총 실현손익 누적
-                    long sumOfRealizedEarningAmount = copiedBuildUpHistoryAggregation.getSumOfRealizedEarningAmount() + realizedEarningAmount;
-                    //당일 추가 매도 수량 합계
-                    int sumOfAdditionalSellingQuantityForToday = additionalSellingQuantity;
-                    //당일 추가 매도 금액 합계
-                    long sumOfAdditionalSellingAmountForToday = additionalSellingAmount;
-                    //당일 수수료 누적
-                    long sumOfCommissionForToday = commission;
-                    //당일 실현손익 누적
-                    long sumOfRealizedEarningAmountForToday = realizedEarningAmount;
-
-                    copiedBuildUpHistoryAggregation = copiedBuildUpHistoryAggregation.updateSumForAdditionalSell(sumOfSellingQuantity,
-                                                                                                                sumOfMyQuantity,
-                                                                                                                sumOfSellingAmount,
-                                                                                                                sumOfCommission,
-                                                                                                                sumOfRealizedEarningAmount,
-                                                                                                                sumOfAdditionalSellingQuantityForToday,
-                                                                                                                sumOfAdditionalSellingAmountForToday,
-                                                                                                                sumOfCommissionForToday,
-                                                                                                                sumOfRealizedEarningAmountForToday);
-                }
-            }
-        }
-
-        return copiedBuildUpHistoryAggregation;
     }
 
     private List<DailyDeal> getExistingDailyDeals(BuildUpModificationSourceDTO buildUpModificationSourceDTO) {
