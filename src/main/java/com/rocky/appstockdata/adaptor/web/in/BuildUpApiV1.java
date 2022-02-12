@@ -113,30 +113,15 @@ public class BuildUpApiV1 {
                                       @RequestParam(value = "sellPrice", defaultValue = "0") String[] sellPrices,
                                       @RequestParam(value = "buyPercent", defaultValue = "0") String[] buyPercents,
                                       @RequestParam(value = "buyPrice", defaultValue = "0") String[] buyPrices){
-        List<DealModification> dealModifications = new ArrayList<>();
 
         try{
-            for(int i = 0; i < modifyDates.length; i++){
-                if(StringUtils.isEmpty(modifyDates[i])){
-                    continue;
-                }
-
-                dealModifications.add(DealModification.builder()
-                        .modifyDate(modifyDates[i])
-                        .buyPercent(buyPercents[i])
-                        .buyPrice(buyPrices[i])
-                        .sellPercent(sellPercents[i])
-                        .sellPrice(sellPrices[i])
-                        .build());
-            }
-
-           DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
+            DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
                     .companyName(companyName)
                     .startDate(startDate)
                     .endDate(endDate)
                     .slotAmount(Long.parseLong(slotAmount))
                     .portion(Double.parseDouble(portion))
-                    .dealModifications(dealModifications)
+                    .dealModifications(createDealModifications(modifyDates, sellPercents, sellPrices, buyPercents, buyPrices))
                     .build();
 
             DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
@@ -153,6 +138,24 @@ public class BuildUpApiV1 {
         }
 
         return "dealTraining";
+    }
+
+    private List<DealModification> createDealModifications(String[] modifyDates, String[] sellPercents, String[] sellPrices, String[] buyPercents, String[] buyPrices) {
+        List<DealModification> dealModifications = new ArrayList<>();
+        for(int i = 0; i < modifyDates.length; i++){
+            if(StringUtils.isEmpty(modifyDates[i])){
+                continue;
+            }
+
+            dealModifications.add(DealModification.builder()
+                    .modifyDate(modifyDates[i])
+                    .buyPercent(buyPercents[i])
+                    .buyPrice(buyPrices[i])
+                    .sellPercent(sellPercents[i])
+                    .sellPrice(sellPrices[i])
+                    .build());
+        }
+        return dealModifications;
     }
 
     @GetMapping("/dealTrainingManual")
