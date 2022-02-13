@@ -56,7 +56,7 @@ public class BuildUpModificationSourceDTO {
     public BuildUpSourceDTO transformToBuildUpSourceDTO(){
         return BuildUpSourceDTO.builder()
                 .companyName(this.companyName)
-                .buildupAmount(this.buildupAmount)
+                .buildupAmount(String.valueOf(this.buildupAmount))
                 .startDate(this.startDate)
                 .endDate(this.endDate)
                 .simulationMode(this.simulationMode)

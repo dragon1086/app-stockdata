@@ -97,12 +97,6 @@
                         }
                     });
                 },    // source 는 자동 완성 대상
-                select : function(event, ui) {    //아이템 선택시
-                    console.log(ui);//사용자가 오토컴플릿이 만들어준 목록에서 선택을 하면 반환되는 객체
-                    console.log(ui.item.label);    //김치 볶음밥label
-                    console.log(ui.item.value);    //김치 볶음밥
-
-                },
                 focus : function(event, ui) {
                     return false;//한글 아이템 선택 시, 글자가 사라지는 버그 잡아줌
                 },
@@ -113,12 +107,8 @@
                 },
                 delay: 1000,    //검색창에 글자 써지고 나서 autocomplete 창 뜰 때 까지 딜레이 시간(ms)
                 disabled: false, //자동완성 기능 스위치
-                position: { my : "left top", at: "left bottom" },
-                close : function(event){    //자동완성창 닫아질때 호출
-                    console.log(event);
-                }
+                position: { my : "left top", at: "left bottom" }
             });
-
         });
     </script>
 </head>
@@ -129,7 +119,7 @@
     <form action="deal-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
             <h1 class="display-3 fw-bold">주식 일봉매매 시뮬레이션</h1>
-            <div class="input-group mb-3"  style="margin-top: 25px;">
+            <div class="input-group mb-3" style="margin-top: 25px;">
                 <span class="input-group-text mb-1" id="basic-addon0">난이도 선택(시작비중 있을때만 적용)</span>
                 <select class="form-select form-select-lg mb-1" name="level" aria-label="level" aria-describedby="basic-addon0">
                     <option value="beginner" selected>주린이</option>

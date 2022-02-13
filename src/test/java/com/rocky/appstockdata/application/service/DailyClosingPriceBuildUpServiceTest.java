@@ -31,7 +31,7 @@ class DailyClosingPriceBuildUpServiceTest {
     void calculateBuildUp() {
         BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
                 .companyName("흥아해운")
-                .buildupAmount(10000L)
+                .buildupAmount("10000")
                 .startDate("2021-10-13")
                 .endDate("2021-10-15")
                 .build();
@@ -96,7 +96,7 @@ class DailyClosingPriceBuildUpServiceTest {
     void calculateBuildUp_with_no_data() {
         BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
                 .companyName("흥아해운")
-                .buildupAmount(10000L)
+                .buildupAmount("10000")
                 .startDate("1500-10-13")
                 .endDate("1500-10-15")
                 .build();

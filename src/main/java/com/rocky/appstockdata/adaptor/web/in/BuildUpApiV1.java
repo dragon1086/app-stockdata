@@ -190,7 +190,7 @@ public class BuildUpApiV1 {
             BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
                     .simulationMode(simulationMode)
                     .companyName(companyName)
-                    .buildupAmount(Long.parseLong(buildupAmount))
+                    .buildupAmount(buildupAmount)
                     .startDate(startDate)
                     .endDate(endDate)
                     .build();

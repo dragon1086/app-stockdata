@@ -32,7 +32,7 @@ class MinusCandleBuildUpServiceTest {
     void calculateBuildUp() {
         BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
                 .companyName("흥아해운")
-                .buildupAmount(10000L)
+                .buildupAmount("10000")
                 .startDate("2021-11-01")
                 .endDate("2021-11-03")
                 .build();
