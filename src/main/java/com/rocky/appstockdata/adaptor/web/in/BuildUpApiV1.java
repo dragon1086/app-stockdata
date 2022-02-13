@@ -1,6 +1,9 @@
 package com.rocky.appstockdata.adaptor.web.in;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
+import com.rocky.appstockdata.application.port.in.CompanyNameSearchUseCase;
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
 import com.rocky.appstockdata.domain.*;
 import com.rocky.appstockdata.domain.validator.BuildUpSourceValidator;
@@ -12,9 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +25,14 @@ import java.util.List;
 public class BuildUpApiV1 {
     private final BuildUpCalculateUseCase buildUpCalculateUseCase;
     private final DealTrainingUseCase dealTrainingUseCase;
+    private final CompanyNameSearchUseCase companyNameSearchUseCase;
 
-    public BuildUpApiV1(BuildUpCalculateUseCase buildUpCalculateUseCase, DealTrainingUseCase dealTrainingUseCase) {
+    public BuildUpApiV1(BuildUpCalculateUseCase buildUpCalculateUseCase,
+                        DealTrainingUseCase dealTrainingUseCase,
+                        CompanyNameSearchUseCase companyNameSearchUseCase) {
         this.buildUpCalculateUseCase = buildUpCalculateUseCase;
         this.dealTrainingUseCase = dealTrainingUseCase;
+        this.companyNameSearchUseCase = companyNameSearchUseCase;
     }
 
     @GetMapping("/")
@@ -46,11 +51,11 @@ public class BuildUpApiV1 {
         try{
             DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
                     .companyName(companyName)
-                    .slotAmount(Long.parseLong(slotAmount))
-                    .portion(Double.parseDouble(portion))
+                    .slotAmount(slotAmount)
+                    .portion(portion)
                     .startDate(startDate)
-                    .valuationPercent((valuationPercent != null) ? Double.parseDouble(valuationPercent) : null)
-                    .level(level)
+                    .valuationPercent(valuationPercent)
+                    .level(StringUtils.isEmpty(level) ? null : level)
                     .build();
 
             DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
@@ -119,8 +124,8 @@ public class BuildUpApiV1 {
                     .companyName(companyName)
                     .startDate(startDate)
                     .endDate(endDate)
-                    .slotAmount(Long.parseLong(slotAmount))
-                    .portion(Double.parseDouble(portion))
+                    .slotAmount(slotAmount)
+                    .portion(portion)
                     .dealModifications(createDealModifications(modifyDates, sellPercents, sellPrices, buyPercents, buyPrices))
                     .build();
 
@@ -318,5 +323,20 @@ public class BuildUpApiV1 {
         modelMap.put("isError", "true");
         modelMap.put("errorMessage", message);
         return viewFileName;
+    }
+
+    @RequestMapping(value = "/company", method = RequestMethod.POST)
+    @ResponseBody
+    public String getCompanyNames(@RequestParam(value = "keyword") String keyword) {
+        List<String> results = companyNameSearchUseCase.getCompanyNames(keyword);
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            return mapper.writeValueAsString(results);
+        } catch (JsonProcessingException e) {
+            return "검색 결과 없음";
+        }
+
     }
 }

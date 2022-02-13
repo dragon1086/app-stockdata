@@ -11,4 +11,6 @@ public interface StockDealRepository {
     List<DailyDeal> getDailyDeal(DailyDealRequestDTO dailyDealRequestDTO);
 
     String getEarliestDate(String companyName);
+
+    List<String> getCompanyNames(String keyword);
 }

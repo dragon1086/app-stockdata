@@ -3,6 +3,7 @@ package com.rocky.appstockdata.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -20,20 +21,20 @@ public class DealTrainingSourceDTO {
 
     @Builder
     public DealTrainingSourceDTO(String companyName,
-                                 Long slotAmount,
-                                 Double portion,
+                                 String slotAmount,
+                                 String portion,
                                  List<DealModification> dealModifications,
                                  String startDate,
                                  String endDate,
-                                 Double valuationPercent,
+                                 String valuationPercent,
                                  String level) {
-        this.companyName = companyName;
-        this.slotAmount = slotAmount;
-        this.portion = portion;
+        this.companyName = StringUtils.isEmpty(companyName) ? null : companyName;
+        this.slotAmount = StringUtils.isEmpty(slotAmount) ? null : Long.parseLong(slotAmount);
+        this.portion = StringUtils.isEmpty(portion) ? null : Double.parseDouble(portion);
         this.dealModifications = dealModifications;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.valuationPercent = valuationPercent;
+        this.startDate = StringUtils.isEmpty(startDate) ? null :startDate;
+        this.endDate = StringUtils.isEmpty(endDate) ? null : endDate;
+        this.valuationPercent = StringUtils.isEmpty(valuationPercent) ? null : Double.parseDouble(valuationPercent);
         this.level = level;
     }
 }

@@ -30,4 +30,14 @@
           AND ITEM_NAME = #{companyName}
         LIMIT 1
     </select>
+
+    <select id="getCompanyNames" parameterType="string" resultType="string">
+        SELECT
+            ITEM_NAME
+        FROM
+            COMPANY
+        WHERE 1=1
+          AND ITEM_NAME LIKE CONCAT('%',#{companyName},'%')
+        LIMIT 5
+    </select>
 </mapper>
