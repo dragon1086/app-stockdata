@@ -15,9 +15,11 @@ import com.rocky.appstockdata.domain.dto.DailyDealSmallDTO;
 import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
 import com.rocky.appstockdata.domain.validator.BuildUpSourceValidator;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
+import com.rocky.appstockdata.domain.validator.OpenApiValidator;
 import com.rocky.appstockdata.exceptions.BuildUpSourceException;
 import com.rocky.appstockdata.exceptions.DealTrainingSourceException;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
+import com.rocky.appstockdata.exceptions.NotAllowedException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -36,63 +38,74 @@ public class OpenApiV1 {
         this.dealDataUseCase = dealDataUseCase;
     }
 
-    @RequestMapping(value = "/3month-to-today", method = RequestMethod.GET)
+    @RequestMapping(value = "/3month-to-today/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf8")
     @ResponseBody
-    public String getDealListFrom3MonthsAgoToToday() {
-        List<DailyDealSmallDTO> results = dealDataUseCase.from3MonthsAgoToTodayDeals();
-
-        ObjectMapper mapper = new ObjectMapper();
-
+    public String getDealListFrom3MonthsAgoToToday(@PathVariable String id) {
         try {
+            OpenApiValidator.idValidator(id);
+            List<DailyDealSmallDTO> results = dealDataUseCase.from3MonthsAgoToTodayDeals();
+
+            ObjectMapper mapper = new ObjectMapper();
+
             return mapper.writeValueAsString(results);
         } catch (JsonProcessingException e) {
-            return "검색 결과 없음";
+            return "{\"errorMessage\" :  \"검색 결과 없음\"}";
+        } catch (NotAllowedException e){
+            return e.getMessage();
         }
 
     }
 
-    @RequestMapping(value = "/6month-to-3month-ago", method = RequestMethod.GET)
+    @RequestMapping(value = "/6month-to-3month-ago/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf8")
     @ResponseBody
-    public String getDealListFrom6MonthsAgoTo3MonthsAgo() {
-        List<DailyDealSmallDTO> results = dealDataUseCase.from6MonthsAgoTo3MonthsAgoDeals();
-
-        ObjectMapper mapper = new ObjectMapper();
-
+    public String getDealListFrom6MonthsAgoTo3MonthsAgo(@PathVariable String id) {
         try {
+            OpenApiValidator.idValidator(id);
+            List<DailyDealSmallDTO> results = dealDataUseCase.from6MonthsAgoTo3MonthsAgoDeals();
+
+            ObjectMapper mapper = new ObjectMapper();
+
             return mapper.writeValueAsString(results);
         } catch (JsonProcessingException e) {
-            return "검색 결과 없음";
+            return "{\"errorMessage\" :  \"검색 결과 없음\"}";
+        } catch (NotAllowedException e){
+            return e.getMessage();
         }
 
     }
 
-    @RequestMapping(value = "/9month-to-6month-ago", method = RequestMethod.GET)
+    @RequestMapping(value = "/9month-to-6month-ago/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf8")
     @ResponseBody
-    public String getDealListFrom9MonthsAgoTo6MonthsAgo() {
-        List<DailyDealSmallDTO> results = dealDataUseCase.from9MonthsAgoTo6MonthsAgoDeals();
-
-        ObjectMapper mapper = new ObjectMapper();
-
+    public String getDealListFrom9MonthsAgoTo6MonthsAgo(@PathVariable String id) {
         try {
+            OpenApiValidator.idValidator(id);
+            List<DailyDealSmallDTO> results = dealDataUseCase.from9MonthsAgoTo6MonthsAgoDeals();
+
+            ObjectMapper mapper = new ObjectMapper();
+
             return mapper.writeValueAsString(results);
         } catch (JsonProcessingException e) {
-            return "검색 결과 없음";
+            return "{\"errorMessage\" :  \"검색 결과 없음\"}";
+        } catch (NotAllowedException e){
+            return e.getMessage();
         }
 
     }
 
-    @RequestMapping(value = "/12month-to-9month-ago", method = RequestMethod.GET)
+    @RequestMapping(value = "/12month-to-9month-ago/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf8")
     @ResponseBody
-    public String getDealListFrom12MonthsAgoTo9MonthsAgo() {
-        List<DailyDealSmallDTO> results = dealDataUseCase.from12MonthsAgoTo9MonthsAgoDeals();
-
-        ObjectMapper mapper = new ObjectMapper();
-
+    public String getDealListFrom12MonthsAgoTo9MonthsAgo(@PathVariable String id) {
         try {
+            OpenApiValidator.idValidator(id);
+            List<DailyDealSmallDTO> results = dealDataUseCase.from12MonthsAgoTo9MonthsAgoDeals();
+
+            ObjectMapper mapper = new ObjectMapper();
+
             return mapper.writeValueAsString(results);
         } catch (JsonProcessingException e) {
-            return "검색 결과 없음";
+            return "{\"errorMessage\" :  \"검색 결과 없음\"}";
+        } catch (NotAllowedException e){
+            return e.getMessage();
         }
-
     }
 }
