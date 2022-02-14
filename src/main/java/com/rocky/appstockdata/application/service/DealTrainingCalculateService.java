@@ -3,6 +3,8 @@ package com.rocky.appstockdata.application.service;
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
 import com.rocky.appstockdata.domain.*;
+import com.rocky.appstockdata.domain.dto.DailyDealRequestDTO;
+import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
 import com.rocky.appstockdata.domain.utils.DealTrainingUtil;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;

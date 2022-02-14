@@ -1,5 +1,6 @@
-package com.rocky.appstockdata.domain;
+package com.rocky.appstockdata.domain.dto;
 
+import com.rocky.appstockdata.domain.DealModification;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

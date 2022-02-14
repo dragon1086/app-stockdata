@@ -4,8 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
 import com.rocky.appstockdata.application.port.in.CompanyNameSearchUseCase;
+import com.rocky.appstockdata.application.port.in.DealDataUseCase;
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
 import com.rocky.appstockdata.domain.*;
+import com.rocky.appstockdata.domain.dto.BuildUpModificationSourceDTO;
+import com.rocky.appstockdata.domain.dto.BuildUpSourceDTO;
+import com.rocky.appstockdata.domain.dto.DailyDealSmallDTO;
+import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
 import com.rocky.appstockdata.domain.validator.BuildUpSourceValidator;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
 import com.rocky.appstockdata.exceptions.BuildUpSourceException;
@@ -337,6 +342,5 @@ public class BuildUpApiV1 {
         } catch (JsonProcessingException e) {
             return "검색 결과 없음";
         }
-
     }
 }

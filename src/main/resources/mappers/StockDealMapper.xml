@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rocky.appstockdata.application.port.out.StockDealRepository">
-    <select id="getDailyDeal" parameterType="com.rocky.appstockdata.domain.DailyDealRequestDTO" resultType="com.rocky.appstockdata.domain.DailyDeal">
+    <select id="getDailyDeal" parameterType="com.rocky.appstockdata.domain.dto.DailyDealRequestDTO" resultType="com.rocky.appstockdata.domain.DailyDeal">
         SELECT
             ITEM_CODE as itemCode,
             ITEM_NAME as itemName,
@@ -39,5 +39,69 @@
         WHERE 1=1
           AND ITEM_NAME LIKE CONCAT('%',#{companyName},'%')
         LIMIT 5
+    </select>
+
+    <select id="from3MonthsAgoToTodayDeals" resultType="com.rocky.appstockdata.domain.dto.DailyDealSmallDTO">
+        SELECT
+            ITEM_CODE as itemCode,
+            ITEM_NAME as itemName,
+            DEAL_DATE as dealDate,
+            CLOSING_PRICE as closingPrice,
+            START_PRICE as startPrice,
+            HIGH_PRICE as highPrice,
+            LOW_PRICE as lowPrice
+        FROM
+            DEAL_HISTORY
+        WHERE 1=1
+          AND DEAL_DATE <![CDATA[>]]> date_format(date_add(now(), interval -3 month), '%Y%m%d')
+          AND DEAL_DATE <![CDATA[<=]]> date_format(now(), '%Y%m%d')
+    </select>
+
+    <select id="from6MonthsAgoTo3MonthsAgoDeals" resultType="com.rocky.appstockdata.domain.dto.DailyDealSmallDTO">
+        SELECT
+            ITEM_CODE as itemCode,
+            ITEM_NAME as itemName,
+            DEAL_DATE as dealDate,
+            CLOSING_PRICE as closingPrice,
+            START_PRICE as startPrice,
+            HIGH_PRICE as highPrice,
+            LOW_PRICE as lowPrice
+        FROM
+            DEAL_HISTORY
+        WHERE 1=1
+          AND DEAL_DATE <![CDATA[>]]> date_format(date_add(now(), interval -6 month), '%Y%m%d')
+          AND DEAL_DATE <![CDATA[<=]]> date_format(date_add(now(), interval -3 month), '%Y%m%d')
+    </select>
+
+    <select id="from9MonthsAgoTo6MonthsAgoDeals" resultType="com.rocky.appstockdata.domain.dto.DailyDealSmallDTO">
+        SELECT
+            ITEM_CODE as itemCode,
+            ITEM_NAME as itemName,
+            DEAL_DATE as dealDate,
+            CLOSING_PRICE as closingPrice,
+            START_PRICE as startPrice,
+            HIGH_PRICE as highPrice,
+            LOW_PRICE as lowPrice
+        FROM
+            DEAL_HISTORY
+        WHERE 1=1
+          AND DEAL_DATE <![CDATA[>]]> date_format(date_add(now(), interval -9 month), '%Y%m%d')
+          AND DEAL_DATE <![CDATA[<=]]> date_format(date_add(now(), interval -6 month), '%Y%m%d')
+    </select>
+
+    <select id="from12MonthsAgoTo9MonthsAgoDeals" resultType="com.rocky.appstockdata.domain.dto.DailyDealSmallDTO">
+        SELECT
+            ITEM_CODE as itemCode,
+            ITEM_NAME as itemName,
+            DEAL_DATE as dealDate,
+            CLOSING_PRICE as closingPrice,
+            START_PRICE as startPrice,
+            HIGH_PRICE as highPrice,
+            LOW_PRICE as lowPrice
+        FROM
+            DEAL_HISTORY
+        WHERE 1=1
+          AND DEAL_DATE <![CDATA[>=]]> date_format(date_add(now(), interval -1 year), '%Y%m%d')
+          AND DEAL_DATE <![CDATA[<=]]> date_format(date_add(now(), interval -9 month), '%Y%m%d')
     </select>
 </mapper>

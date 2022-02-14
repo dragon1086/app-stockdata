@@ -1,9 +1,8 @@
 package com.rocky.appstockdata.infrastructure;
 
-import com.rocky.appstockdata.domain.BuildUpSourceDTO;
 import com.rocky.appstockdata.domain.DailyDeal;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
-import com.rocky.appstockdata.domain.DailyDealRequestDTO;
+import com.rocky.appstockdata.domain.dto.DailyDealRequestDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

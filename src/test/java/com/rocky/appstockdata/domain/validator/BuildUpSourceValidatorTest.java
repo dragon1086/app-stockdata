@@ -1,11 +1,9 @@
 package com.rocky.appstockdata.domain.validator;
 
-import com.rocky.appstockdata.domain.BuildUpSourceDTO;
+import com.rocky.appstockdata.domain.dto.BuildUpSourceDTO;
 import com.rocky.appstockdata.exceptions.BuildUpSourceException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class BuildUpSourceValidatorTest {
 

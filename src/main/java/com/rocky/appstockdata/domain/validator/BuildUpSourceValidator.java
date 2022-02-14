@@ -1,6 +1,6 @@
 package com.rocky.appstockdata.domain.validator;
 
-import com.rocky.appstockdata.domain.BuildUpSourceDTO;
+import com.rocky.appstockdata.domain.dto.BuildUpSourceDTO;
 import com.rocky.appstockdata.exceptions.BuildUpSourceException;
 import org.apache.commons.lang3.StringUtils;
 

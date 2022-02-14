@@ -1,4 +1,4 @@
-package com.rocky.appstockdata.domain;
+package com.rocky.appstockdata.domain.dto;
 
 import lombok.Builder;
 import lombok.Getter;

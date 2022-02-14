@@ -1,6 +1,6 @@
 package com.rocky.appstockdata.domain.validator;
 
-import com.rocky.appstockdata.domain.DealTrainingSourceDTO;
+import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
 import com.rocky.appstockdata.exceptions.DealTrainingSourceException;
 import org.apache.commons.lang3.StringUtils;
 

@@ -3,7 +3,7 @@ package com.rocky.appstockdata.application.service;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
 import com.rocky.appstockdata.domain.DealModification;
 import com.rocky.appstockdata.domain.DealTrainingResult;
-import com.rocky.appstockdata.domain.DealTrainingSourceDTO;
+import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
