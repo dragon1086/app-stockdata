@@ -4,12 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
 import com.rocky.appstockdata.application.port.in.CompanyNameSearchUseCase;
-import com.rocky.appstockdata.application.port.in.DealDataUseCase;
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
-import com.rocky.appstockdata.domain.*;
+import com.rocky.appstockdata.application.service.SiteMapService;
+import com.rocky.appstockdata.domain.BuildUp;
+import com.rocky.appstockdata.domain.DealModification;
+import com.rocky.appstockdata.domain.DealTrainingResult;
 import com.rocky.appstockdata.domain.dto.BuildUpModificationSourceDTO;
 import com.rocky.appstockdata.domain.dto.BuildUpSourceDTO;
-import com.rocky.appstockdata.domain.dto.DailyDealSmallDTO;
 import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
 import com.rocky.appstockdata.domain.validator.BuildUpSourceValidator;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
@@ -18,6 +19,7 @@ import com.rocky.appstockdata.exceptions.DealTrainingSourceException;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -31,18 +33,27 @@ public class BuildUpApiV1 {
     private final BuildUpCalculateUseCase buildUpCalculateUseCase;
     private final DealTrainingUseCase dealTrainingUseCase;
     private final CompanyNameSearchUseCase companyNameSearchUseCase;
+    private final SiteMapService siteMapService;
 
     public BuildUpApiV1(BuildUpCalculateUseCase buildUpCalculateUseCase,
                         DealTrainingUseCase dealTrainingUseCase,
-                        CompanyNameSearchUseCase companyNameSearchUseCase) {
+                        CompanyNameSearchUseCase companyNameSearchUseCase,
+                        SiteMapService siteMapService) {
         this.buildUpCalculateUseCase = buildUpCalculateUseCase;
         this.dealTrainingUseCase = dealTrainingUseCase;
         this.companyNameSearchUseCase = companyNameSearchUseCase;
+        this.siteMapService = siteMapService;
     }
 
     @GetMapping("/")
     public String dealTrainingMain(){
         return "index";
+    }
+
+    @RequestMapping(value="/sitemap.xml", produces= {"application/xml"})
+    @ResponseBody
+    public ResponseEntity<String> sitemap(){
+        return ResponseEntity.ok(siteMapService.getSystemicSiteMap());
     }
 
     @PostMapping("/deal-calculate")
