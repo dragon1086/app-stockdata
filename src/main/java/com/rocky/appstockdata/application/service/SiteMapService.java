@@ -19,10 +19,9 @@ public class SiteMapService {
     public static final String CHANGEFREQ_NEVER = "never";
 
     public String getSystemicSiteMap(){
-        Date now = new Date();
         StringBuffer sb = new StringBuffer();
         sb.append(BEGIN_DOC);
-        sb.append(new SiteMap(BASE_URL, now, CHANGEFREQ_MONTHLY, "1.0"));
+        sb.append(new SiteMap(BASE_URL, new Date(), CHANGEFREQ_MONTHLY, "1.0"));
         sb.append(END_DOC);
         return sb.toString();
     }
