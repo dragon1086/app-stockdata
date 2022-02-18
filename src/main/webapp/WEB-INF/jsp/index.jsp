@@ -17,7 +17,8 @@
     <meta name="description" content="주식 일봉매매 시뮬레이션">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.1">
-    <title>주식 일봉매매 시뮬레이션</title>
+    <meta name="google-site-verification" content="8TTVWhEDuj8mMlx0fjRf-TGRRHi4qA7HnI_4cCEbFXQ" />
+    <title>주식 시뮬레이션</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>

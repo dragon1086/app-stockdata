@@ -17,7 +17,7 @@
     <meta name="description" content="룰 적용 시뮬레이션기">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.2">
-    <title>매일종가매수 시뮬레이션기</title>
+    <title>룰 적용 시뮬레이션기</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
