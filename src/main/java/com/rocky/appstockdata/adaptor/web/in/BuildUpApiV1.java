@@ -5,13 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rocky.appstockdata.application.port.in.BuildUpCalculateUseCase;
 import com.rocky.appstockdata.application.port.in.CompanyNameSearchUseCase;
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
-import com.rocky.appstockdata.application.service.SiteMapService;
+import com.rocky.appstockdata.application.service.SitemapService;
 import com.rocky.appstockdata.domain.BuildUp;
 import com.rocky.appstockdata.domain.DealModification;
 import com.rocky.appstockdata.domain.DealTrainingResult;
 import com.rocky.appstockdata.domain.dto.BuildUpModificationSourceDTO;
 import com.rocky.appstockdata.domain.dto.BuildUpSourceDTO;
 import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
+import com.rocky.appstockdata.domain.utils.XmlUrlSet;
 import com.rocky.appstockdata.domain.validator.BuildUpSourceValidator;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
 import com.rocky.appstockdata.exceptions.BuildUpSourceException;
@@ -19,13 +20,16 @@ import com.rocky.appstockdata.exceptions.DealTrainingSourceException;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -33,16 +37,19 @@ public class BuildUpApiV1 {
     private final BuildUpCalculateUseCase buildUpCalculateUseCase;
     private final DealTrainingUseCase dealTrainingUseCase;
     private final CompanyNameSearchUseCase companyNameSearchUseCase;
-    private final SiteMapService siteMapService;
+    private final SitemapService sitemapService;
+    private final RequestMappingHandlerMapping requestMappingHandlerMapping;
 
     public BuildUpApiV1(BuildUpCalculateUseCase buildUpCalculateUseCase,
                         DealTrainingUseCase dealTrainingUseCase,
                         CompanyNameSearchUseCase companyNameSearchUseCase,
-                        SiteMapService siteMapService) {
+                        SitemapService sitemapService,
+                        RequestMappingHandlerMapping requestMappingHandlerMapping) {
         this.buildUpCalculateUseCase = buildUpCalculateUseCase;
         this.dealTrainingUseCase = dealTrainingUseCase;
         this.companyNameSearchUseCase = companyNameSearchUseCase;
-        this.siteMapService = siteMapService;
+        this.sitemapService = sitemapService;
+        this.requestMappingHandlerMapping = requestMappingHandlerMapping;
     }
 
     @GetMapping("/")
@@ -50,10 +57,17 @@ public class BuildUpApiV1 {
         return "index";
     }
 
-    @RequestMapping(value="/sitemap.xml", produces= {"application/xml"})
+    @GetMapping("/sitemap.xml")
     @ResponseBody
-    public ResponseEntity<String> sitemap(){
-        return ResponseEntity.ok(siteMapService.getSystemicSiteMap());
+    public XmlUrlSet sitemap() {
+        Map<RequestMappingInfo, HandlerMethod> handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
+        List<String> urls = new ArrayList<>();
+
+        for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
+            urls.addAll((entry.getKey().getPatternsCondition().getPatterns()));
+        }
+
+        return sitemapService.createSitemap(urls);
     }
 
     @PostMapping("/deal-calculate")
