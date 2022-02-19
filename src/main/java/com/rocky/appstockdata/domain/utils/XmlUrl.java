@@ -10,20 +10,22 @@ import java.time.format.DateTimeFormatter;
 public class XmlUrl {
     private static final String BASE_URL = "http://stocksimulation.kr";
 
-    @JacksonXmlProperty(localName = "loc")
+    @JacksonXmlProperty(localName = "loc", namespace = "http://www.sitemaps.org/schemas/sitemap/0.9")
     private String loc;
 
-    @JacksonXmlProperty(localName = "lastmod")
+    @JacksonXmlProperty(localName = "lastmod", namespace = "http://www.sitemaps.org/schemas/sitemap/0.9")
     private String lastmod;
 
-    @JacksonXmlProperty(localName = "changefreq")
-    private String changefreq = "daily";
+    @JacksonXmlProperty(localName = "changefreq", namespace = "http://www.sitemaps.org/schemas/sitemap/0.9")
+    private String changefreq;
 
-    @JacksonXmlProperty(localName = "priority")
-    private String priority = "0.5";
+    @JacksonXmlProperty(localName = "priority", namespace = "http://www.sitemaps.org/schemas/sitemap/0.9")
+    private String priority;
 
     public XmlUrl(String loc) {
         this.loc = BASE_URL + loc;
         this.lastmod = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        this.changefreq = "monthly";
+        this.priority = "0.5";
     }
 }
