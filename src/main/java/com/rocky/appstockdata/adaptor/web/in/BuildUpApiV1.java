@@ -20,6 +20,7 @@ import com.rocky.appstockdata.exceptions.DealTrainingSourceException;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -57,7 +58,7 @@ public class BuildUpApiV1 {
         return "index";
     }
 
-    @GetMapping("/sitemap.xml")
+    @GetMapping(value = "/sitemap.xml", produces = MediaType.TEXT_XML_VALUE)
     @ResponseBody
     public XmlUrlSet sitemap() {
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
