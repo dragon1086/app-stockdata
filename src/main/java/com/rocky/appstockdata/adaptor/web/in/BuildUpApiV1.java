@@ -71,6 +71,18 @@ public class BuildUpApiV1 {
         return sitemapService.createSitemap(urls);
     }
 
+    @RequestMapping(value = "/robots.txt")
+    @ResponseBody
+    public String robots() {
+        return "User-agent: *\n" +
+                "Disallow: /deal-calculate\n" +
+                "Disallow: /deal-calculate-modify\n" +
+                "Disallow: /buildup-calculate\n" +
+                "Disallow: /buildup-calculate-modify\n" +
+                "Disallow: /company\n" +
+                "Disallow: /resources/";
+    }
+
     @PostMapping("/deal-calculate")
     public String dealCalculate(ModelMap modelMap,
                                 @RequestParam(value = "companyName", required = false) String companyName,
