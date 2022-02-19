@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 @JacksonXmlRootElement(localName = "url", namespace = "http://www.sitemaps.org/schemas/sitemap/0.9")
 public class XmlUrl {
-    private static final String BASE_URL = "http://stocksimulation.kr";
+    private static final String BASE_URL = "https://stocksimulation.kr";
 
     @JacksonXmlProperty(localName = "loc", namespace = "http://www.sitemaps.org/schemas/sitemap/0.9")
     private String loc;

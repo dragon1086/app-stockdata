@@ -6,14 +6,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 @Service
 public class SitemapService {
-    // 여기서 loop 돌면서 모든 XmlUrl을 XmlUrlSet에 담는다.
+    private static final List<String> BLACK_LIST = asList("/3month-to-today/{id}",
+                                                        "/6month-to-3month-ago/{id}",
+                                                        "/9month-to-6month-ago/{id}",
+                                                        "/12month-to-9month-ago/{id}");
+
     public XmlUrlSet createSitemap(List<String> urls) {
         XmlUrlSet xmlUrlSet = new XmlUrlSet();
         for (String url : urls) {
-            xmlUrlSet.addUrl(new XmlUrl(url));
-
+            if(!BLACK_LIST.contains(url)){
+                xmlUrlSet.addUrl(new XmlUrl(url));
+            }
         }
         return xmlUrlSet;
     }
