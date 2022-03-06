@@ -185,6 +185,17 @@
         <button type="button" class="btn btn-info" onclick="location.href='/dealTrainingManual'" style="height:30px;width:280px;font-size:14px;">주식 일봉매매 시뮬레이션 메뉴얼</button>
     </div>
 
+    <!-- Footer -->
+    <footer class="text-center text-lg-start bg-light text-muted">
+        <!-- Copyright -->
+        <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+            개발자(펭수르) 개별 문의처 :
+            <a class="text-reset fw-bold" href="https://mdbootstrap.com/">dragon1086@naver.com</a>
+        </div>
+        <!-- Copyright -->
+    </footer>
+    <!-- Footer -->
+
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
 </body>
 </html>

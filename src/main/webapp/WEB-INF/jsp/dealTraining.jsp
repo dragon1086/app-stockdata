@@ -613,6 +613,17 @@
     </div>
 </div>
 
+<!-- Footer -->
+<footer class="text-center text-lg-start bg-light text-muted">
+    <!-- Copyright -->
+    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+        개발자(펭수르) 개별 문의처 :
+        <a class="text-reset fw-bold" href="https://mdbootstrap.com/">dragon1086@naver.com</a>
+    </div>
+    <!-- Copyright -->
+</footer>
+<!-- Footer -->
+
 <script type="text/javascript" src="/resources/js/bootstrap.js?ver=123"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://code.highcharts.com/stock/highstock.js"></script>

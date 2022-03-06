@@ -143,6 +143,17 @@
         </article>
     </div>
 
+    <!-- Footer -->
+    <footer class="text-center text-lg-start bg-light text-muted">
+        <!-- Copyright -->
+        <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
+            개발자(펭수르) 개별 문의처 :
+            <a class="text-reset fw-bold" href="https://mdbootstrap.com/">dragon1086@naver.com</a>
+        </div>
+        <!-- Copyright -->
+    </footer>
+    <!-- Footer -->
+
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
 </body>
 </html>
