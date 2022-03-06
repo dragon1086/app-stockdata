@@ -194,6 +194,6 @@ public class DailyClosingPriceBuildUpService implements BuildUpService {
                 .endDate(buildUpModificationSourceDTO.getEndDate())
                 .startDate(buildUpModificationSourceDTO.getStartDate())
                 .build());
-        return existingDailyDealList;
+        return addMovingAverage(existingDailyDealList);
     }
 }
