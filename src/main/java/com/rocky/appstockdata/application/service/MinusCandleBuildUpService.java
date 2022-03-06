@@ -16,6 +16,7 @@ import java.util.List;
 
 import static com.rocky.appstockdata.domain.utils.BuildUpUtil.transformDate;
 import static com.rocky.appstockdata.domain.utils.DealTrainingUtil.sortDesc;
+import static com.rocky.appstockdata.domain.utils.MovingAverageUtil.addMovingAverage;
 
 @Service
 @Slf4j
@@ -106,7 +107,7 @@ public class MinusCandleBuildUpService implements BuildUpService {
             throw new NoResultDataException("조회하신 검색 결과가 없습니다. 종목명 또는 조회기간을 확인 부탁드립니다.\r\n"
                     + "종목명은 영문표기를 한글로 변형 또는 반대로 해서 다시 입력해보시기 바랍니다.");
         }
-        return dailyDealList;
+        return addMovingAverage(dailyDealList);
     }
 
     private BuildUpHistoryAggregation buyOnlyForMinusCandle(BuildUpHistoryAggregation buildUpHistoryAggregation, BuildUpSourceDTO buildUpSourceDTO, DailyDeal dailyDeal){
@@ -147,6 +148,7 @@ public class MinusCandleBuildUpService implements BuildUpService {
                         .additionalSellingAmount(buildUpHistoryAggregation.getSumOfAdditionalSellingAmountForToday())
                         .commission(buildUpHistoryAggregation.getSumOfCommissionForToday())
                         .realizedEarningAmount(buildUpHistoryAggregation.getSumOfRealizedEarningAmountForToday())
+                        .movingAverage(dailyDeal.getMovingAverage())
                         .build());
             }
 
@@ -211,10 +213,11 @@ public class MinusCandleBuildUpService implements BuildUpService {
     }
 
     private List<DailyDeal> getExistingDailyDeals(BuildUpModificationSourceDTO buildUpModificationSourceDTO) {
-        return stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
+        List<DailyDeal> existingDailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
                 .companyName(buildUpModificationSourceDTO.getCompanyName())
                 .endDate(buildUpModificationSourceDTO.getEndDate())
                 .startDate(buildUpModificationSourceDTO.getStartDate())
                 .build());
+        return addMovingAverage(existingDailyDealList);
     }
 }
