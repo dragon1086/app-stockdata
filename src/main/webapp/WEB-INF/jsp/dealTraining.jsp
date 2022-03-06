@@ -618,7 +618,7 @@
     <!-- Copyright -->
     <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
         개발자(펭수르) 개별 문의처 :
-        <a class="text-reset fw-bold" href="https://mdbootstrap.com/">dragon1086@naver.com</a>
+        <a class="text-reset fw-bold">dragon1086@naver.com</a>
     </div>
     <!-- Copyright -->
 </footer>
