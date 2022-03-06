@@ -91,15 +91,31 @@
                         var candleStickDataList = [];
                         var volumeList = [];
                         var myAverageUnitPriceList = [];
+                        var fiveMovingAverageList = [];
+                        var twentyMovingAverageList = [];
+                        var sixtyMovingAverageList = [];
+                        var oneTwentyMovingAverageList = [];
                         var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
 
                         <c:if test="${isError == 'false'}">
                             <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
                                 candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
                                 volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
-                            <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
-                                myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
-                            </c:if>
+                                <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
+                                    myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
+                                </c:if>
+                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('5') != null}">
+                                    fiveMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('5')}]);
+                                </c:if>
+                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('20') != null}">
+                                    twentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('20')}]);
+                                </c:if>
+                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('60') != null}">
+                                    sixtyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('60')}]);
+                                </c:if>
+                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('120') != null}">
+                                    oneTwentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('120')}]);
+                                </c:if>
                             </c:forEach>
                         </c:if>
 
@@ -247,6 +263,47 @@
                                         units: groupingUnits
                                     },
                                     color: '#b4aa36',
+                                    lineWidth: 4,
+                                    onSeries: 'candle'
+                                }, {
+                                    type: 'spline',
+                                    name: '5일 이동평균',
+                                    data: fiveMovingAverageList,
+                                    dataGrouping: {
+                                        units: groupingUnits
+                                    },
+                                    color: '#383832',
+                                    lineWidth: 1,
+                                    onSeries: 'candle'
+                                }, {
+                                    type: 'spline',
+                                    name: '20일 이동평균',
+                                    data: twentyMovingAverageList,
+                                    dataGrouping: {
+                                        units: groupingUnits
+                                    },
+                                    color: '#ff0000',
+                                    lineWidth: 1,
+                                    onSeries: 'candle'
+                                }, {
+                                    type: 'spline',
+                                    name: '60일 이동평균',
+                                    data: sixtyMovingAverageList,
+                                    dataGrouping: {
+                                        units: groupingUnits
+                                    },
+                                    color: '#514fff',
+                                    lineWidth: 1,
+                                    onSeries: 'candle'
+                                }, {
+                                    type: 'spline',
+                                    name: '120일 이동평균',
+                                    data: oneTwentyMovingAverageList,
+                                    dataGrouping: {
+                                        units: groupingUnits
+                                    },
+                                    color: '#ffae00',
+                                    lineWidth: 1,
                                     onSeries: 'candle'
                                 }],
                                 responsive: {

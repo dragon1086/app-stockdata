@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.rocky.appstockdata.application.port.out.StockDealRepository">
-    <select id="getDailyDeal" parameterType="com.rocky.appstockdata.domain.dto.DailyDealRequestDTO" resultType="com.rocky.appstockdata.domain.DailyDeal">
+    <resultMap id="dailyDealMap" type="com.rocky.appstockdata.domain.DailyDeal">
+        <result property="itemCode" column="ITEM_CODE"/>
+        <result property="itemName" column="ITEM_NAME"/>
+        <result property="closingPrice" column="CLOSING_PRICE"/>
+        <result property="startPrice" column="START_PRICE"/>
+        <result property="highPrice" column="HIGH_PRICE"/>
+        <result property="lowPrice" column="LOW_PRICE"/>
+        <result property="tradeVolume" column="TRADE_VOLUME"/>
+        <result property="dealDate" column="DEAL_DATE"/>
+        <result property="totalAmount" column="TOTAL_AMOUNT"/>
+        <result property="kospiKosdaq" column="KOSPI_KOSDAQ"/>
+    </resultMap>
+    <select id="getDailyDeal" parameterType="com.rocky.appstockdata.domain.dto.DailyDealRequestDTO" resultMap="dailyDealMap">
         SELECT
-            ITEM_CODE as itemCode,
-            ITEM_NAME as itemName,
-            CLOSING_PRICE as closingPrice,
-            START_PRICE as startPrice,
-            HIGH_PRICE as highPrice,
-            LOW_PRICE as lowPrice,
-            TRADE_VOLUME as tradeVolume,
-            TRADE_MONEY as tradeMoney,
-            DEAL_DATE as dealDate,
-            TOTAL_AMOUNT as totalAmount,
-            KOSPI_KOSDAQ as kospiKosdaq
+            ITEM_CODE,
+            ITEM_NAME,
+            CLOSING_PRICE,
+            START_PRICE,
+            HIGH_PRICE,
+            LOW_PRICE,
+            TRADE_VOLUME,
+            TRADE_MONEY,
+            DEAL_DATE,
+            TOTAL_AMOUNT,
+            KOSPI_KOSDAQ
         FROM
             DEAL_HISTORY
         WHERE 1=1
