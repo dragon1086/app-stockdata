@@ -270,6 +270,8 @@ public class BuildUpApiV1 {
         modelMap.put("sumOfSellingQuantity", buildUp.getSumOfSellingQuantity());
         modelMap.put("dailyDealHistories", buildUp.getDailyDealHistories());
         modelMap.put("dailyDealHistoriesDesc", buildUp.getDailyDealHistoriesDesc());
+        modelMap.put("countOfDayOnDayClosingPriceIncrease", buildUp.getCountOfDayOnDayClosingPriceIncrease());
+        modelMap.put("countOfDayOnDayClosingPriceDecrease", buildUp.getCountOfDayOnDayClosingPriceDecrease());
         modelMap.put("isError", "false");
     }
 
@@ -347,6 +349,8 @@ public class BuildUpApiV1 {
         modelMap.put("dailyDealHistories", buildUp.getDailyDealHistories());
         modelMap.put("dailyDealHistoriesDesc", buildUp.getDailyDealHistoriesDesc());
         modelMap.put("dealModifications", buildUpModificationSourceDTO.dealModificationsForView());
+        modelMap.put("countOfDayOnDayClosingPriceIncrease", buildUp.getCountOfDayOnDayClosingPriceIncrease());
+        modelMap.put("countOfDayOnDayClosingPriceDecrease", buildUp.getCountOfDayOnDayClosingPriceDecrease());
         modelMap.put("isError", "false");
     }
 

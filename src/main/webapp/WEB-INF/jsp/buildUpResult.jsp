@@ -75,6 +75,8 @@
                                 <h2>총 매도수량 : <fmt:formatNumber value="${sumOfSellingQuantity}" pattern="#,###" />주</h2>
                                 <h2>총 매도수수료(0.3%) : <fmt:formatNumber value="${sumOfCommission}" pattern="#,###" />원</h2>
                                 <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
+                                <h2>전일대비 증가 횟수 : <fmt:formatNumber value="${countOfDayOnDayClosingPriceIncrease}" pattern="#,###" />회</h2>
+                                <h2>전일대비 감소 횟수 : <fmt:formatNumber value="${countOfDayOnDayClosingPriceDecrease}" pattern="#,###" />회</h2>
                             </c:otherwise>
                         </c:choose>
                     </div>

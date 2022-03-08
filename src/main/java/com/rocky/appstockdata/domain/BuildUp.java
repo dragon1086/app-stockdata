@@ -21,6 +21,8 @@ public class BuildUp {
     private String simulationMode;
     private List<DailyDealHistory> dailyDealHistories;
     private List<DailyDealHistory> dailyDealHistoriesDesc;
+    private int countOfDayOnDayClosingPriceIncrease;
+    private int countOfDayOnDayClosingPriceDecrease;
 
     @Builder
     public BuildUp(Double earningRate,
@@ -34,7 +36,9 @@ public class BuildUp {
                    String itemName,
                    String simulationMode,
                    List<DailyDealHistory> dailyDealHistories,
-                   List<DailyDealHistory> dailyDealHistoriesDesc) {
+                   List<DailyDealHistory> dailyDealHistoriesDesc,
+                   int countOfDayOnDayClosingPriceIncrease,
+                   int countOfDayOnDayClosingPriceDecrease) {
         this.earningRate = earningRate;
         this.earningAmount = earningAmount;
         this.totalAmount = totalAmount;
@@ -47,5 +51,7 @@ public class BuildUp {
         this.simulationMode = simulationMode;
         this.dailyDealHistories = dailyDealHistories;
         this.dailyDealHistoriesDesc = dailyDealHistoriesDesc;
+        this.countOfDayOnDayClosingPriceIncrease = countOfDayOnDayClosingPriceIncrease;
+        this.countOfDayOnDayClosingPriceDecrease = countOfDayOnDayClosingPriceDecrease;
     }
 }

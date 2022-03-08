@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -27,6 +28,9 @@ public class BuildUpHistoryAggregation {
     private long sumOfCommissionForToday;
     private long sumOfRealizedEarningAmountForToday;
     private List<DailyDealHistory> dailyDealHistories;
+    private Long yesterdayClosingPrice;
+    private int countOfDayOnDayClosingPriceIncrease;
+    private int countOfDayOnDayClosingPriceDecrease;
 
     @Builder
     public BuildUpHistoryAggregation(long sumOfPurchaseAmount,
@@ -44,7 +48,10 @@ public class BuildUpHistoryAggregation {
                                      long sumOfAdditionalSellingAmountForToday,
                                      long sumOfCommissionForToday,
                                      long sumOfRealizedEarningAmountForToday,
-                                     List<DailyDealHistory> dailyDealHistories) {
+                                     List<DailyDealHistory> dailyDealHistories,
+                                     Long yesterdayClosingPrice,
+                                     int countOfDayOnDayClosingPriceIncrease,
+                                     int countOfDayOnDayClosingPriceDecrease) {
         this.sumOfPurchaseAmount = sumOfPurchaseAmount;
         this.sumOfSellingAmount = sumOfSellingAmount;
         this.sumOfCommission = sumOfCommission;
@@ -61,6 +68,33 @@ public class BuildUpHistoryAggregation {
         this.sumOfCommissionForToday = sumOfCommissionForToday;
         this.sumOfRealizedEarningAmountForToday = sumOfRealizedEarningAmountForToday;
         this.dailyDealHistories = dailyDealHistories;
+        this.yesterdayClosingPrice = yesterdayClosingPrice;
+        this.countOfDayOnDayClosingPriceIncrease = countOfDayOnDayClosingPriceIncrease;
+        this.countOfDayOnDayClosingPriceDecrease = countOfDayOnDayClosingPriceDecrease;
+    }
+
+    public static BuildUpHistoryAggregation createBuildUpHistoryAggregation() {
+            return BuildUpHistoryAggregation.builder()
+                    .sumOfPurchaseAmount(0L)
+                    .sumOfSellingAmount(0L)
+                    .sumOfCommission(0L)
+                    .sumOfRealizedEarningAmount(0L)
+                    .sumOfPurchaseQuantity(0)
+                    .sumOfSellingQuantity(0)
+                    .sumOfMyQuantity(0)
+                    .myAverageUnitPrice(0.0d)
+                    .finalRemainingAmount(0L)
+                    .sumOfAdditionalBuyingQuantityForToday(0)
+                    .sumOfAdditionalSellingQuantityForToday(0)
+                    .sumOfAdditionalBuyingAmountForToday(0L)
+                    .sumOfAdditionalSellingAmountForToday(0L)
+                    .sumOfCommissionForToday(0L)
+                    .sumOfRealizedEarningAmountForToday(0L)
+                    .dailyDealHistories(new ArrayList<>())
+                    .yesterdayClosingPrice(0L)
+                    .countOfDayOnDayClosingPriceIncrease(0)
+                    .countOfDayOnDayClosingPriceDecrease(0)
+                    .build();
     }
 
     public BuildUpHistoryAggregation updateSum(int sumOfPurchaseQuantity,
@@ -68,7 +102,9 @@ public class BuildUpHistoryAggregation {
                                                long sumOfPurchaseAmount,
                                                double myAverageUnitPrice,
                                                long finalRemainingAmount,
-                                               List<DailyDealHistory> dailyDealHistories){
+                                               List<DailyDealHistory> dailyDealHistories,
+                                               Long closingPrice,
+                                               long differenceOfClosingPrice){
 
         return BuildUpHistoryAggregation.builder()
                 .sumOfPurchaseAmount(sumOfPurchaseAmount)
@@ -87,6 +123,10 @@ public class BuildUpHistoryAggregation {
                 .sumOfCommissionForToday(this.sumOfCommissionForToday)
                 .sumOfRealizedEarningAmountForToday(this.sumOfRealizedEarningAmountForToday)
                 .dailyDealHistories(dailyDealHistories)
+                //인자로 오는 closingPrice(오늘날짜)를 어제날짜로 치환함
+                .yesterdayClosingPrice(closingPrice)
+                .countOfDayOnDayClosingPriceIncrease(differenceOfClosingPrice > 0 ? ++this.countOfDayOnDayClosingPriceIncrease : this.countOfDayOnDayClosingPriceIncrease)
+                .countOfDayOnDayClosingPriceDecrease(differenceOfClosingPrice < 0 ? ++this.countOfDayOnDayClosingPriceDecrease : this.countOfDayOnDayClosingPriceDecrease)
                 .build();
     }
 
@@ -114,6 +154,9 @@ public class BuildUpHistoryAggregation {
                 .sumOfCommissionForToday(this.sumOfCommissionForToday)
                 .sumOfRealizedEarningAmountForToday(this.sumOfRealizedEarningAmountForToday)
                 .dailyDealHistories(this.dailyDealHistories)
+                .yesterdayClosingPrice(this.yesterdayClosingPrice)
+                .countOfDayOnDayClosingPriceIncrease(this.countOfDayOnDayClosingPriceIncrease)
+                .countOfDayOnDayClosingPriceDecrease(this.countOfDayOnDayClosingPriceDecrease)
                 .build();
     }
 
@@ -144,6 +187,9 @@ public class BuildUpHistoryAggregation {
                 .sumOfCommissionForToday(sumOfCommissionForToday)
                 .sumOfRealizedEarningAmountForToday(sumOfRealizedEarningAmountForToday)
                 .dailyDealHistories(this.dailyDealHistories)
+                .yesterdayClosingPrice(this.yesterdayClosingPrice)
+                .countOfDayOnDayClosingPriceIncrease(this.countOfDayOnDayClosingPriceIncrease)
+                .countOfDayOnDayClosingPriceDecrease(this.countOfDayOnDayClosingPriceDecrease)
                 .build();
     }
 
@@ -169,6 +215,9 @@ public class BuildUpHistoryAggregation {
                 .sumOfCommissionForToday(this.sumOfCommissionForToday)
                 .sumOfRealizedEarningAmountForToday(this.sumOfRealizedEarningAmountForToday)
                 .dailyDealHistories(this.dailyDealHistories)
+                .yesterdayClosingPrice(this.yesterdayClosingPrice)
+                .countOfDayOnDayClosingPriceIncrease(this.countOfDayOnDayClosingPriceIncrease)
+                .countOfDayOnDayClosingPriceDecrease(this.countOfDayOnDayClosingPriceDecrease)
                 .build();
     }
 
@@ -189,27 +238,11 @@ public class BuildUpHistoryAggregation {
                 .sumOfAdditionalSellingAmountForToday(this.sumOfAdditionalSellingAmountForToday)
                 .sumOfCommissionForToday(this.sumOfCommissionForToday)
                 .sumOfRealizedEarningAmountForToday(this.sumOfRealizedEarningAmountForToday)
+                .yesterdayClosingPrice(this.yesterdayClosingPrice)
+                .countOfDayOnDayClosingPriceIncrease(this.countOfDayOnDayClosingPriceIncrease)
+                .countOfDayOnDayClosingPriceDecrease(this.countOfDayOnDayClosingPriceDecrease)
                 .dailyDealHistories(dailyDealHistories)
                 .build();
-    }
-
-    public void updateAggregations(BuildUpHistoryAggregation buildUpHistoryAggregation) {
-        this.sumOfPurchaseAmount = buildUpHistoryAggregation.getSumOfPurchaseAmount();
-        this.sumOfSellingAmount = buildUpHistoryAggregation.getSumOfSellingAmount();
-        this.sumOfCommission = buildUpHistoryAggregation.getSumOfCommission();
-        this.sumOfRealizedEarningAmount = buildUpHistoryAggregation.getSumOfRealizedEarningAmount();
-        this.sumOfPurchaseQuantity = buildUpHistoryAggregation.getSumOfPurchaseQuantity();
-        this.sumOfSellingQuantity = buildUpHistoryAggregation.getSumOfSellingQuantity();
-        this.sumOfMyQuantity = buildUpHistoryAggregation.getSumOfMyQuantity();
-        this.myAverageUnitPrice = buildUpHistoryAggregation.getMyAverageUnitPrice();
-        this.finalRemainingAmount = buildUpHistoryAggregation.getFinalRemainingAmount();
-        this.sumOfAdditionalBuyingQuantityForToday = buildUpHistoryAggregation.getSumOfAdditionalBuyingQuantityForToday();
-        this.sumOfAdditionalSellingQuantityForToday = buildUpHistoryAggregation.getSumOfAdditionalSellingQuantityForToday();
-        this.sumOfAdditionalBuyingAmountForToday = buildUpHistoryAggregation.getSumOfAdditionalBuyingAmountForToday();
-        this.sumOfAdditionalSellingAmountForToday = buildUpHistoryAggregation.getSumOfAdditionalSellingAmountForToday();
-        this.sumOfCommissionForToday = buildUpHistoryAggregation.getSumOfCommissionForToday();
-        this.sumOfRealizedEarningAmountForToday = buildUpHistoryAggregation.getSumOfRealizedEarningAmountForToday();
-        this.dailyDealHistories = buildUpHistoryAggregation.getDailyDealHistories();
     }
 
     public BuildUpHistoryAggregation initializeSumForToday() {
@@ -230,6 +263,9 @@ public class BuildUpHistoryAggregation {
                 .sumOfCommissionForToday(0L)
                 .sumOfRealizedEarningAmountForToday(0L)
                 .dailyDealHistories(this.dailyDealHistories)
+                .yesterdayClosingPrice(this.yesterdayClosingPrice)
+                .countOfDayOnDayClosingPriceIncrease(this.countOfDayOnDayClosingPriceIncrease)
+                .countOfDayOnDayClosingPriceDecrease(this.countOfDayOnDayClosingPriceDecrease)
                 .build();
     }
 
@@ -250,6 +286,9 @@ public class BuildUpHistoryAggregation {
                 .sumOfAdditionalSellingAmountForToday(this.sumOfAdditionalSellingAmountForToday)
                 .sumOfCommissionForToday(this.sumOfCommissionForToday)
                 .sumOfRealizedEarningAmountForToday(this.sumOfRealizedEarningAmountForToday)
+                .yesterdayClosingPrice(this.yesterdayClosingPrice)
+                .countOfDayOnDayClosingPriceIncrease(this.countOfDayOnDayClosingPriceIncrease)
+                .countOfDayOnDayClosingPriceDecrease(this.countOfDayOnDayClosingPriceDecrease)
                 .dailyDealHistories(this.dailyDealHistories)
                 .build();
     }
@@ -367,5 +406,30 @@ public class BuildUpHistoryAggregation {
         long sumOfRealizedEarningAmount = buildUpHistoryAggregation.getSumOfRealizedEarningAmount() + realizedEarningAmount;
 
         return buildUpHistoryAggregation.updateSellingSum(sumOfSellingQuantity, sumOfSellingAmount, sumOfCommission, sumOfRealizedEarningAmount);
+    }
+
+    public BuildUpHistoryAggregation updateCountOfDayOnDayClosingPrice(Long closingPrice, long differenceOfClosingPrice) {
+        return BuildUpHistoryAggregation.builder()
+                .sumOfPurchaseAmount(this.sumOfPurchaseAmount)
+                .sumOfSellingAmount(this.sumOfSellingAmount)
+                .sumOfCommission(this.sumOfCommission)
+                .sumOfRealizedEarningAmount(this.sumOfRealizedEarningAmount)
+                .sumOfPurchaseQuantity(this.sumOfPurchaseQuantity)
+                .sumOfSellingQuantity(this.sumOfSellingQuantity)
+                .sumOfMyQuantity(this.sumOfMyQuantity)
+                .myAverageUnitPrice(this.myAverageUnitPrice)
+                .finalRemainingAmount(this.finalRemainingAmount)
+                .sumOfAdditionalBuyingQuantityForToday(this.sumOfAdditionalBuyingQuantityForToday)
+                .sumOfAdditionalSellingQuantityForToday(this.sumOfAdditionalSellingQuantityForToday)
+                .sumOfAdditionalBuyingAmountForToday(this.sumOfAdditionalBuyingAmountForToday)
+                .sumOfAdditionalSellingAmountForToday(this.sumOfAdditionalSellingAmountForToday)
+                .sumOfCommissionForToday(this.sumOfCommissionForToday)
+                .sumOfRealizedEarningAmountForToday(this.sumOfRealizedEarningAmountForToday)
+                //인자로 오는 closingPrice(오늘날짜)를 어제날짜로 치환함
+                .yesterdayClosingPrice(closingPrice)
+                .countOfDayOnDayClosingPriceIncrease(differenceOfClosingPrice > 0 ? ++this.countOfDayOnDayClosingPriceIncrease : this.countOfDayOnDayClosingPriceIncrease)
+                .countOfDayOnDayClosingPriceDecrease(differenceOfClosingPrice < 0 ? ++this.countOfDayOnDayClosingPriceDecrease : this.countOfDayOnDayClosingPriceDecrease)
+                .dailyDealHistories(this.dailyDealHistories)
+                .build();
     }
 }

@@ -2,7 +2,10 @@ package com.rocky.appstockdata.application.service;
 
 import com.rocky.appstockdata.application.port.in.BuildUpService;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
-import com.rocky.appstockdata.domain.*;
+import com.rocky.appstockdata.domain.BuildUp;
+import com.rocky.appstockdata.domain.BuildUpHistoryAggregation;
+import com.rocky.appstockdata.domain.DailyDeal;
+import com.rocky.appstockdata.domain.DailyDealHistory;
 import com.rocky.appstockdata.domain.dto.BuildUpModificationSourceDTO;
 import com.rocky.appstockdata.domain.dto.BuildUpSourceDTO;
 import com.rocky.appstockdata.domain.dto.DailyDealRequestDTO;
@@ -35,7 +38,7 @@ public class DailyClosingPriceBuildUpService implements BuildUpService {
 
     @Override
     public BuildUp calculateBuildUp(BuildUpSourceDTO buildUpSourceDTO) {
-        BuildUpHistoryAggregation buildUpHistoryAggregation = createBuildUpHistoryAggregation();
+        BuildUpHistoryAggregation buildUpHistoryAggregation = BuildUpHistoryAggregation.createBuildUpHistoryAggregation();
 
         List<DailyDeal> dailyDealList = getDailyDeals(buildUpSourceDTO);
 
@@ -52,27 +55,6 @@ public class DailyClosingPriceBuildUpService implements BuildUpService {
         }
         return calculateFinalSummary(buildUpHistoryAggregation, dailyDealList.get(0).getItemName(), buildUpSourceDTO.getSimulationMode());
 
-    }
-
-    private BuildUpHistoryAggregation createBuildUpHistoryAggregation() {
-        return BuildUpHistoryAggregation.builder()
-                .sumOfPurchaseAmount(0L)
-                .sumOfSellingAmount(0L)
-                .sumOfCommission(0L)
-                .sumOfRealizedEarningAmount(0L)
-                .sumOfPurchaseQuantity(0)
-                .sumOfSellingQuantity(0)
-                .sumOfMyQuantity(0)
-                .myAverageUnitPrice(0.0d)
-                .finalRemainingAmount(0L)
-                .sumOfAdditionalBuyingQuantityForToday(0)
-                .sumOfAdditionalSellingQuantityForToday(0)
-                .sumOfAdditionalBuyingAmountForToday(0L)
-                .sumOfAdditionalSellingAmountForToday(0L)
-                .sumOfCommissionForToday(0L)
-                .sumOfRealizedEarningAmountForToday(0L)
-                .dailyDealHistories(new ArrayList<>())
-                .build();
     }
 
     private BuildUp calculateFinalSummary(BuildUpHistoryAggregation buildUpHistoryAggregation, String itemName, String simulationMode) {
@@ -94,6 +76,8 @@ public class DailyClosingPriceBuildUpService implements BuildUpService {
                 .sumOfSellingQuantity(buildUpHistoryAggregation.getSumOfSellingQuantity())
                 .dailyDealHistories(buildUpHistoryAggregation.getDailyDealHistories())
                 .dailyDealHistoriesDesc(sortDesc(buildUpHistoryAggregation.getDailyDealHistories()))
+                .countOfDayOnDayClosingPriceIncrease(buildUpHistoryAggregation.getCountOfDayOnDayClosingPriceIncrease())
+                .countOfDayOnDayClosingPriceDecrease(buildUpHistoryAggregation.getCountOfDayOnDayClosingPriceDecrease())
                 .build();
     }
 
@@ -159,12 +143,23 @@ public class DailyClosingPriceBuildUpService implements BuildUpService {
                                                     sumOfPurchaseAmount,
                                                     myAverageUnitPrice,
                                                     finalRemainingAmount,
-                                                    dailyDealHistories);
+                                                    dailyDealHistories,
+                                                    closingPrice,
+                                                    //전날대비 종가 상승,하락 여부 수집
+                                                    getDifferenceOfYesterdayAndTodayClosingPrice(buildUpHistoryAggregation, closingPrice));
+    }
+
+    private long getDifferenceOfYesterdayAndTodayClosingPrice(BuildUpHistoryAggregation buildUpHistoryAggregation, Long closingPrice) {
+        long differenceOfClosingPrice = 0;
+        if(buildUpHistoryAggregation.getYesterdayClosingPrice() != 0){
+            differenceOfClosingPrice = closingPrice - buildUpHistoryAggregation.getYesterdayClosingPrice();
+        }
+        return differenceOfClosingPrice;
     }
 
     @Override
     public BuildUp calculateBuildUpModification(BuildUpModificationSourceDTO buildUpModificationSourceDTO) {
-        BuildUpHistoryAggregation buildUpHistoryAggregation = createBuildUpHistoryAggregation();
+        BuildUpHistoryAggregation buildUpHistoryAggregation = BuildUpHistoryAggregation.createBuildUpHistoryAggregation();
 
         List<DailyDeal> existingDailyDealList = getExistingDailyDeals(buildUpModificationSourceDTO);
 
