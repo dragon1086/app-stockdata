@@ -147,6 +147,9 @@
         <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
             개발자(펭수르) 개별 문의처 :
             <a class="text-reset fw-bold">dragon1086@naver.com</a>
+            <p></p>
+            주식 데이터 구매 문의처 :
+            <a class="text-reset fw-bold" href="https://kmong.com/gig/245871">https://kmong.com/gig/245871</a>
         </div>
         <!-- Copyright -->
     </footer>
