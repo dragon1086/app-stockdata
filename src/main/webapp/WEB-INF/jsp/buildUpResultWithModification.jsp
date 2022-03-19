@@ -88,6 +88,9 @@
 
         }
     </script>
+    <!-- Go to www.addthis.com/dashboard to customize your tools -->
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-6235e482acba06f7"></script>
+
 </head>
 <body>
 <div class="container">
@@ -477,6 +480,11 @@
                         </div>
                         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
                             <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">수정 전송</button>
+                        </div>
+
+                        <div class="px-4 py-5 my-5">
+                            <!-- Go to www.addthis.com/dashboard to customize your tools -->
+                            <div class="addthis_inline_share_toolbox"></div>
                         </div>
 
                         <div class="row g-1 text-left" style="padding:20px">
