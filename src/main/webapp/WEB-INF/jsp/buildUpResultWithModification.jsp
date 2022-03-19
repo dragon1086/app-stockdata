@@ -91,8 +91,15 @@
 </head>
 <body>
 <div class="container">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">초기화면</a></li>
+        </ul>
+    </header>
+</div>
+
+<div class="container">
     <div class="container-fluid">
-        <button type="button" class="btn btn-dark" onclick="location.href='/'">초기화면 돌아가기</button>
         <div class="row">
             <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">

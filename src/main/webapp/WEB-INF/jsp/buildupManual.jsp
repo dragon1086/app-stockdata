@@ -57,19 +57,28 @@
     </script>
 </head>
 <body>
-    <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-dark" onclick="location.href='/'">초기화면 돌아가기</button>
+    <div class="container">
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">초기화면</a></li>
+            </ul>
+        </header>
     </div>
-    <div class="px-4 py-5 my-5 text-center">
-        <h1 class="display-3 fw-bold">룰 적용 시뮬레이션</h1>
-        <h1 class="display-3 fw-bold">사용메뉴얼</h1>
-        <h3 class="pb-4 mb-4 fst-italic border-bottom">
-            계좌의 뒤를 지켜줄 든든한 시드를 성장시켜보아요
-        </h3>
+
+    <div class="px-4 py-5 my-5">
+        <div class="text-center">
+            <h1 class="display-3 fw-bold">룰 적용 시뮬레이션</h1>
+            <h1 class="display-3 fw-bold">사용메뉴얼</h1>
+            <h3 class="pb-4 mb-4 fst-italic border-bottom">
+                계좌의 뒤를 지켜줄 든든한 시드를 성장시켜보아요
+            </h3>
+        </div>
 
         <article class="blog-post">
-            <h2><strong>만든 배경</strong></h2>
-            <h4 class="blog-post-meta">2022년 1월 13일 by 주식시뮬레이션 훈련하는 개발자</h4>
+            <div class="text-center">
+                <h2><strong>만든 배경</strong></h2>
+                <h4 class="blog-post-meta">2022년 1월 13일 by 주식시뮬레이션 훈련하는 개발자</h4>
+            </div>
             <p>아무것도 모르던 불과 1년 전. 저는 가치투자를 한답시고, 나름 저평가된 주식을 찾아서 바로 다음날 몰빵을 했습니다.</p>
             <p>2021년에 시장이 좋을 때에는, 성공률이 꽤나 높았습니다. 하지만 하반기부터 하락이 시작된 이후부터는 물려있을 수 밖에 없더군요.</p>
             <p>그리고 남들에게 주식을 배우기 시작하며, 깨달았습니다. 아, 우리나라 주식은 하락이 일반적인 경우구나..!! 그럼에도 수익을 내야 하는구나.</p>
@@ -78,8 +87,10 @@
             <p>그러면 어떤 종목이 박스가 길고 짧을까? 이 종목은 어느정도 모아가면 수익을 낼 수 있을까? 만약 내가 삼성전자를 10년간 모아갔다면 얼마나 수익이 날까?</p>
             <p>등등 다양한 궁금증이 생깁니다. 이 궁금증을 충족시키기 위해 '매일종가매수 시뮬레이션기'를 만들었습니다.</p>
             <hr>
-            <h2><strong>기능 설명</strong></h2>
-            <h4 class="blog-post-meta">2022년 1월 20일 by 주식시뮬레이션 훈련하는 개발자</h4>
+            <div class="text-center">
+                <h2><strong>기능 설명</strong></h2>
+                <h4 class="blog-post-meta">2022년 1월 20일 by 주식시뮬레이션 훈련하는 개발자</h4>
+            </div>
             <p>우선 메인화면에서 "매일 종가매수 시뮬레이션 하러 가기"를 클릭합니다.</p>
             <img src="resources/images/buildUpMain2.png" style="width:60%;margin: auto" loading="lazy">
             <p>이후 종가매수 할 시뮬레이션 종목명, 시작날짜, 종료 및 전량매도날짜, 매일 매수 할 금액을 입력하고 "전송"을 클릭합니다.</p>

@@ -57,19 +57,28 @@
     </script>
 </head>
 <body>
-    <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-dark" onclick="location.href='/'">초기화면 돌아가기</button>
+    <div class="container">
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">초기화면</a></li>
+            </ul>
+        </header>
     </div>
-    <div class="px-4 py-5 my-5 text-center">
-        <h1 class="display-3 fw-bold">주식 일봉매매 시뮬레이션</h1>
-        <h1 class="display-3 fw-bold">사용메뉴얼</h1>
-        <h3 class="pb-4 mb-4 fst-italic border-bottom">
-            수익이 파란색이라도 빨간색으로 만들어나갈 수 있는 실력을 키워보아요
-        </h3>
+
+    <div class="px-4 py-5 my-5">
+        <div class="text-center">
+            <h1 class="display-3 fw-bold">주식 일봉매매 시뮬레이션</h1>
+            <h1 class="display-3 fw-bold">사용메뉴얼</h1>
+            <h3 class="pb-4 mb-4 fst-italic border-bottom">
+                수익이 파란색이라도 빨간색으로 만들어나갈 수 있는 실력을 키워보아요
+            </h3>
+        </div>
 
         <article class="blog-post">
-            <h2><strong>만든 배경</strong></h2>
-            <h4 class="blog-post-meta">2022년 1월 23일 by 주식시뮬레이션 훈련하는 개발자</h4>
+            <div class="text-center">
+                <h2><strong>만든 배경</strong></h2>
+                <h4 class="blog-post-meta">2022년 1월 23일 by 주식시뮬레이션 훈련하는 개발자</h4>
+            </div>
             <p>아무것도 모르던 불과 1년 전. 저는 가치투자를 한답시고, 나름 저평가된 주식을 찾아서 바로 다음날 몰빵을 했습니다.</p>
             <p>2021년에 시장이 좋을 때에는, 성공률이 꽤나 높았습니다. 하지만 하반기부터 하락이 시작된 이후부터는 물려있을 수 밖에 없더군요.</p>
             <p>그리고 남들에게 주식을 배우기 시작하며, 깨달았습니다. 아, 우리나라 주식은 하락이 일반적인 경우구나..!! 그럼에도 수익을 내야 하는구나.</p>
@@ -85,8 +94,10 @@
             <p>아쉽게도 분봉차트는 지원하지 않아서, 여러분이 분봉으로 대응했다고 가정하고 당일 평균 매도/매수 단가를 입력해야 합니다.</p>
             <p>그럼에도 꾸준히 일봉차트로 시뮬레이션 훈련을 하다보면, 실전매매에서도 효과를 발휘할 것이라 믿습니다.</p>
             <hr>
-            <h2><strong>기능 설명</strong></h2>
-            <h4 class="blog-post-meta">2022년 1월 23일 by 주식시뮬레이션 훈련하는 개발자</h4>
+            <div class="text-center">
+                <h2><strong>기능 설명</strong></h2>
+                <h4 class="blog-post-meta">2022년 1월 23일 by 주식시뮬레이션 훈련하는 개발자</h4>
+            </div>
             <p>우선 메인화면에서 글자들이 적혀있는걸 보실 수 있습니다. 시뮬레이션의 목표와 시작 방식을 읽어봐주세요.</p>
             <p>그리고 시뮬레이션 할 종목명, 계좌에 배정할 금액, 초기 매수 비중을 입력하고 "전송"을 클릭합니다. (모든 값은 필수로 입력해주세요)</p>
             <p>시작비중을 0으로 입력하면 처음부터 시작할 수 있고, 그 이상을 입력하면 평균매입단가가 자동으로 설정되어 시작합니다.</p>
