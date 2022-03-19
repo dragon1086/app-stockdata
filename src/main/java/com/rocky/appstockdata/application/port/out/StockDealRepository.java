@@ -13,8 +13,6 @@ public interface StockDealRepository {
 
     String getEarliestDate(String companyName);
 
-    List<String> getCompanyNames(String keyword);
-
     List<DailyDealSmallDTO> from3MonthsAgoToTodayDeals();
 
     List<DailyDealSmallDTO> from6MonthsAgoTo3MonthsAgoDeals();

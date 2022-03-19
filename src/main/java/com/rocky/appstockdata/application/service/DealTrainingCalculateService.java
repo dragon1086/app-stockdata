@@ -1,5 +1,6 @@
 package com.rocky.appstockdata.application.service;
 
+import com.rocky.appstockdata.application.port.in.CompanyNameSearchUseCase;
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
 import com.rocky.appstockdata.domain.*;
@@ -23,27 +24,34 @@ import static com.rocky.appstockdata.domain.utils.MovingAverageUtil.addMovingAve
 @Slf4j
 public class DealTrainingCalculateService implements DealTrainingUseCase {
     private final StockDealRepository stockDealRepository;
+    private final CompanyNameSearchUseCase companyNameSearchUseCase;
 
-    public DealTrainingCalculateService(StockDealRepository stockDealRepository) {
+    public DealTrainingCalculateService(StockDealRepository stockDealRepository,
+                                        CompanyNameSearchUseCase companyNameSearchUseCase) {
         this.stockDealRepository = stockDealRepository;
+        this.companyNameSearchUseCase = companyNameSearchUseCase;
     }
 
     @Override
     public DealTrainingResult initializeDailyDeal(DealTrainingSourceDTO dealTrainingSourceDTO) {
-        final int THREE_YEAR = 3;
+        DealTrainingSourceDTO requestData = dealTrainingSourceDTO;
+        if(StringUtils.isEmpty(dealTrainingSourceDTO.getCompanyName())){
+            requestData = dealTrainingSourceDTO.createRandomCompanyName(companyNameSearchUseCase.getRandomCompanyName());
+        }
 
-        LocalDate endDate = createEndDate(dealTrainingSourceDTO);
+        final int THREE_YEAR = 3;
+        LocalDate endDate = createEndDate(requestData);
         LocalDate startDate = endDate.minusYears(THREE_YEAR);
 
 
-        List<DailyDeal> dailyDealList = getInitializedDailyDealList(dealTrainingSourceDTO, startDate, endDate);
+        List<DailyDeal> dailyDealList = getInitializedDailyDealList(requestData, startDate, endDate);
         //마지막 날짜를 빼야 함. 이 마지막날은 사용자가 매수/매도를 입력할 수 있게끔 따로 구성해야 함.
         DailyDeal nextTryDay = dailyDealList.remove(dailyDealList.size() - 1);
 
-        DailyDealHistoryAggregation dailyDealHistoryAggregation = createInitialDailyDealHistoryAggregation(dealTrainingSourceDTO, dailyDealList, nextTryDay);
+        DailyDealHistoryAggregation dailyDealHistoryAggregation = createInitialDailyDealHistoryAggregation(requestData, dailyDealList, nextTryDay);
         addFinalDailyDealForNextTryWith(dailyDealHistoryAggregation, nextTryDay);
 
-        return getInitializedDealTrainingResult(dealTrainingSourceDTO, startDate, nextTryDay, dailyDealHistoryAggregation);
+        return getInitializedDealTrainingResult(requestData, startDate, nextTryDay, dailyDealHistoryAggregation);
     }
 
     private LocalDate createEndDate(DealTrainingSourceDTO dealTrainingSourceDTO) {

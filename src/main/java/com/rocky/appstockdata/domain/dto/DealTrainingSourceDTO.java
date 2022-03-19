@@ -38,4 +38,10 @@ public class DealTrainingSourceDTO {
         this.valuationPercent = StringUtils.isEmpty(valuationPercent) ? null : Double.parseDouble(valuationPercent);
         this.level = level;
     }
+
+    public DealTrainingSourceDTO createRandomCompanyName(String randomCompanyName) {
+        this.companyName = randomCompanyName;
+
+        return this;
+    }
 }

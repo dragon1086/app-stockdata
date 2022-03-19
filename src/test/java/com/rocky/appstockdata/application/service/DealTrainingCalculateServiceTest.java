@@ -1,5 +1,6 @@
 package com.rocky.appstockdata.application.service;
 
+import com.rocky.appstockdata.application.port.in.CompanyNameSearchUseCase;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
 import com.rocky.appstockdata.domain.DealModification;
 import com.rocky.appstockdata.domain.DealTrainingResult;
@@ -22,11 +23,14 @@ class DealTrainingCalculateServiceTest {
     @Autowired
     StockDealRepository stockDealRepository;
 
+    @Autowired
+    CompanyNameSearchUseCase companyNameSearchUseCase;
+
     DealTrainingCalculateService dealTrainingCalculateService;
 
     @BeforeAll
     public void setup(){
-        dealTrainingCalculateService = new DealTrainingCalculateService(stockDealRepository);
+        dealTrainingCalculateService = new DealTrainingCalculateService(stockDealRepository, companyNameSearchUseCase);
     }
 
     @Test

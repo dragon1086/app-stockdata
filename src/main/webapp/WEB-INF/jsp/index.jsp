@@ -55,6 +55,17 @@
             document.cookie = "SameSite=None; Secure";
         });
 
+        function companyNameOnOff(){
+            var companyNameCheckbox = document.getElementById("companyNameCheck");
+
+
+            if (companyNameCheckbox.checked == true){
+                document.getElementById("companyNameInput").disabled = false;
+            } else {
+                document.getElementById("companyNameInput").disabled = true;
+            }
+        }
+
         function startDateOnOff(){
             var startDateCheckbox = document.getElementById("startDateCheck");
 
@@ -129,8 +140,10 @@
                 </select>
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">기업 이름</span>
-                <input type="text" id="companyNameInput" class="form-control"  name="companyName" placeholder="기업명을 입력하세요" aria-label="companyName" aria-describedby="basic-addon1">
+                <span class="input-group-text" id="basic-addon1">기업 이름(기본 랜덤)</span>
+                <input type="text" id="companyNameInput" class="form-control"  name="companyName" placeholder="기업 랜덤 선택. 기업명을 입력하시려면 오른쪽 체크박스 체크." aria-label="companyName" aria-describedby="basic-addon1" disabled>
+                <input type="checkbox" id="companyNameCheck" name="companyNameCheck" onclick="companyNameOnOff()">
+                <label for="companyNameCheck" style="margin: auto">기업이름(기본 랜덤)</label>
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon2">종목에 배분할 금액</span>
@@ -141,20 +154,20 @@
                 <input type="text" class="form-control"  name="portion" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="portion" aria-describedby="basic-addon3">
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon4">시작 날짜</span>
-                <input type="date" id="startDate" class="form-control"  name="startDate" placeholder="훈련 시작 날짜를 입력하세요" aria-label="startDate" aria-describedby="basic-addon4" disabled>
+                <span class="input-group-text" id="basic-addon4">시작 날짜(기본 랜덤)</span>
+                <input type="date" id="startDate" class="form-control"  name="startDate" placeholder="랜덤 날짜. 훈련 시작 날짜를 입력하시려면 오른쪽 체크박스 체크." aria-label="startDate" aria-describedby="basic-addon4" disabled>
                 <input type="checkbox" id="startDateCheck" name="startDateCheck" onclick="startDateOnOff()">
-                <label for="startDateCheck" style="margin: auto">시작일 설정</label>
+                <label for="startDateCheck" style="margin: auto">시작일 설정(기본 랜덤)</label>
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon5">시작 평가손익(%)</span>
-                <input type="text" id="valuationPercent" class="form-control"  name="valuationPercent" placeholder="초기 평가손익을 입력하세요" aria-label="valuationPercent" aria-describedby="basic-addon5" disabled>
+                <span class="input-group-text" id="basic-addon5">시작 평가손익(%)(기본 랜덤)</span>
+                <input type="text" id="valuationPercent" class="form-control"  name="valuationPercent" placeholder="랜덤 평가손익. 초기 평가손익을 입력하시려면 오른쪽 체크박스 체크." aria-label="valuationPercent" aria-describedby="basic-addon5" disabled>
                 <input type="checkbox" id="valuationPercentCheck" name="valuationPercentCheck" onclick="valuationPercentOnOff()">
-                <label for="valuationPercentCheck" style="margin: auto">시작평가손익 설정</label>
+                <label for="valuationPercentCheck" style="margin: auto">시작평가손익 설정(기본 랜덤)</label>
             </div>
 
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">훈련 시작</button>
+                <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">시뮬레이션 시작</button>
             </div>
         </div>
     </form>
@@ -165,8 +178,9 @@
         <p class="lead mb-4" style="font-size:17px;">(자세한 메뉴얼이 필요하시면 아래 메뉴얼 버튼을 클릭해주세요!)</p>
         <p class="lead mb-4" style="font-size:17px;">하루하루 다음 일봉을 예상해보며, 매매와 기다림을 선택해가며 주어진 환경에서 실현수익을 만드는 것이 목표입니다.</p>
         <p></p>
-        <p class="lead mb-4" style="font-size:17px;">"종목", "종목에 배분할 총금액", "시작 비중"을 입력하면, 랜덤하게 3년치의 일봉차트가 보여집니다.</p>
+        <p class="lead mb-4" style="font-size:17px;">"종목에 배분할 총금액", "시작 비중"을 입력하면, 랜덤하게 종목을 선택하고 3년치의 일봉차트가 보여집니다.</p>
         <p class="lead mb-4" style="font-size:17px;">일봉차트를 참고하셔서 어떤 상황에서도 수익을 만들어보는 경험을 체험해보세요!</p>
+        <p class="lead mb-4" style="font-size:17px;">(종목이 마음에 안드시면, 살짝 뒤로가기 ㅎㅎ)</p>
         <p></p>
         <p class="lead mb-4" style="font-size:17px;">시작 시점, 평균 단가, 평가 손익은 랜덤으로 정해집니다.</p>
         <p class="lead mb-4" style="font-size:17px;">평가 손익은 난이도에 따라 다르게 설정되며, 여러분이 과거 특정 시점부터 관리해온 손익이라고 가정했습니다.</p>
@@ -178,7 +192,7 @@
         <p class="lead mb-4" style="font-size:17px;">난이도를 "중수"로 선택하시면 평가손익의 범위는 -50% ~ +50% 입니다.</p>
         <p class="lead mb-4" style="font-size:17px;">난이도를 "초고수"로 선택하시면 평가손익의 범위는 -80% ~ +80% 입니다.</p>
         <p></p>
-        <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.02.25 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
+        <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.03.18 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
     </div>
     <div class="px-4 py-5 my-5 text-center">
