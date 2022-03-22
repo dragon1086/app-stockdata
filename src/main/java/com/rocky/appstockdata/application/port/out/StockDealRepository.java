@@ -2,7 +2,6 @@ package com.rocky.appstockdata.application.port.out;
 
 import com.rocky.appstockdata.domain.DailyDeal;
 import com.rocky.appstockdata.domain.dto.DailyDealRequestDTO;
-import com.rocky.appstockdata.domain.dto.DailyDealSmallDTO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,11 +12,15 @@ public interface StockDealRepository {
 
     String getEarliestDate(String companyName);
 
-    List<DailyDealSmallDTO> from3MonthsAgoToTodayDeals();
+    List<DailyDeal> from3MonthsAgoToTodayDeals();
 
-    List<DailyDealSmallDTO> from6MonthsAgoTo3MonthsAgoDeals();
+    List<DailyDeal> from6MonthsAgoTo3MonthsAgoDeals();
 
-    List<DailyDealSmallDTO> from9MonthsAgoTo6MonthsAgoDeals();
+    List<DailyDeal> from9MonthsAgoTo6MonthsAgoDeals();
 
-    List<DailyDealSmallDTO> from12MonthsAgoTo9MonthsAgoDeals();
+    List<DailyDeal> from12MonthsAgoTo9MonthsAgoDeals();
+
+    List<DailyDeal> from1MonthsAgoToTodayDeals();
+
+    List<DailyDeal> from2MonthsAgoTo1MonthsAgoDeals();
 }

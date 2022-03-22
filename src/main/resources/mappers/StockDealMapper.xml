@@ -53,7 +53,7 @@
         LIMIT 5
     </select>
 
-    <select id="from3MonthsAgoToTodayDeals" resultType="com.rocky.appstockdata.domain.dto.DailyDealSmallDTO">
+    <select id="from1MonthsAgoToTodayDeals" resultType="com.rocky.appstockdata.domain.DailyDeal">
         SELECT
             ITEM_CODE as itemCode,
             ITEM_NAME as itemName,
@@ -61,7 +61,51 @@
             CLOSING_PRICE as closingPrice,
             START_PRICE as startPrice,
             HIGH_PRICE as highPrice,
-            LOW_PRICE as lowPrice
+            LOW_PRICE as lowPrice,
+            TRADE_VOLUME as tradeVolume,
+            TRADE_MONEY as tradeMoney,
+            TOTAL_AMOUNT as totalAmount,
+            KOSPI_KOSDAQ as kospiKosdaq
+        FROM
+            DEAL_HISTORY
+        WHERE 1=1
+          AND DEAL_DATE <![CDATA[>]]> date_format(date_add(now(), interval -1 month), '%Y%m%d')
+          AND DEAL_DATE <![CDATA[<=]]> date_format(now(), '%Y%m%d')
+    </select>
+
+    <select id="from2MonthsAgoTo1MonthsAgoDeals" resultType="com.rocky.appstockdata.domain.DailyDeal">
+        SELECT
+            ITEM_CODE as itemCode,
+            ITEM_NAME as itemName,
+            DEAL_DATE as dealDate,
+            CLOSING_PRICE as closingPrice,
+            START_PRICE as startPrice,
+            HIGH_PRICE as highPrice,
+            LOW_PRICE as lowPrice,
+            TRADE_VOLUME as tradeVolume,
+            TRADE_MONEY as tradeMoney,
+            TOTAL_AMOUNT as totalAmount,
+            KOSPI_KOSDAQ as kospiKosdaq
+        FROM
+            DEAL_HISTORY
+        WHERE 1=1
+          AND DEAL_DATE <![CDATA[>]]> date_format(date_add(now(), interval -2 month), '%Y%m%d')
+          AND DEAL_DATE <![CDATA[<=]]> date_format(date_add(now(), interval -1 month), '%Y%m%d')
+    </select>
+
+    <select id="from3MonthsAgoToTodayDeals" resultType="com.rocky.appstockdata.domain.DailyDeal">
+        SELECT
+            ITEM_CODE as itemCode,
+            ITEM_NAME as itemName,
+            DEAL_DATE as dealDate,
+            CLOSING_PRICE as closingPrice,
+            START_PRICE as startPrice,
+            HIGH_PRICE as highPrice,
+            LOW_PRICE as lowPrice,
+            TRADE_VOLUME as tradeVolume,
+            TRADE_MONEY as tradeMoney,
+            TOTAL_AMOUNT as totalAmount,
+            KOSPI_KOSDAQ as kospiKosdaq
         FROM
             DEAL_HISTORY
         WHERE 1=1
@@ -69,7 +113,7 @@
           AND DEAL_DATE <![CDATA[<=]]> date_format(now(), '%Y%m%d')
     </select>
 
-    <select id="from6MonthsAgoTo3MonthsAgoDeals" resultType="com.rocky.appstockdata.domain.dto.DailyDealSmallDTO">
+    <select id="from6MonthsAgoTo3MonthsAgoDeals" resultType="com.rocky.appstockdata.domain.DailyDeal">
         SELECT
             ITEM_CODE as itemCode,
             ITEM_NAME as itemName,
@@ -77,7 +121,11 @@
             CLOSING_PRICE as closingPrice,
             START_PRICE as startPrice,
             HIGH_PRICE as highPrice,
-            LOW_PRICE as lowPrice
+            LOW_PRICE as lowPrice,
+            TRADE_VOLUME as tradeVolume,
+            TRADE_MONEY as tradeMoney,
+            TOTAL_AMOUNT as totalAmount,
+            KOSPI_KOSDAQ as kospiKosdaq
         FROM
             DEAL_HISTORY
         WHERE 1=1
@@ -85,7 +133,7 @@
           AND DEAL_DATE <![CDATA[<=]]> date_format(date_add(now(), interval -3 month), '%Y%m%d')
     </select>
 
-    <select id="from9MonthsAgoTo6MonthsAgoDeals" resultType="com.rocky.appstockdata.domain.dto.DailyDealSmallDTO">
+    <select id="from9MonthsAgoTo6MonthsAgoDeals" resultType="com.rocky.appstockdata.domain.DailyDeal">
         SELECT
             ITEM_CODE as itemCode,
             ITEM_NAME as itemName,
@@ -93,7 +141,11 @@
             CLOSING_PRICE as closingPrice,
             START_PRICE as startPrice,
             HIGH_PRICE as highPrice,
-            LOW_PRICE as lowPrice
+            LOW_PRICE as lowPrice,
+            TRADE_VOLUME as tradeVolume,
+            TRADE_MONEY as tradeMoney,
+            TOTAL_AMOUNT as totalAmount,
+            KOSPI_KOSDAQ as kospiKosdaq
         FROM
             DEAL_HISTORY
         WHERE 1=1
@@ -101,7 +153,7 @@
           AND DEAL_DATE <![CDATA[<=]]> date_format(date_add(now(), interval -6 month), '%Y%m%d')
     </select>
 
-    <select id="from12MonthsAgoTo9MonthsAgoDeals" resultType="com.rocky.appstockdata.domain.dto.DailyDealSmallDTO">
+    <select id="from12MonthsAgoTo9MonthsAgoDeals" resultType="com.rocky.appstockdata.domain.DailyDeal">
         SELECT
             ITEM_CODE as itemCode,
             ITEM_NAME as itemName,
@@ -109,7 +161,11 @@
             CLOSING_PRICE as closingPrice,
             START_PRICE as startPrice,
             HIGH_PRICE as highPrice,
-            LOW_PRICE as lowPrice
+            LOW_PRICE as lowPrice,
+            TRADE_VOLUME as tradeVolume,
+            TRADE_MONEY as tradeMoney,
+            TOTAL_AMOUNT as totalAmount,
+            KOSPI_KOSDAQ as kospiKosdaq
         FROM
             DEAL_HISTORY
         WHERE 1=1

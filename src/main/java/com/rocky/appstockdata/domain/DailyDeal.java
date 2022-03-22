@@ -1,5 +1,7 @@
 package com.rocky.appstockdata.domain;
 
+import com.rocky.appstockdata.domain.dto.DailyDealDTOv1;
+import com.rocky.appstockdata.domain.dto.DailyDealDTOv2;
 import lombok.*;
 
 import java.util.HashMap;
@@ -69,5 +71,33 @@ public class DailyDeal {
 
     public void addMovingAverage(String window, long movingAverage) {
         this.movingAverage.addMovingAverage(window, movingAverage);
+    }
+
+    public DailyDealDTOv2 toDailyDealDTOv2() {
+        return DailyDealDTOv2.builder()
+                .dealDate(this.dealDate)
+                .itemCode(this.itemCode)
+                .itemName(this.itemName)
+                .closingPrice(this.closingPrice)
+                .startPrice(this.startPrice)
+                .highPrice(this.highPrice)
+                .lowPrice(this.lowPrice)
+                .build();
+    }
+
+    public DailyDealDTOv1 toDailyDealDTOv1() {
+        return DailyDealDTOv1.builder()
+                .dealDate(this.dealDate)
+                .itemCode(this.itemCode)
+                .itemName(this.itemName)
+                .closingPrice(this.closingPrice)
+                .startPrice(this.startPrice)
+                .highPrice(this.highPrice)
+                .lowPrice(this.lowPrice)
+                .tradeMoney(this.tradeMoney)
+                .tradeVolume(this.tradeVolume)
+                .totalAmount(this.totalAmount)
+                .kospiKosdaq(this.kospiKosdaq)
+                .build();
     }
 }

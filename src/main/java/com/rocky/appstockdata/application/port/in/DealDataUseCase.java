@@ -1,15 +1,15 @@
 package com.rocky.appstockdata.application.port.in;
 
-import com.rocky.appstockdata.domain.dto.DailyDealSmallDTO;
-
-import java.util.List;
-
 public interface DealDataUseCase {
-    List<DailyDealSmallDTO> from3MonthsAgoToTodayDeals();
+    String from3MonthsAgoToTodayDeals(String id);
 
-    List<DailyDealSmallDTO> from6MonthsAgoTo3MonthsAgoDeals();
+    String from6MonthsAgoTo3MonthsAgoDeals(String id);
 
-    List<DailyDealSmallDTO> from9MonthsAgoTo6MonthsAgoDeals();
+    String from9MonthsAgoTo6MonthsAgoDeals(String id);
 
-    List<DailyDealSmallDTO> from12MonthsAgoTo9MonthsAgoDeals();
+    String from12MonthsAgoTo9MonthsAgoDeals(String id);
+
+    String from1MonthsAgoToTodayDeals(String id);
+
+    String from2MonthsAgoTo1MonthsAgoDeals(String id);
 }
