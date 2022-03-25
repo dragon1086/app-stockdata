@@ -213,7 +213,13 @@
                                         x: -3
                                     },
                                     title: {
-                                        text: '${itemName}'
+                                        align: 'high',
+                                        offset: 0,
+                                        rotation: 0,
+                                        y: -10,
+                                        x: -20,
+                                        reserveSpace: false,
+                                        text: '가격'
                                     },
                                     height: '55%',
                                     lineWidth: 2,
@@ -226,6 +232,12 @@
                                         x: -3
                                     },
                                     title: {
+                                        align: 'high',
+                                        offset: 0,
+                                        rotation: 0,
+                                        y: -10,
+                                        x: -30,
+                                        reserveSpace: false,
                                         text: '거래량'
                                     },
                                     top: '60%',
@@ -238,6 +250,12 @@
                                         x: -3
                                     },
                                     title: {
+                                        align: 'high',
+                                        offset: 0,
+                                        rotation: 0,
+                                        y: -10,
+                                        x: -20,
+                                        reserveSpace: false,
                                         text: '비중'
                                     },
                                     top: '75%',
@@ -250,6 +268,13 @@
                                         x: -3
                                     },
                                     title: {
+                                        align: 'high',
+                                        textAlign: 'left',
+                                        offset: 0,
+                                        rotation: 0,
+                                        y: -10,
+                                        x: -60,
+                                        reserveSpace: false,
                                         text: '매수/매도 금액'
                                     },
                                     top: '90%',
