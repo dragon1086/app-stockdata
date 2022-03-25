@@ -422,6 +422,28 @@
                                     }]
                                 }
                             });
+
+                            // URL to Highcharts export server
+                            var exportUrl = 'http://export.highcharts.com/';
+
+                            // POST parameter for Highcharts export server
+                            var object = {
+                                options: JSON.stringify(chart),
+                                type: 'image/png',
+                                async: true
+                            };
+
+                            // Ajax request
+                            $.ajax({
+                                type: 'post',
+                                url: exportUrl,
+                                data: object,
+                                success: function (data) {
+                                    // Update "src" attribute with received image URL
+                                    // $('#chart').attr('src', exportUrl + data);
+                                    console.log(exportUrl + data);
+                                }
+                            });
                         });
                     }
                     drawCandleStickChart();
