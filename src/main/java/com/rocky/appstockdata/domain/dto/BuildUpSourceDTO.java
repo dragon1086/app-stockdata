@@ -26,4 +26,9 @@ public class BuildUpSourceDTO {
         this.endDate = StringUtils.isEmpty(endDate) ? null : endDate;
         this.simulationMode = StringUtils.isEmpty(simulationMode) ? null : simulationMode;
     }
+
+    public BuildUpSourceDTO createRandomCompanyName(String randomCompanyName) {
+        this.companyName = randomCompanyName;
+        return this;
+    }
 }

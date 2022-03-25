@@ -9,9 +9,6 @@ import java.time.format.DateTimeFormatter;
 
 public class BuildUpSourceValidator {
     public static void validate(BuildUpSourceDTO buildUpSourceDTO) throws BuildUpSourceException {
-        if(StringUtils.isEmpty(buildUpSourceDTO.getCompanyName())){
-            throw new BuildUpSourceException("기업 이름을 넣으셔야 합니다.");
-        }
         if(StringUtils.isEmpty(buildUpSourceDTO.getStartDate())){
             throw new BuildUpSourceException("시작 날짜를 입력하셔야 합니다");
         }

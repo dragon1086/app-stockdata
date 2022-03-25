@@ -54,6 +54,17 @@
             document.cookie = "SameSite=None; Secure";
         });
 
+        function companyNameOnOff(){
+            var companyNameCheckbox = document.getElementById("companyNameCheck");
+
+
+            if (companyNameCheckbox.checked == true){
+                document.getElementById("companyNameInput").disabled = false;
+            } else {
+                document.getElementById("companyNameInput").disabled = true;
+            }
+        }
+
         $(function() {    //화면 다 뜨면 시작
             $("#companyNameInput").autocomplete({
                 source : function( request, response ) {
@@ -105,8 +116,10 @@
                 </select>
             </div>
             <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">기업 이름</span>
-                <input type="text" id="companyNameInput" class="form-control"  name="companyName" placeholder="기업명을 입력하세요" aria-label="companyName" aria-describedby="basic-addon1">
+                <span class="input-group-text" id="basic-addon1">기업 이름(기본 랜덤)</span>
+                <input type="text" id="companyNameInput" class="form-control"  name="companyName" placeholder="기업명을 입력하세요" aria-label="companyName" aria-describedby="basic-addon1" disabled>
+                <input type="checkbox" id="companyNameCheck" name="companyNameCheck" onclick="companyNameOnOff()">
+                <label for="companyNameCheck" style="margin: auto">기업이름(기본 랜덤)</label>
             </div>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon2">시작 날짜</span>
