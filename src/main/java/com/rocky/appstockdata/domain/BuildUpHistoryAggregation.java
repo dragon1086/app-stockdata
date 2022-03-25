@@ -347,6 +347,10 @@ public class BuildUpHistoryAggregation {
 
             //매도 수량 : (내림)(이전까지 총 구매금액 * 매도비중 / 매도단가)
             int additionalSellingQuantity = (int) Math.floor((copiedBuildUpHistoryAggregation.getSumOfPurchaseAmount() * (double) dealModification.getSellPercent()/100) / (double) dealModification.getSellPrice());
+            //매도수량이 내가 매입한 수량보다 많으면 안되므로, 보정
+            if ((copiedBuildUpHistoryAggregation.getSumOfMyQuantity() - additionalSellingQuantity) < 0) {
+                additionalSellingQuantity = copiedBuildUpHistoryAggregation.getSumOfMyQuantity();
+            }
             //매도 금액 : 매도 수량 * 매도 단가
             long additionalSellingAmount = additionalSellingQuantity * dealModification.getSellPrice();
             //매도 수수료(0.3%)
