@@ -134,9 +134,9 @@
             <div class="input-group mb-3" style="margin-top: 25px;">
                 <span class="input-group-text mb-1" id="basic-addon0">난이도 선택(시작비중 있을때만 적용)</span>
                 <select class="form-select form-select-lg mb-1" name="level" aria-label="level" aria-describedby="basic-addon0">
-                    <option value="beginner" selected>주린이</option>
-                    <option value="intermediate">중수</option>
-                    <option value="master">초고수</option>
+                    <option value="beginner" selected>-20%~+20%</option>
+                    <option value="intermediate">-50%~+50%</option>
+                    <option value="master">-80%~+80%</option>
                 </select>
             </div>
             <div class="input-group mb-3">
@@ -187,12 +187,12 @@
         <p class="lead mb-4" style="font-size:17px;">만약 "시작 비중"을 0으로 입력하면, 난이도에 상관없이 처음부터 새로 시작할 수 있습니다.</p>
         <p></p>
         <p class="lead mb-4" style="font-size:17px;">고수일수록 소위 "똥"이라고 불리는, 물린 종목을 잘 풀어내서 수익으로 마무리 지을 수 있어야 합니다.</p>
-        <p class="lead mb-4" style="font-size:17px;">그런 의미에서 난이도는 고수로 올라갈수록 평가 손익의 범위를 크게 설정했습니다.</p>
-        <p class="lead mb-4" style="font-size:17px;">난이도를 "주린이"로 선택하시면 평가손익의 범위는 -20% ~ +20% 입니다.</p>
-        <p class="lead mb-4" style="font-size:17px;">난이도를 "중수"로 선택하시면 평가손익의 범위는 -50% ~ +50% 입니다.</p>
-        <p class="lead mb-4" style="font-size:17px;">난이도를 "초고수"로 선택하시면 평가손익의 범위는 -80% ~ +80% 입니다.</p>
+        <p class="lead mb-4" style="font-size:17px;">그런 의미에서 난이도는 고수로 올라갈수록 평가 손익의 복불복 범위를 크게 설정했습니다.</p>
+        <p class="lead mb-4" style="font-size:17px;">난이도를 "-20% ~ +20%"로 선택하시면 평가손익의 범위는 -20% ~ +20% 입니다.</p>
+        <p class="lead mb-4" style="font-size:17px;">난이도를 "-50% ~ +50%"로 선택하시면 평가손익의 범위는 -50% ~ +50% 입니다.</p>
+        <p class="lead mb-4" style="font-size:17px;">난이도를 "-80% ~ +80%"로 선택하시면 평가손익의 범위는 -80% ~ +80% 입니다.</p>
         <p></p>
-        <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.03.18 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
+        <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.04.15 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
     </div>
     <div class="px-4 py-5 my-5 text-center">
