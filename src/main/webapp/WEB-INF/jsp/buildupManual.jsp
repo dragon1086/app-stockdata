@@ -14,10 +14,10 @@
     <!-- End Google Tag Manager -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="룰 적용 시뮬레이션기">
+    <meta name="description" content="빌드업 시뮬레이션기">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.1">
-    <title>룰 적용 시뮬레이션기 메뉴얼</title>
+    <title>빌드업 시뮬레이션기 메뉴얼</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
@@ -67,7 +67,7 @@
 
     <div class="px-4 py-5 my-5">
         <div class="text-center">
-            <h1 class="display-3 fw-bold">룰 적용 시뮬레이션</h1>
+            <h1 class="display-3 fw-bold">빌드업 시뮬레이션</h1>
             <h1 class="display-3 fw-bold">사용메뉴얼</h1>
             <h3 class="pb-4 mb-4 fst-italic border-bottom">
                 계좌의 뒤를 지켜줄 든든한 시드를 성장시켜보아요

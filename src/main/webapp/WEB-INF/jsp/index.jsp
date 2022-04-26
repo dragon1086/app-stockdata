@@ -126,11 +126,11 @@
 </head>
 <body>
     <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-secondary" onclick="location.href='/buildup'" style="height:50px;width:330px;font-size:18px;">룰 적용 시뮬레이션 하러 가기</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='/buildup'" style="height:50px;width:330px;font-size:18px;">빌드업 시뮬레이션 하러 가기</button>
     </div>
     <form action="deal-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
-            <h1 class="display-3 fw-bold">주식 일봉매매 시뮬레이션</h1>
+            <h1 class="display-3 fw-bold">상추매매 일봉 시뮬레이션</h1>
             <div class="input-group mb-3" style="margin-top: 25px;">
                 <span class="input-group-text mb-1" id="basic-addon0">난이도 선택(시작비중 있을때만 적용)</span>
                 <select class="form-select form-select-lg mb-1" name="level" aria-label="level" aria-describedby="basic-addon0">
@@ -175,6 +175,7 @@
     <div class="display-3 mx-auto">
         <h1 class="lead mb-4 fw-bold" style="font-size:20px;">기능 개요</h1>
         <p class="lead mb-4" style="font-size:17px;">일봉 기준으로 종목을 관찰하고 매매를 시뮬레이션 해보는 프로그램입니다.</p>
+        <p class="lead mb-4" style="font-size:17px;">아이디어는 어니스트와 주식빌드업 유튜브 채널을 참고했습니다.</p>
         <p class="lead mb-4" style="font-size:17px;">(자세한 메뉴얼이 필요하시면 아래 메뉴얼 버튼을 클릭해주세요!)</p>
         <p class="lead mb-4" style="font-size:17px;">하루하루 다음 일봉을 예상해보며, 매매와 기다림을 선택해가며 주어진 환경에서 실현수익을 만드는 것이 목표입니다.</p>
         <p></p>
@@ -187,16 +188,16 @@
         <p class="lead mb-4" style="font-size:17px;">만약 "시작 비중"을 0으로 입력하면, 난이도에 상관없이 처음부터 새로 시작할 수 있습니다.</p>
         <p></p>
         <p class="lead mb-4" style="font-size:17px;">고수일수록 소위 "똥"이라고 불리는, 물린 종목을 잘 풀어내서 수익으로 마무리 지을 수 있어야 합니다.</p>
-        <p class="lead mb-4" style="font-size:17px;">그런 의미에서 난이도는 고수로 올라갈수록 평가 손익의 복불복 범위를 크게 설정했습니다.</p>
+        <p class="lead mb-4" style="font-size:17px;">그런 의미에서 난이도는 올라갈수록 평가 손익의 복불복 범위를 크게 설정했습니다.</p>
         <p class="lead mb-4" style="font-size:17px;">난이도를 "-20% ~ +20%"로 선택하시면 평가손익의 범위는 -20% ~ +20% 입니다.</p>
         <p class="lead mb-4" style="font-size:17px;">난이도를 "-50% ~ +50%"로 선택하시면 평가손익의 범위는 -50% ~ +50% 입니다.</p>
         <p class="lead mb-4" style="font-size:17px;">난이도를 "-80% ~ +80%"로 선택하시면 평가손익의 범위는 -80% ~ +80% 입니다.</p>
         <p></p>
-        <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.04.15 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
+        <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.04.22 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
     </div>
     <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-info" onclick="location.href='/dealTrainingManual'" style="height:30px;width:280px;font-size:14px;">주식 일봉매매 시뮬레이션 메뉴얼</button>
+        <button type="button" class="btn btn-info" onclick="location.href='/dealTrainingManual'" style="height:30px;width:280px;font-size:14px;">상추 일봉매매 시뮬레이션 메뉴얼</button>
     </div>
 
     <!-- Footer -->

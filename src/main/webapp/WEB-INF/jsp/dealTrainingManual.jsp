@@ -67,7 +67,7 @@
 
     <div class="px-4 py-5 my-5">
         <div class="text-center">
-            <h1 class="display-3 fw-bold">주식 일봉매매 시뮬레이션</h1>
+            <h1 class="display-3 fw-bold">상추 일봉매매 시뮬레이션</h1>
             <h1 class="display-3 fw-bold">사용메뉴얼</h1>
             <h3 class="pb-4 mb-4 fst-italic border-bottom">
                 수익이 파란색이라도 빨간색으로 만들어나갈 수 있는 실력을 키워보아요
