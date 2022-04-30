@@ -17,7 +17,7 @@
     <meta name="description" content="빌드업 시뮬레이션기">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.1">
-    <title>빌드업 시뮬레이션기 메뉴얼</title>
+    <title>빌드업 자동 시뮬레이션기 메뉴얼</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>

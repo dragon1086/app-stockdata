@@ -107,7 +107,7 @@
     </div>
     <form action="buildup-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
-            <h1 class="display-3 fw-bold">빌드업 시뮬레이션기</h1>
+            <h1 class="display-3 fw-bold">빌드업 자동 시뮬레이션기</h1>
             <div class="input-group mb-3" style="margin-top: 25px;">
                 <span class="input-group-text mb-3" id="basic-addon0">시뮬레이션 모드</span>
                 <select class="form-select form-select-lg mb-3" name="simulationMode" aria-label="simulationMode" aria-describedby="basic-addon0">
@@ -152,7 +152,7 @@
 
     </div>
     <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-info" onclick="location.href='/buildupManual'" style="height:30px;width:280px;font-size:14px;">빌드업 시뮬레이션 메뉴얼</button>
+        <button type="button" class="btn btn-info" onclick="location.href='/buildupManual'" style="height:30px;width:280px;font-size:14px;">빌드업 자동 시뮬레이션 메뉴얼</button>
     </div>
 
     <!-- Footer -->

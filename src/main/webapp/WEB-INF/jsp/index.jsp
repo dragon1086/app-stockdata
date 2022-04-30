@@ -126,7 +126,7 @@
 </head>
 <body>
     <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-secondary" onclick="location.href='/buildup'" style="height:50px;width:330px;font-size:18px;">빌드업 시뮬레이션 하러 가기</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='/buildup'" style="height:50px;width:330px;font-size:18px;">빌드업 자동 시뮬레이션 하러 가기</button>
     </div>
     <form action="deal-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
