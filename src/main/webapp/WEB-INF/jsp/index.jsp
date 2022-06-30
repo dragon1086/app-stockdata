@@ -193,7 +193,7 @@
         <p class="lead mb-4" style="font-size:17px;">난이도를 "-50% ~ +50%"로 선택하시면 평가손익의 범위는 -50% ~ +50% 입니다.</p>
         <p class="lead mb-4" style="font-size:17px;">난이도를 "-80% ~ +80%"로 선택하시면 평가손익의 범위는 -80% ~ +80% 입니다.</p>
         <p></p>
-        <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.04.22 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
+        <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.07.07 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
     </div>
     <div class="px-4 py-5 my-5 text-center">

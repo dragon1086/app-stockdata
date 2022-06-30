@@ -148,7 +148,7 @@
         <p class="lead mb-4 "style="font-size:17px;">1. 매일종가매수 및 마지막날 전량매도</p>
         <p class="lead mb-4 "style="font-size:17px;">2. 음봉일때만 매수 및 마지막날 전량매도</p>
         <p></p>
-        <p class="lead mb-4 "style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.04.22 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
+        <p class="lead mb-4 "style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.07.01 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
     </div>
     <div class="px-4 py-5 my-5 text-center">
