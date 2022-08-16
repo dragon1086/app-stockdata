@@ -75,10 +75,6 @@ public class BuildUpApiV1 {
     @ResponseBody
     public String robots() {
         return "User-agent: *\n" +
-                "Disallow: /deal-calculate\n" +
-                "Disallow: /deal-calculate-modify\n" +
-                "Disallow: /buildup-calculate\n" +
-                "Disallow: /buildup-calculate-modify\n" +
                 "Disallow: /company\n" +
                 "Disallow: /resources/";
     }
