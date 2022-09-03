@@ -39,9 +39,9 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
             requestData = dealTrainingSourceDTO.createRandomCompanyName(companyNameSearchUseCase.getRandomCompanyName());
         }
 
-        final int TWO_YEAR = 1;
+        final int YEAR_CONST = 2;
         LocalDate endDate = createEndDate(requestData);
-        LocalDate startDate = endDate.minusYears(TWO_YEAR);
+        LocalDate startDate = endDate.minusYears(YEAR_CONST);
 
 
         List<DailyDeal> dailyDealList = getInitializedDailyDealList(requestData, startDate, endDate);
