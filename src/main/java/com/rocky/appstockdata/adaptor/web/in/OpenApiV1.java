@@ -54,39 +54,4 @@ public class OpenApiV1 {
         }
 
     }
-
-    @RequestMapping(value = "/6month-to-3month-ago/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf8")
-    @ResponseBody
-    public String getDealListFrom6MonthsAgoTo3MonthsAgo(@PathVariable String id) {
-        try {
-            OpenApiValidator.idValidator(id);
-            return dealDataUseCase.from6MonthsAgoTo3MonthsAgoDeals(id);
-        } catch (NotAllowedException e){
-            return e.getMessage();
-        }
-
-    }
-
-    @RequestMapping(value = "/9month-to-6month-ago/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf8")
-    @ResponseBody
-    public String getDealListFrom9MonthsAgoTo6MonthsAgo(@PathVariable String id) {
-        try {
-            OpenApiValidator.idValidator(id);
-            return dealDataUseCase.from9MonthsAgoTo6MonthsAgoDeals(id);
-        } catch (NotAllowedException e){
-            return e.getMessage();
-        }
-
-    }
-
-    @RequestMapping(value = "/12month-to-9month-ago/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf8")
-    @ResponseBody
-    public String getDealListFrom12MonthsAgoTo9MonthsAgo(@PathVariable String id) {
-        try {
-            OpenApiValidator.idValidator(id);
-            return dealDataUseCase.from12MonthsAgoTo9MonthsAgoDeals(id);
-        } catch (NotAllowedException e){
-            return e.getMessage();
-        }
-    }
 }
