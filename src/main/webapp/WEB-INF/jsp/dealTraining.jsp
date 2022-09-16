@@ -54,6 +54,10 @@
         $(function(){
             additionalBuyingSellHistory();
             $('input[id=thisModifyDate]').attr('value',"${nextTryDate}");
+            $('input[id=sellPercent]').attr('value',"0");
+            $('input[id=buyPercent]').attr('value',"0");
+            $('input[id=sellPrice]').attr('value',"${currentClosingPrice}");
+            $('input[id=buyPrice]').attr('value',"${currentClosingPrice}");
             document.cookie = "SameSite=None; Secure";
         });
 
@@ -108,360 +112,11 @@
     <div class="container-fluid">
         <div class="row">
             <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4">
-                <div id="container" style="height: 1000px; min-width: 310px"></div>
-                <script>
-                    function drawCandleStickChart(){
-                        //setting values
-                        var candleStickDataList = [];
-                        var volumeList = [];
-                        var portionList = [];
-                        var myAverageUnitPriceList = [];
-                        var additionalBuyingPrice = [];
-                        var additionalSellingPrice = [];
-                        var additionalBuyingAmount = [];
-                        var additionalSellingAmount = [];
-                        var fiveMovingAverageList = [];
-                        var twentyMovingAverageList = [];
-                        var sixtyMovingAverageList = [];
-                        var oneTwentyMovingAverageList = [];
-                        var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
-
-                        <c:if test="${isError == 'false'}">
-                        <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
-                        candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
-                        volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
-                        portionList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.portion}])
-                        <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
-                        myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
-                        </c:if>
-                        <c:if test="${dailyDealHistory.additionalBuyingQuantity != 0}">
-                        additionalBuyingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount / dailyDealHistory.additionalBuyingQuantity}]);
-                        additionalBuyingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount}]);
-                        </c:if>
-                        <c:if test="${dailyDealHistory.additionalSellingQuantity != 0}">
-                        additionalSellingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount / dailyDealHistory.additionalSellingQuantity}]);
-                        additionalSellingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount}]);
-                        </c:if>
-                        <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('5') != null}">
-                        fiveMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('5')}]);
-                        </c:if>
-                        <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('20') != null}">
-                        twentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('20')}]);
-                        </c:if>
-                        <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('60') != null}">
-                        sixtyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('60')}]);
-                        </c:if>
-                        <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('120') != null}">
-                        oneTwentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('120')}]);
-                        </c:if>
-                        </c:forEach>
-                        </c:if>
-
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const highchartsOptions = Highcharts.setOptions({
-                                    lang: {
-                                        loading: '로딩중입니다...',
-                                        months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-                                        weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
-                                        shortMonths: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-                                        exportButtonTitle: "Export",
-                                        printButtonTitle: "프린트",
-                                        rangeSelectorFrom: "From",
-                                        rangeSelectorTo: "To",
-                                        rangeSelectorZoom: "확대범위",
-                                        downloadPNG: 'PNG로 다운로드',
-                                        downloadJPEG: 'JPEG로 다운로드',
-                                        downloadPDF: 'PDF로 다운로드',
-                                        downloadSVG: 'SVG로 다운로드',
-                                        resetZoom: "Reset",
-                                        resetZoomTitle: "Reset",
-                                        thousandsSep: ",",
-                                        decimalPoint: '.'
-                                    }
-                                }
-                            );
-                            const chart = Highcharts.stockChart('container', {
-                                title: {
-                                    text: '일봉차트와 평균단가 그래프(${itemName})',
-                                    style:{
-                                        color: '#00443a',
-                                        fontSize: '24px',
-                                        fontWeight: 'bold'
-                                    }
-                                },
-                                subtitle: {
-                                    text: '<b>캔들이 좁게 보일 때 범례의 평균/매수/매도 단가를 클릭해서 없애면, 캔들차트가 더 잘 보입니다</b>',
-                                    align: 'left'
-                                },
-                                chart: {
-                                    zoomType: 'xy'
-                                },
-                                time:{
-                                    useUTC: false,
-                                    timezone: 'Asia/Seoul',
-                                },
-                                legend: {
-                                    enabled: true,
-                                    align: 'center',
-                                    backgroundColor: '#FCFFC5',
-                                    borderColor: 'black',
-                                    borderWidth: 2,
-                                    shadow: true
-                                },
-                                rangeSelector: {
-                                    selected: 1,
-                                },
-                                yAxis: [{
-                                    labels: {
-                                        align: 'right',
-                                        x: -3
-                                    },
-                                    title: {
-                                        align: 'high',
-                                        offset: 0,
-                                        rotation: 0,
-                                        y: -10,
-                                        x: -20,
-                                        reserveSpace: false,
-                                        text: '가격'
-                                    },
-                                    height: '55%',
-                                    lineWidth: 2,
-                                    resize: {
-                                        enabled: true
-                                    }
-                                }, {
-                                    labels: {
-                                        align: 'right',
-                                        x: -3
-                                    },
-                                    title: {
-                                        align: 'high',
-                                        offset: 0,
-                                        rotation: 0,
-                                        y: -10,
-                                        x: -30,
-                                        reserveSpace: false,
-                                        text: '거래량'
-                                    },
-                                    top: '60%',
-                                    height: '10%',
-                                    offset: 0,
-                                    lineWidth: 2
-                                }, {
-                                    labels: {
-                                        align: 'right',
-                                        x: -3
-                                    },
-                                    title: {
-                                        align: 'high',
-                                        offset: 0,
-                                        rotation: 0,
-                                        y: -10,
-                                        x: -20,
-                                        reserveSpace: false,
-                                        text: '비중'
-                                    },
-                                    top: '75%',
-                                    height: '10%',
-                                    offset: 0,
-                                    lineWidth: 2
-                                }, {
-                                    labels: {
-                                        align: 'right',
-                                        x: -3
-                                    },
-                                    title: {
-                                        align: 'high',
-                                        textAlign: 'left',
-                                        offset: 0,
-                                        rotation: 0,
-                                        y: -10,
-                                        x: -60,
-                                        reserveSpace: false,
-                                        text: '매수/매도 금액'
-                                    },
-                                    top: '90%',
-                                    height: '10%',
-                                    offset: 0,
-                                    lineWidth: 2
-                                }],
-                                plotOptions: {
-                                    candlestick: {
-                                        color: 'blue',
-                                        upColor: 'red'
-                                    }
-                                },
-                                tooltip: {
-                                    split: true
-                                },
-                                series: [{
-                                    id: 'candle',
-                                    name: '${itemName}',
-                                    type: 'candlestick',
-                                    data: candleStickDataList,
-                                    tooltip: {
-                                        valueDecimals: 0
-                                    },
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    }
-                                }, {
-                                    type: 'column',
-                                    name: '거래량',
-                                    data: volumeList,
-                                    yAxis: 1,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    }
-                                }, {
-                                    type: 'spline',
-                                    name: '평균단가',
-                                    data: myAverageUnitPriceList,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#b4aa36',
-                                    lineWidth: 4,
-                                    onSeries: 'candle'
-                                }, {
-                                    type: 'scatter',
-                                    name: '추가 매수단가',
-                                    data: additionalBuyingPrice,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#afa400',
-                                    onSeries: 'candle',
-                                    dataLabels: {
-                                        enabled: true,
-                                        borderRadius: 20,
-                                        borderColor: 'red',
-                                        y: -5,
-                                        shape: 'callout',
-                                        rotation: 20
-                                    },
-                                    marker: {
-                                        enabled: true,
-                                        radius: 10
-                                    }
-                                }, {
-                                    type: 'scatter',
-                                    name: '추가 매도단가',
-                                    data: additionalSellingPrice,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#007eff',
-                                    onSeries: 'candle',
-                                    dataLabels: {
-                                        enabled: true,
-                                        borderRadius: 20,
-                                        borderColor: 'blue',
-                                        y: 5,
-                                        shape: null,
-                                        rotation: 20
-                                    },
-                                    marker: {
-                                        enabled: true,
-                                        radius: 10
-                                    }
-                                }, {
-                                    type: 'spline',
-                                    name: '5일 이동평균',
-                                    data: fiveMovingAverageList,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#383832',
-                                    lineWidth: 1,
-                                    onSeries: 'candle'
-                                }, {
-                                    type: 'spline',
-                                    name: '20일 이동평균',
-                                    data: twentyMovingAverageList,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#ff0000',
-                                    lineWidth: 1,
-                                    onSeries: 'candle'
-                                }, {
-                                    type: 'spline',
-                                    name: '60일 이동평균',
-                                    data: sixtyMovingAverageList,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#514fff',
-                                    lineWidth: 1,
-                                    onSeries: 'candle'
-                                }, {
-                                    type: 'spline',
-                                    name: '120일 이동평균',
-                                    data: oneTwentyMovingAverageList,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#ffae00',
-                                    lineWidth: 1,
-                                    onSeries: 'candle'
-                                }, {
-                                    type: 'line',
-                                    id: 'portion',
-                                    name: '비중',
-                                    data: portionList,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    yAxis: 2,
-                                    color: '#000000',
-                                    onSeries: 'candle'
-                                }, {
-                                    type: 'column',
-                                    id: 'buyingAmount',
-                                    name: '매수 금액',
-                                    data: additionalBuyingAmount,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    yAxis: 3,
-                                    color: '#FF0000'
-                                }, {
-                                    type: 'column',
-                                    name: '매도 금액',
-                                    data: additionalSellingAmount,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    yAxis: 3,
-                                    color: '#0022ff',
-                                    onSeries: 'buyingAmount'
-                                }],
-                                responsive: {
-                                    rules: [{
-                                        condition: {
-                                            maxWidth: 800
-                                        },
-                                        chartOptions: {
-                                            rangeSelector: {
-                                                inputEnabled: false
-                                            }
-                                        }
-                                    }]
-                                }
-                            });
-                        });
-                    }
-                    drawCandleStickChart();
-                </script>
-
-                <hr style="height:3px;color:#dc874f">
                 <form id="modifyCalculation" action="deal-calculate-modify" method="post" name="calculateRequestFrom">
                     <div class="px-4 py-5 my-5 text-left" id="parentDivForModifiyCalculation">
                         <h2><strong>매매 시뮬레이션</strong></h2>
                         <p></p>
-                        <h4>위 그래프를 보시고, 매수/매도/PASS를 선택하세요. </h4>
+                        <h4>아래 그래프를 보시고, 매수/매도/PASS를 선택하세요. </h4>
                         <h4>매수/매도 하고 싶으시면 단가와 비중 입력 후 "다음", 그냥 넘기고 싶으시면 "다음"버튼 눌러주세요. </h4>
                         <h4>1개 행에 매수/매도 다 입력해도 되고, 한쪽만 입력해도 됩니다.</h4>
                         <h4>단, 매수/매도 비중을 입력했으면 매수/매도 단가도 필수입니다. 비중과 단가 중 하나라도 미입력 시 계산 무시합니다.</h4>
@@ -474,21 +129,372 @@
                             </div>
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="basic-addon2">매도 비중%</span>
-                                <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="sellPercent" aria-describedby="basic-addon2">
+                                <input id="sellPercent" type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="sellPercent" aria-describedby="basic-addon2">
                                 <span class="input-group-text" id="basic-addon3">매도 가격</span>
-                                <input type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
+                                <input id="sellPrice" type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
                             </div>
                             <div class="input-group mb-3">
                                 <span class="input-group-text" id="basic-addon4">매수 비중%</span>
-                                <input type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
+                                <input id="buyPercent" type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
                                 <span class="input-group-text" id="basic-addon5">매수 가격</span>
-                                <input type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
+                                <input id="buyPrice" type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
                             </div>
                         </div>
                     </div>
+
                     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
                         <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">다음</button>
                     </div>
+
+                    <hr style="height:3px;color:#dc874f">
+
+                    <div id="container" style="height: 1000px; min-width: 310px"></div>
+                    <script>
+                        function drawCandleStickChart(){
+                            //setting values
+                            var candleStickDataList = [];
+                            var volumeList = [];
+                            var portionList = [];
+                            var myAverageUnitPriceList = [];
+                            var additionalBuyingPrice = [];
+                            var additionalSellingPrice = [];
+                            var additionalBuyingAmount = [];
+                            var additionalSellingAmount = [];
+                            var fiveMovingAverageList = [];
+                            var twentyMovingAverageList = [];
+                            var sixtyMovingAverageList = [];
+                            var oneTwentyMovingAverageList = [];
+                            var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
+
+                            <c:if test="${isError == 'false'}">
+                            <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
+                            candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
+                            volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
+                            portionList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.portion}])
+                            <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
+                            myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
+                            </c:if>
+                            <c:if test="${dailyDealHistory.additionalBuyingQuantity != 0}">
+                            additionalBuyingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount / dailyDealHistory.additionalBuyingQuantity}]);
+                            additionalBuyingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount}]);
+                            </c:if>
+                            <c:if test="${dailyDealHistory.additionalSellingQuantity != 0}">
+                            additionalSellingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount / dailyDealHistory.additionalSellingQuantity}]);
+                            additionalSellingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount}]);
+                            </c:if>
+                            <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('5') != null}">
+                            fiveMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('5')}]);
+                            </c:if>
+                            <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('20') != null}">
+                            twentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('20')}]);
+                            </c:if>
+                            <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('60') != null}">
+                            sixtyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('60')}]);
+                            </c:if>
+                            <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('120') != null}">
+                            oneTwentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('120')}]);
+                            </c:if>
+                            </c:forEach>
+                            </c:if>
+
+                            document.addEventListener('DOMContentLoaded', function () {
+                                const highchartsOptions = Highcharts.setOptions({
+                                        lang: {
+                                            loading: '로딩중입니다...',
+                                            months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                                            weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+                                            shortMonths: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                                            exportButtonTitle: "Export",
+                                            printButtonTitle: "프린트",
+                                            rangeSelectorFrom: "From",
+                                            rangeSelectorTo: "To",
+                                            rangeSelectorZoom: "확대범위",
+                                            downloadPNG: 'PNG로 다운로드',
+                                            downloadJPEG: 'JPEG로 다운로드',
+                                            downloadPDF: 'PDF로 다운로드',
+                                            downloadSVG: 'SVG로 다운로드',
+                                            resetZoom: "Reset",
+                                            resetZoomTitle: "Reset",
+                                            thousandsSep: ",",
+                                            decimalPoint: '.'
+                                        }
+                                    }
+                                );
+                                const chart = Highcharts.stockChart('container', {
+                                    title: {
+                                        text: '일봉차트와 평균단가 그래프(${itemName})',
+                                        style:{
+                                            color: '#00443a',
+                                            fontSize: '24px',
+                                            fontWeight: 'bold'
+                                        }
+                                    },
+                                    subtitle: {
+                                        text: '<b>캔들이 좁게 보일 때 범례의 평균/매수/매도 단가를 클릭해서 없애면, 캔들차트가 더 잘 보입니다</b>',
+                                        align: 'left'
+                                    },
+                                    chart: {
+                                        zoomType: 'xy'
+                                    },
+                                    time:{
+                                        useUTC: false,
+                                        timezone: 'Asia/Seoul',
+                                    },
+                                    legend: {
+                                        enabled: true,
+                                        align: 'center',
+                                        backgroundColor: '#FCFFC5',
+                                        borderColor: 'black',
+                                        borderWidth: 2,
+                                        shadow: true
+                                    },
+                                    rangeSelector: {
+                                        selected: 1,
+                                    },
+                                    yAxis: [{
+                                        labels: {
+                                            align: 'right',
+                                            x: -3
+                                        },
+                                        title: {
+                                            align: 'high',
+                                            offset: 0,
+                                            rotation: 0,
+                                            y: -10,
+                                            x: -20,
+                                            reserveSpace: false,
+                                            text: '가격'
+                                        },
+                                        height: '55%',
+                                        lineWidth: 2,
+                                        resize: {
+                                            enabled: true
+                                        }
+                                    }, {
+                                        labels: {
+                                            align: 'right',
+                                            x: -3
+                                        },
+                                        title: {
+                                            align: 'high',
+                                            offset: 0,
+                                            rotation: 0,
+                                            y: -10,
+                                            x: -30,
+                                            reserveSpace: false,
+                                            text: '거래량'
+                                        },
+                                        top: '60%',
+                                        height: '10%',
+                                        offset: 0,
+                                        lineWidth: 2
+                                    }, {
+                                        labels: {
+                                            align: 'right',
+                                            x: -3
+                                        },
+                                        title: {
+                                            align: 'high',
+                                            offset: 0,
+                                            rotation: 0,
+                                            y: -10,
+                                            x: -20,
+                                            reserveSpace: false,
+                                            text: '비중'
+                                        },
+                                        top: '75%',
+                                        height: '10%',
+                                        offset: 0,
+                                        lineWidth: 2
+                                    }, {
+                                        labels: {
+                                            align: 'right',
+                                            x: -3
+                                        },
+                                        title: {
+                                            align: 'high',
+                                            textAlign: 'left',
+                                            offset: 0,
+                                            rotation: 0,
+                                            y: -10,
+                                            x: -60,
+                                            reserveSpace: false,
+                                            text: '매수/매도 금액'
+                                        },
+                                        top: '90%',
+                                        height: '10%',
+                                        offset: 0,
+                                        lineWidth: 2
+                                    }],
+                                    plotOptions: {
+                                        candlestick: {
+                                            color: 'blue',
+                                            upColor: 'red'
+                                        }
+                                    },
+                                    tooltip: {
+                                        split: true
+                                    },
+                                    series: [{
+                                        id: 'candle',
+                                        name: '${itemName}',
+                                        type: 'candlestick',
+                                        data: candleStickDataList,
+                                        tooltip: {
+                                            valueDecimals: 0
+                                        },
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        }
+                                    }, {
+                                        type: 'column',
+                                        name: '거래량',
+                                        data: volumeList,
+                                        yAxis: 1,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        }
+                                    }, {
+                                        type: 'spline',
+                                        name: '평균단가',
+                                        data: myAverageUnitPriceList,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        color: '#b4aa36',
+                                        lineWidth: 4,
+                                        onSeries: 'candle'
+                                    }, {
+                                        type: 'scatter',
+                                        name: '추가 매수단가',
+                                        data: additionalBuyingPrice,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        color: '#afa400',
+                                        onSeries: 'candle',
+                                        dataLabels: {
+                                            enabled: true,
+                                            borderRadius: 20,
+                                            borderColor: 'red',
+                                            y: -5,
+                                            shape: 'callout',
+                                            rotation: 20
+                                        },
+                                        marker: {
+                                            enabled: true,
+                                            radius: 10
+                                        }
+                                    }, {
+                                        type: 'scatter',
+                                        name: '추가 매도단가',
+                                        data: additionalSellingPrice,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        color: '#007eff',
+                                        onSeries: 'candle',
+                                        dataLabels: {
+                                            enabled: true,
+                                            borderRadius: 20,
+                                            borderColor: 'blue',
+                                            y: 5,
+                                            shape: null,
+                                            rotation: 20
+                                        },
+                                        marker: {
+                                            enabled: true,
+                                            radius: 10
+                                        }
+                                    }, {
+                                        type: 'spline',
+                                        name: '5일 이동평균',
+                                        data: fiveMovingAverageList,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        color: '#383832',
+                                        lineWidth: 1,
+                                        onSeries: 'candle'
+                                    }, {
+                                        type: 'spline',
+                                        name: '20일 이동평균',
+                                        data: twentyMovingAverageList,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        color: '#ff0000',
+                                        lineWidth: 1,
+                                        onSeries: 'candle'
+                                    }, {
+                                        type: 'spline',
+                                        name: '60일 이동평균',
+                                        data: sixtyMovingAverageList,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        color: '#514fff',
+                                        lineWidth: 1,
+                                        onSeries: 'candle'
+                                    }, {
+                                        type: 'spline',
+                                        name: '120일 이동평균',
+                                        data: oneTwentyMovingAverageList,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        color: '#ffae00',
+                                        lineWidth: 1,
+                                        onSeries: 'candle'
+                                    }, {
+                                        type: 'line',
+                                        id: 'portion',
+                                        name: '비중',
+                                        data: portionList,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        yAxis: 2,
+                                        color: '#000000',
+                                        onSeries: 'candle'
+                                    }, {
+                                        type: 'column',
+                                        id: 'buyingAmount',
+                                        name: '매수 금액',
+                                        data: additionalBuyingAmount,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        yAxis: 3,
+                                        color: '#FF0000'
+                                    }, {
+                                        type: 'column',
+                                        name: '매도 금액',
+                                        data: additionalSellingAmount,
+                                        dataGrouping: {
+                                            units: groupingUnits
+                                        },
+                                        yAxis: 3,
+                                        color: '#0022ff',
+                                        onSeries: 'buyingAmount'
+                                    }],
+                                    responsive: {
+                                        rules: [{
+                                            condition: {
+                                                maxWidth: 800
+                                            },
+                                            chartOptions: {
+                                                rangeSelector: {
+                                                    inputEnabled: false
+                                                }
+                                            }
+                                        }]
+                                    }
+                                });
+                            });
+                        }
+                        drawCandleStickChart();
+                    </script>
 
                     <hr style="height:3px;color:#dc874f">
 
