@@ -170,7 +170,7 @@
                             <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
                             candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
                             volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
-                            portionList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.portion}])
+                            portionList.push([${dailyDealHistory.dealDateForTimestamp}, <fmt:formatNumber value="${dailyDealHistory.portion}" pattern="#,###" />])
                             <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
                             myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
                             </c:if>
@@ -382,8 +382,7 @@
                                             rotation: 20
                                         },
                                         marker: {
-                                            enabled: true,
-                                            radius: 10
+                                            symbol: 'url(resources/images/redArrow.jpg)'
                                         }
                                     }, {
                                         type: 'scatter',
@@ -403,8 +402,7 @@
                                             rotation: 20
                                         },
                                         marker: {
-                                            enabled: true,
-                                            radius: 10
+                                            symbol: 'url(resources/images/blueArrow.jpg)'
                                         }
                                     }, {
                                         type: 'spline',
@@ -453,6 +451,9 @@
                                         data: portionList,
                                         dataGrouping: {
                                             units: groupingUnits
+                                        },
+                                        dataLabels: {
+                                            enabled: true
                                         },
                                         yAxis: 2,
                                         color: '#000000',
