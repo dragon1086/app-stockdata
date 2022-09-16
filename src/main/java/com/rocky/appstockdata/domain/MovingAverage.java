@@ -3,11 +3,13 @@ package com.rocky.appstockdata.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Map;
 
 @Getter
 @Setter
+@ToString
 public class MovingAverage {
     Map<String, Long> movingAverageMap;
 
