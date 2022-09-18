@@ -2,7 +2,10 @@ package com.rocky.appstockdata.application.service;
 
 import com.rocky.appstockdata.application.port.in.BuildUpService;
 import com.rocky.appstockdata.application.port.out.StockDealRepository;
-import com.rocky.appstockdata.domain.*;
+import com.rocky.appstockdata.domain.BuildUp;
+import com.rocky.appstockdata.domain.BuildUpHistoryAggregation;
+import com.rocky.appstockdata.domain.DailyDeal;
+import com.rocky.appstockdata.domain.DailyDealHistory;
 import com.rocky.appstockdata.domain.dto.BuildUpModificationSourceDTO;
 import com.rocky.appstockdata.domain.dto.BuildUpSourceDTO;
 import com.rocky.appstockdata.domain.dto.DailyDealRequestDTO;
@@ -10,7 +13,6 @@ import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,7 +29,6 @@ public class MinusCandleBuildUpService implements BuildUpService {
         this.stockDealRepository = stockDealRepository;
     }
 
-
     @Override
     public BuildUpType getBuildUpType() {
         return BuildUpType.MINUS_CANDLE;
@@ -35,10 +36,29 @@ public class MinusCandleBuildUpService implements BuildUpService {
 
     @Override
     public BuildUp calculateBuildUp(BuildUpSourceDTO buildUpSourceDTO) {
-        BuildUpHistoryAggregation buildUpHistoryAggregation = BuildUpHistoryAggregation.createBuildUpHistoryAggregation();
-
         List<DailyDeal> dailyDealList = getDailyDeals(buildUpSourceDTO);
 
+        BuildUpHistoryAggregation buildUpHistoryAggregation = accumulateBuildUpHistoryAggregation(buildUpSourceDTO, dailyDealList);
+
+        return calculateFinalSummary(buildUpHistoryAggregation, dailyDealList.get(0).getItemName(), buildUpSourceDTO.getSimulationMode());
+    }
+
+    private List<DailyDeal> getDailyDeals(BuildUpSourceDTO buildUpSourceDTO) {
+        List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
+                .companyName(buildUpSourceDTO.getCompanyName())
+                .startDate(buildUpSourceDTO.getStartDate())
+                .endDate(buildUpSourceDTO.getEndDate())
+                .build());
+        if(dailyDealList.isEmpty()){
+            throw new NoResultDataException("조회하신 검색 결과가 없습니다. 종목명 또는 조회기간을 확인 부탁드립니다.\r\n"
+                    + "종목명은 영문표기를 한글로 변형 또는 반대로 해서 다시 입력해보시기 바랍니다.");
+        }
+
+        return addMovingAverage(dailyDealList);
+    }
+
+    private BuildUpHistoryAggregation accumulateBuildUpHistoryAggregation(BuildUpSourceDTO buildUpSourceDTO, List<DailyDeal> dailyDealList) {
+        BuildUpHistoryAggregation buildUpHistoryAggregation = BuildUpHistoryAggregation.createBuildUpHistoryAggregation();
         Iterator<DailyDeal> dailyDeals = dailyDealList.iterator();
         while(dailyDeals.hasNext()){
             DailyDeal dailyDeal = dailyDeals.next();
@@ -50,8 +70,7 @@ public class MinusCandleBuildUpService implements BuildUpService {
                 buildUpHistoryAggregation = buildUpHistoryAggregation.sellAll(buildUpHistoryAggregation, dailyDeal.getClosingPrice());
             }
         }
-        return calculateFinalSummary(buildUpHistoryAggregation, dailyDealList.get(0).getItemName(), buildUpSourceDTO.getSimulationMode());
-
+        return buildUpHistoryAggregation;
     }
 
     private BuildUp calculateFinalSummary(BuildUpHistoryAggregation buildUpHistoryAggregation, String itemName, String simulationMode) {
@@ -76,19 +95,6 @@ public class MinusCandleBuildUpService implements BuildUpService {
                 .countOfDayOnDayClosingPriceIncrease(buildUpHistoryAggregation.getCountOfDayOnDayClosingPriceIncrease())
                 .countOfDayOnDayClosingPriceDecrease(buildUpHistoryAggregation.getCountOfDayOnDayClosingPriceDecrease())
                 .build();
-    }
-
-    private List<DailyDeal> getDailyDeals(BuildUpSourceDTO buildUpSourceDTO) {
-        List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
-                .companyName(buildUpSourceDTO.getCompanyName())
-                .startDate(buildUpSourceDTO.getStartDate())
-                .endDate(buildUpSourceDTO.getEndDate())
-                .build());
-        if(dailyDealList.isEmpty()){
-            throw new NoResultDataException("조회하신 검색 결과가 없습니다. 종목명 또는 조회기간을 확인 부탁드립니다.\r\n"
-                    + "종목명은 영문표기를 한글로 변형 또는 반대로 해서 다시 입력해보시기 바랍니다.");
-        }
-        return addMovingAverage(dailyDealList);
     }
 
     private BuildUpHistoryAggregation buyOnlyForMinusCandle(BuildUpHistoryAggregation buildUpHistoryAggregation, BuildUpSourceDTO buildUpSourceDTO, DailyDeal dailyDeal){
