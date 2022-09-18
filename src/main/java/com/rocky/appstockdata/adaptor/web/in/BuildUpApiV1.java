@@ -27,7 +27,7 @@ public class BuildUpApiV1 {
     }
 
     @GetMapping("/buildup")
-    public String buildupIndex(){
+    public String buildupMain(){
         return "buildUpIndex";
     }
 

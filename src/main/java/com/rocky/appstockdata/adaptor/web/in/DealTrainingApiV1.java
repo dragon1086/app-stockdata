@@ -29,7 +29,7 @@ public class DealTrainingApiV1 {
 
     @GetMapping("/")
     public String dealTrainingMain(){
-        return "index";
+        return "dealTrainingIndex";
     }
 
     @PostMapping("/deal-calculate")
