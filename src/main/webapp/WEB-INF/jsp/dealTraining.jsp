@@ -513,9 +513,9 @@
                                             <h2>실현수익률 : 0%</h2>
                                             <h2>실현손익 : 0원</h2>
                                             <h2>슬랏 할당금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
-                                            <h2>현재 비중 : <fmt:formatNumber value="${portion}" pattern="#,###" />%</h2>
+                                            <h2>현재 비중 : <fmt:formatNumber value="${portion+((portion%1>0.5)?(1-(portion%1))%1:-(portion%1))}" pattern="#,###" />%</h2>
                                             <h2>슬랏 예수금 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
-                                            <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion}" pattern="#,###" />%</h2>
+                                            <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion+((remainingPortion%1>0.5)?(1-(remainingPortion%1))%1:-(remainingPortion%1))}" pattern="#,###" />%</h2>
                                             <h2>총 매입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
                                             <h2>총 매도금액 : 0원</h2>
                                             <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
@@ -530,9 +530,9 @@
                                             <h2>실현수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
                                             <h2>실현손익 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
                                             <h2>슬랏 할당금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
-                                            <h2>현재 비중 : <fmt:formatNumber value="${portion}" pattern="#,###" />%</h2>
+                                            <h2>현재 비중 : <fmt:formatNumber value="${portion+((portion%1>0.5)?(1-(portion%1))%1:-(portion%1))}" pattern="#,###" />%</h2>
                                             <h2>슬랏 예수금 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
-                                            <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion}" pattern="#,###" />%</h2>
+                                            <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion+((remainingPortion%1>0.5)?(1-(remainingPortion%1))%1:-(remainingPortion%1))}" pattern="#,###" />%</h2>
                                             <h2>총 매입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
                                             <h2>총 매도금액 : <fmt:formatNumber value="${sumOfSellingAmount}" pattern="#,###" />원</h2>
                                             <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
