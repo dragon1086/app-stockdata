@@ -51,9 +51,25 @@
     <!-- Custom styles for this template -->
     <link href="/resources/css/buildup.css" rel="stylesheet">
     <script>
+        //result setting values
         var nextTryDate = "${nextTryDate}";
         var currentClosingPrice = "${currentClosingPrice}";
         var dealModifications = [];
+
+        //candleStick setting values
+        var candleStickDataList = [];
+        var volumeList = [];
+        var portionList = [];
+        var myAverageUnitPriceList = [];
+        var additionalBuyingPrice = [];
+        var additionalSellingPrice = [];
+        var additionalBuyingAmount = [];
+        var additionalSellingAmount = [];
+        var fiveMovingAverageList = [];
+        var twentyMovingAverageList = [];
+        var sixtyMovingAverageList = [];
+        var oneTwentyMovingAverageList = [];
+        var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
 
         $(function(){
             $('input[id=thisModifyDate]').attr('value',nextTryDate);
@@ -161,20 +177,6 @@
                     <div id="container" style="height: 1000px; min-width: 310px"></div>
                     <script>
                         function drawCandleStickChart(){
-                            //setting values
-                            var candleStickDataList = [];
-                            var volumeList = [];
-                            var portionList = [];
-                            var myAverageUnitPriceList = [];
-                            var additionalBuyingPrice = [];
-                            var additionalSellingPrice = [];
-                            var additionalBuyingAmount = [];
-                            var additionalSellingAmount = [];
-                            var fiveMovingAverageList = [];
-                            var twentyMovingAverageList = [];
-                            var sixtyMovingAverageList = [];
-                            var oneTwentyMovingAverageList = [];
-                            var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
 
                             <c:if test="${isError == 'false'}">
                             <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
