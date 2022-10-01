@@ -70,6 +70,11 @@
         var sixtyMovingAverageList = [];
         var oneTwentyMovingAverageList = [];
         var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
+        var earningRate = "${earningRate}"
+
+        //etc
+        var isError = "${isError}"
+        var errorMessage = "${errorMessage}";
 
         $(function(){
             $('input[id=thisModifyDate]').attr('value',nextTryDate);
@@ -78,6 +83,7 @@
             $('input[id=sellPrice]').attr('value',currentClosingPrice);
             $('input[id=buyPrice]').attr('value',currentClosingPrice);
             $(".currentClosingPrice").text(currentClosingPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+            $(".errorMessage").text(errorMessage);
             document.cookie = "SameSite=None; Secure";
 
             <c:forEach items="${dealModifications2}" var="dealModification">
@@ -85,7 +91,8 @@
             </c:forEach>
 
             additionalBuyingSellHistory();
-
+            showDealStatus();
+            drawDealStatus();
         });
 
         function additionalBuyingSellHistory(){
@@ -122,6 +129,30 @@
                     document.getElementById("additionalBuyingSellHistory").appendChild(divTagForDate).appendChild(divTagForSelling).appendChild(divTagForBuying);
                 }
             };
+        }
+
+        function showDealStatus() {
+            var dealError = document.getElementById("dealError");
+            var dealStatus = document.getElementById("dealStatus");
+            if (isError === 'true') {
+                dealError.style.display = "block";
+                dealStatus.style.display = "none";
+            } else {
+                dealError.style.display = "none";
+                dealStatus.style.display = "block";
+            }
+        }
+
+        function drawDealStatus() {
+            var dealStatusWithEarningRate = document.getElementById("dealStatusWithEarningRate");
+            var dealStatusWithEmptyEarningRate = document.getElementById("dealStatusWithEmptyEarningRate");
+            if (earningRate) {
+                dealStatusWithEarningRate.style.display = "block";
+                dealStatusWithEmptyEarningRate.style.display = "none";
+            } else {
+                dealStatusWithEarningRate.style.display = "none";
+                dealStatusWithEmptyEarningRate.style.display = "block";
+            }
         }
     </script>
 </head>
@@ -177,37 +208,36 @@
                     <div id="container" style="height: 1000px; min-width: 310px"></div>
                     <script>
                         function drawCandleStickChart(){
-
-                            <c:if test="${isError == 'false'}">
-                            <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
-                            candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
-                            volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
-                            portionList.push([${dailyDealHistory.dealDateForTimestamp}, <fmt:formatNumber value="${dailyDealHistory.portion}" pattern="#,###" />])
-                            <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
-                            myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
-                            </c:if>
-                            <c:if test="${dailyDealHistory.additionalBuyingQuantity != 0}">
-                            additionalBuyingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount / dailyDealHistory.additionalBuyingQuantity}]);
-                            additionalBuyingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount}]);
-                            </c:if>
-                            <c:if test="${dailyDealHistory.additionalSellingQuantity != 0}">
-                            additionalSellingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount / dailyDealHistory.additionalSellingQuantity}]);
-                            additionalSellingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount}]);
-                            </c:if>
-                            <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('5') != null}">
-                            fiveMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('5')}]);
-                            </c:if>
-                            <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('20') != null}">
-                            twentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('20')}]);
-                            </c:if>
-                            <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('60') != null}">
-                            sixtyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('60')}]);
-                            </c:if>
-                            <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('120') != null}">
-                            oneTwentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('120')}]);
-                            </c:if>
-                            </c:forEach>
-                            </c:if>
+                            if (isError === 'false'){
+                                <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
+                                candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
+                                volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
+                                portionList.push([${dailyDealHistory.dealDateForTimestamp}, <fmt:formatNumber value="${dailyDealHistory.portion}" pattern="#,###" />])
+                                <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
+                                myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
+                                </c:if>
+                                <c:if test="${dailyDealHistory.additionalBuyingQuantity != 0}">
+                                additionalBuyingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount / dailyDealHistory.additionalBuyingQuantity}]);
+                                additionalBuyingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount}]);
+                                </c:if>
+                                <c:if test="${dailyDealHistory.additionalSellingQuantity != 0}">
+                                additionalSellingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount / dailyDealHistory.additionalSellingQuantity}]);
+                                additionalSellingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount}]);
+                                </c:if>
+                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('5') != null}">
+                                fiveMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('5')}]);
+                                </c:if>
+                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('20') != null}">
+                                twentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('20')}]);
+                                </c:if>
+                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('60') != null}">
+                                sixtyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('60')}]);
+                                </c:if>
+                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('120') != null}">
+                                oneTwentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('120')}]);
+                                </c:if>
+                                </c:forEach>
+                            }
 
                             document.addEventListener('DOMContentLoaded', function () {
                                 const highchartsOptions = Highcharts.setOptions({
@@ -513,32 +543,30 @@
 
                     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
                         <div>
-                            <c:choose>
-                                <c:when test="${isError == 'true'}">
-                                    <h1>${errorMessage}</h1>
-                                </c:when>
-                                <c:otherwise>
+                                <div id="dealError" disabled="false">
+                                    <h1><span class="errorMessage"></span></h1>
+                                </div>
+                                <div id="dealStatus" disabled="true">
                                     <h1><strong>매매 현황</strong></h1>
                                     <p></p>
-                                    <c:choose>
-                                        <c:when test="${empty earningRate}" >
-                                            <h2>실현수익률 : 0%</h2>
-                                            <h2>실현손익 : 0원</h2>
-                                            <h2>슬랏 할당금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
-                                            <h2>현재 비중 : <fmt:formatNumber value="${portion+((portion%1>0.5)?(1-(portion%1))%1:-(portion%1))}" pattern="#,###" />%</h2>
-                                            <h2>슬랏 예수금 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
-                                            <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion+((remainingPortion%1>0.5)?(1-(remainingPortion%1))%1:-(remainingPortion%1))}" pattern="#,###" />%</h2>
-                                            <h2>총 매입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
-                                            <h2>총 매도금액 : 0원</h2>
-                                            <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
-                                            <h2>총 매도수량 : 0주</h2>
-                                            <h2>총 매도수수료(0.3%) : 0원</h2>
-                                            <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
-                                            <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
-                                            <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
-                                            <h2>현재 종가 : <span class="currentClosingPrice"></span>원</h2>
-                                        </c:when>
-                                        <c:otherwise>
+                                    <div id="dealStatusWithEmptyEarningRate" disabled="false">
+                                        <h2>실현수익률 : 0%</h2>
+                                        <h2>실현손익 : 0원</h2>
+                                        <h2>슬랏 할당금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
+                                        <h2>현재 비중 : <fmt:formatNumber value="${portion+((portion%1>0.5)?(1-(portion%1))%1:-(portion%1))}" pattern="#,###" />%</h2>
+                                        <h2>슬랏 예수금 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
+                                        <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion+((remainingPortion%1>0.5)?(1-(remainingPortion%1))%1:-(remainingPortion%1))}" pattern="#,###" />%</h2>
+                                        <h2>총 매입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
+                                        <h2>총 매도금액 : 0원</h2>
+                                        <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
+                                        <h2>총 매도수량 : 0주</h2>
+                                        <h2>총 매도수수료(0.3%) : 0원</h2>
+                                        <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
+                                        <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
+                                        <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
+                                        <h2>현재 종가 : <span class="currentClosingPrice"></span>원</h2>
+                                    </div>
+                                    <div id="dealStatusWithEarningRate" disabled="true">
                                             <h2>실현수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
                                             <h2>실현손익 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
                                             <h2>슬랏 할당금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
@@ -554,10 +582,8 @@
                                             <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
                                             <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
                                             <h2>현재 종가 : <span class="currentClosingPrice" ></span>원</h2>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </c:otherwise>
-                            </c:choose>
+                                    </div>
+                                </div>
                         </div>
                     </div>
 

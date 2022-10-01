@@ -129,11 +129,11 @@ public class DealTrainingApiV1 {
             setModelMap(modelMap, dealTrainingResult, dealTrainingSourceDTO);
 
         } catch (NumberFormatException e){
-            return createModelMapWithFail(modelMap, "올바른 데이터 입력 형식이 아닙니다. 뒤로 돌아가서 정확한 형식으로 넣어주세요.", "buildUpResultWithModification");
+            return createModelMapWithFail(modelMap, "올바른 데이터 입력 형식이 아닙니다. 뒤로 돌아가서 정확한 형식으로 넣어주세요.", "dealTraining");
         } catch (Exception e){
             log.error("서버 오류 발생하였습니다. : {}", e.getMessage());
             e.printStackTrace();
-            return createModelMapWithFail(modelMap, "서버 오류 발생하였습니다.", "buildUpResultWithModification");
+            return createModelMapWithFail(modelMap, "서버 오류 발생하였습니다.", "dealTraining");
         }
 
         return "dealTraining";
