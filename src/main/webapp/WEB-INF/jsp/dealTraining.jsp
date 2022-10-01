@@ -51,13 +51,17 @@
     <!-- Custom styles for this template -->
     <link href="/resources/css/buildup.css" rel="stylesheet">
     <script>
+        var nextTryDate = "${nextTryDate}";
+        var currentClosingPrice = "${currentClosingPrice}".toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        <%--var dealModifications = "${dealModifications}";--%>
         $(function(){
             additionalBuyingSellHistory();
-            $('input[id=thisModifyDate]').attr('value',"${nextTryDate}");
+            $('input[id=thisModifyDate]').attr('value',nextTryDate);
             $('input[id=sellPercent]').attr('value',"0");
             $('input[id=buyPercent]').attr('value',"0");
-            $('input[id=sellPrice]').attr('value',"${currentClosingPrice}");
-            $('input[id=buyPrice]').attr('value',"${currentClosingPrice}");
+            $('input[id=sellPrice]').attr('value',currentClosingPrice);
+            $('input[id=buyPrice]').attr('value',currentClosingPrice);
+            $(".currentClosingPrice").text(currentClosingPrice);
             document.cookie = "SameSite=None; Secure";
         });
 
@@ -234,7 +238,7 @@
                                         align: 'left'
                                     },
                                     chart: {
-                                        zoomType: 'xy'
+                                        zoomType: 'x'
                                     },
                                     time:{
                                         useUTC: false,
@@ -524,7 +528,7 @@
                                             <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
                                             <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
                                             <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
-                                            <h2>현재 종가 : <fmt:formatNumber value="${currentClosingPrice}" pattern="#,###" />원</h2>
+                                            <h2>현재 종가 : <span class="currentClosingPrice"></span>원</h2>
                                         </c:when>
                                         <c:otherwise>
                                             <h2>실현수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
@@ -541,7 +545,7 @@
                                             <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
                                             <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
                                             <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
-                                            <h2>현재 종가 : <fmt:formatNumber value="${currentClosingPrice}" pattern="#,###" />원</h2>
+                                            <h2>현재 종가 : <span class="currentClosingPrice" ></span>원</h2>
                                         </c:otherwise>
                                     </c:choose>
                                 </c:otherwise>
