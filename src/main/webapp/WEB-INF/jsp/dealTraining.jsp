@@ -70,7 +70,20 @@
         var sixtyMovingAverageList = [];
         var oneTwentyMovingAverageList = [];
         var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
-        var earningRate = "${earningRate}"
+        var earningRate = "${earningRate}";
+        var earningAmount = "${earningAmount}";
+        var slotAmount = "${slotAmount}";
+        var portion = "${portion+((portion%1>0.5)?(1-(portion%1))%1:-(portion%1))}";
+        var remainingSlotAmount = "${remainingSlotAmount}";
+        var remainingPortion = "${remainingPortion+((remainingPortion%1>0.5)?(1-(remainingPortion%1))%1:-(remainingPortion%1))}";
+        var sumOfPurchaseAmount = "${sumOfPurchaseAmount}";
+        var sumOfSellingAmount = "${sumOfSellingAmount}";
+        var sumOfPurchaseQuantity = "${sumOfPurchaseQuantity}";
+        var sumOfSellingQuantity = "${sumOfSellingQuantity}";
+        var sumOfCommission = "${sumOfCommission}";
+        var totalAmount = "${totalAmount}";
+        var valuationPercent = "${valuationPercent}";
+        var averageUnitPrice = "${averageUnitPrice}";
 
         //etc
         var isError = "${isError}"
@@ -82,8 +95,22 @@
             $('input[id=buyPercent]').attr('value',"0");
             $('input[id=sellPrice]').attr('value',currentClosingPrice);
             $('input[id=buyPrice]').attr('value',currentClosingPrice);
-            $(".currentClosingPrice").text(currentClosingPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+            $(".currentClosingPrice").text(makeComma(currentClosingPrice));
             $(".errorMessage").text(errorMessage);
+            $(".earningRate").text(makeComma(earningRate));
+            $(".earningAmount").text(makeComma(earningAmount));
+            $(".slotAmount").text(makeComma(slotAmount));
+            $(".portion").text(makeComma(portion));
+            $(".remainingSlotAmount").text(makeComma(remainingSlotAmount));
+            $(".remainingPortion").text(makeComma(remainingPortion));
+            $(".sumOfPurchaseAmount").text(makeComma(sumOfPurchaseAmount));
+            $(".sumOfSellingAmount").text(makeComma(sumOfSellingAmount));
+            $(".sumOfPurchaseQuantity").text(makeComma(sumOfPurchaseQuantity));
+            $(".sumOfSellingQuantity").text(makeComma(sumOfSellingQuantity));
+            $(".sumOfCommission").text(makeComma(sumOfCommission));
+            $(".totalAmount").text(makeComma(totalAmount));
+            $(".valuationPercent").text(makeComma(valuationPercent));
+            $(".averageUnitPrice").text(makeComma(averageUnitPrice));
             document.cookie = "SameSite=None; Secure";
 
             <c:forEach items="${dealModifications2}" var="dealModification">
@@ -94,6 +121,10 @@
             showDealStatus();
             drawDealStatus();
         });
+
+        function makeComma(originalNumber){
+            return originalNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+        }
 
         function additionalBuyingSellHistory(){
             for(let idx=0; idx < dealModifications.length; idx++) {
@@ -552,35 +583,35 @@
                                     <div id="dealStatusWithEmptyEarningRate" disabled="false">
                                         <h2>실현수익률 : 0%</h2>
                                         <h2>실현손익 : 0원</h2>
-                                        <h2>슬랏 할당금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
-                                        <h2>현재 비중 : <fmt:formatNumber value="${portion+((portion%1>0.5)?(1-(portion%1))%1:-(portion%1))}" pattern="#,###" />%</h2>
-                                        <h2>슬랏 예수금 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
-                                        <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion+((remainingPortion%1>0.5)?(1-(remainingPortion%1))%1:-(remainingPortion%1))}" pattern="#,###" />%</h2>
-                                        <h2>총 매입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
+                                        <h2>슬랏 할당금액 : <span class="slotAmount"></span>원</h2>
+                                        <h2>현재 비중 : <span class="portion"></span>%</h2>
+                                        <h2>슬랏 예수금 : <span class="remainingSlotAmount"></span>원</h2>
+                                        <h2>슬랏 예수금 비중 : <span class="remainingPortion"></span>%</h2>
+                                        <h2>총 매입금액 : <span class="sumOfPurchaseAmount"></span>원</h2>
                                         <h2>총 매도금액 : 0원</h2>
-                                        <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
+                                        <h2>총 매입수량 : <span class="sumOfPurchaseQuantity"></span>주</h2>
                                         <h2>총 매도수량 : 0주</h2>
                                         <h2>총 매도수수료(0.3%) : 0원</h2>
-                                        <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
-                                        <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
-                                        <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
+                                        <h2>현재 평가금액 : <span class="totalAmount"></span>원</h2>
+                                        <h2>현재 평가손익 : <span class="valuationPercent"></span>%</h2>
+                                        <h2>현재 평균단가 : <span class="averageUnitPrice"></span>원</h2>
                                         <h2>현재 종가 : <span class="currentClosingPrice"></span>원</h2>
                                     </div>
                                     <div id="dealStatusWithEarningRate" disabled="true">
-                                            <h2>실현수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
-                                            <h2>실현손익 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
-                                            <h2>슬랏 할당금액 : <fmt:formatNumber value="${slotAmount}" pattern="#,###" />원</h2>
-                                            <h2>현재 비중 : <fmt:formatNumber value="${portion+((portion%1>0.5)?(1-(portion%1))%1:-(portion%1))}" pattern="#,###" />%</h2>
-                                            <h2>슬랏 예수금 : <fmt:formatNumber value="${remainingSlotAmount}" pattern="#,###" />원</h2>
-                                            <h2>슬랏 예수금 비중 : <fmt:formatNumber value="${remainingPortion+((remainingPortion%1>0.5)?(1-(remainingPortion%1))%1:-(remainingPortion%1))}" pattern="#,###" />%</h2>
-                                            <h2>총 매입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
-                                            <h2>총 매도금액 : <fmt:formatNumber value="${sumOfSellingAmount}" pattern="#,###" />원</h2>
-                                            <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
-                                            <h2>총 매도수량 : <fmt:formatNumber value="${sumOfSellingQuantity}" pattern="#,###" />주</h2>
-                                            <h2>총 매도수수료(0.3%) : <fmt:formatNumber value="${sumOfCommission}" pattern="#,###" />원</h2>
-                                            <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
-                                            <h2>현재 평가손익 : <fmt:formatNumber value="${valuationPercent}" pattern="#,###.00" />%</h2>
-                                            <h2>현재 평균단가 : <fmt:formatNumber value="${averageUnitPrice}" pattern="#,###" />원</h2>
+                                            <h2>실현수익률 : <span class="earningRate"></span>%</h2>
+                                            <h2>실현손익 : <span class="earningAmount"></span>원</h2>
+                                            <h2>슬랏 할당금액 : <span class="slotAmount"></span>원</h2>
+                                            <h2>현재 비중 : <span class="portion"></span>%</h2>
+                                            <h2>슬랏 예수금 : <span class="remainingSlotAmount"></span>원</h2>
+                                            <h2>슬랏 예수금 비중 : <span class="remainingPortion"></span>%</h2>
+                                            <h2>총 매입금액 : <span class="sumOfPurchaseAmount"></span>원</h2>
+                                            <h2>총 매도금액 : <span class="sumOfSellingAmount"></span>원</h2>
+                                            <h2>총 매입수량 : <span class="sumOfPurchaseQuantity"></span>주</h2>
+                                            <h2>총 매도수량 : <span class="sumOfSellingQuantity"></span>주</h2>
+                                            <h2>총 매도수수료(0.3%) : <span class="sumOfCommission"></span>원</h2>
+                                            <h2>현재 평가금액 : <span class="totalAmount"></span>원</h2>
+                                            <h2>현재 평가손익 : <span class="valuationPercent"></span>%</h2>
+                                            <h2>현재 평균단가 : <span class="averageUnitPrice"></span>원</h2>
                                             <h2>현재 종가 : <span class="currentClosingPrice" ></span>원</h2>
                                     </div>
                                 </div>
