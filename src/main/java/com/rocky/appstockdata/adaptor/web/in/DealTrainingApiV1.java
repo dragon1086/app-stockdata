@@ -8,6 +8,7 @@ import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
 import com.rocky.appstockdata.exceptions.DealTrainingSourceException;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -77,6 +78,7 @@ public class DealTrainingApiV1 {
         modelMap.put("remainingSlotAmount", dealTrainingResult.getRemainingSlotAmount());
         modelMap.put("remainingPortion", dealTrainingResult.getRemainingPortion());
         modelMap.put("dealModifications", dealTrainingResult.getDealModifications());
+        modelMap.put("dealModifications2", JSONArray.fromObject(dealTrainingResult.getDealModifications()));
         modelMap.put("totalAmount", dealTrainingResult.getTotalAmount());
         modelMap.put("valuationPercent", dealTrainingResult.getValuationPercent());
         modelMap.put("averageUnitPrice", dealTrainingResult.getAverageUnitPrice());

@@ -52,35 +52,42 @@
     <link href="/resources/css/buildup.css" rel="stylesheet">
     <script>
         var nextTryDate = "${nextTryDate}";
-        var currentClosingPrice = "${currentClosingPrice}".toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        <%--var dealModifications = "${dealModifications}";--%>
+        var currentClosingPrice = "${currentClosingPrice}";
+        var dealModifications = [];
+
         $(function(){
-            additionalBuyingSellHistory();
             $('input[id=thisModifyDate]').attr('value',nextTryDate);
             $('input[id=sellPercent]').attr('value',"0");
             $('input[id=buyPercent]').attr('value',"0");
             $('input[id=sellPrice]').attr('value',currentClosingPrice);
             $('input[id=buyPrice]').attr('value',currentClosingPrice);
-            $(".currentClosingPrice").text(currentClosingPrice);
+            $(".currentClosingPrice").text(currentClosingPrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','));
             document.cookie = "SameSite=None; Secure";
+
+            <c:forEach items="${dealModifications2}" var="dealModification">
+                dealModifications.push(${dealModification});
+            </c:forEach>
+
+            additionalBuyingSellHistory();
+
         });
 
         function additionalBuyingSellHistory(){
-            <c:forEach items="${dealModifications}" var="dealModification">
-                <c:if test="${(dealModification.buyPercent != 0 && dealModification.buyPrice !=0) || (dealModification.sellPercent != 0 && dealModification.sellPrice !=0)}">
+            for(let idx=0; idx < dealModifications.length; idx++) {
+                if( ( dealModifications[idx].buyPercent !== 0 && dealModifications[idx].buyPrice !== 0 ) || ( dealModifications[idx].sellPercent !== 0 && dealModifications[idx].sellPrice !== 0 ) ){
                     var innerDivTagForDate = $('<div/>', {class: 'input-group mb-3'});
                     var innerDivTagForSelling = $('<div/>', {class: 'input-group mb-3'});
                     var innerDivTagForBuying = $('<div/>', {class: 'input-group mb-3'});
                     var spanModifyDate = $('<span/>', {class: 'input-group-text'}).text("수정 날짜");
-                    var inputModifyDate = $('<input/>', {readOnly: 'true', type: 'date', class: 'form-control', name: 'modifyDate', value: "<javatime:parseLocalDate value='${dealModification.modifyDate}' pattern='yyyy-MM-dd' />"});
+                    var inputModifyDate = $('<input/>', {readOnly: 'true', type: 'date', class: 'form-control', name: 'modifyDate', value: dealModifications[idx].modifyDate});
                     var spanSellPercentHistory = $('<span/>', {class: 'input-group-text'}).text("매도 비중%");
-                    var inputSellPercentHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'sellPercent', value: ${dealModification.sellPercent}});
+                    var inputSellPercentHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'sellPercent', value: dealModifications[idx].sellPercent});
                     var spanSellPriceHistory = $('<span/>', {class: 'input-group-text'}).text("매도 가격");
-                    var inputSellPriceHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'sellPrice', value: ${dealModification.sellPrice}});
+                    var inputSellPriceHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'sellPrice', value: dealModifications[idx].sellPrice});
                     var spanBuyPercentHistory = $('<span/>', {class: 'input-group-text'}).text("매수 비중%");
-                    var inputBuyPercentHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'buyPercent', value: ${dealModification.buyPercent}});
+                    var inputBuyPercentHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'buyPercent', value: dealModifications[idx].buyPercent});
                     var spanBuyPriceHistory = $('<span/>', {class: 'input-group-text'}).text("매수 가격");
-                    var inputBuyPriceHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'buyPrice', value: ${dealModification.buyPrice}});
+                    var inputBuyPriceHistory = $('<input/>', {readOnly: 'true', type: 'text', class: 'form-control', name: 'buyPrice', value: dealModifications[idx].buyPrice});
 
                     var divTagForDate = document.createElement('div');
                     divTagForDate.className = "input-group mb-3";
@@ -97,9 +104,8 @@
                     divTagForBuying.append(innerDivTagForBuying.get(0));
 
                     document.getElementById("additionalBuyingSellHistory").appendChild(divTagForDate).appendChild(divTagForSelling).appendChild(divTagForBuying);
-                </c:if>
-            </c:forEach>
-
+                }
+            };
         }
     </script>
 </head>
