@@ -120,7 +120,7 @@
             $('input[id=inputCompanyName]').attr('value',companyName);
             $('input[id=inputStartDate]').attr('value',startDate);
             $('input[id=inputEndDate]').attr('value',endDate);
-            $('input[id=inputSlotAmount]').attr('value',makeComma(slotAmount));
+            $('input[id=inputSlotAmount]').attr('value',slotAmount);
             $('input[id=inputPortion]').attr('value', makeComma(initialPortion));
             document.cookie = "SameSite=None; Secure";
 
@@ -134,7 +134,8 @@
         });
 
         function makeComma(originalNumber){
-            return originalNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            var parts = originalNumber.toString().split(".");
+            return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
 
         function additionalBuyingSellHistory(){
@@ -258,7 +259,7 @@
                                 for(let idx=0; idx < dailyDealHistories.length; idx++) {
                                     candleStickDataList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].startPrice, dailyDealHistories[idx].highPrice, dailyDealHistories[idx].lowPrice, dailyDealHistories[idx].closingPrice]);
                                     volumeList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].tradeVolume]);
-                                    portionList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].portion]);
+                                    portionList.push([dailyDealHistories[idx].dealDateForTimestamp, Number(dailyDealHistories[idx].portion.toFixed(0))]);
                                     if( dailyDealHistories[idx].myAverageUnitPrice !== 0 ) {
                                         myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
                                     }
@@ -687,25 +688,27 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <c:forEach items="${dailyDealHistoriesDesc}" var="dailyDealHistory">
-                                <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
-                                    <tr>
-                                        <td>${dailyDealHistory.dealDate}</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.buyPrice}" pattern="#,###" />원</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.buyPercent}" pattern="#,###" />%</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.sellPrice}" pattern="#,###" />원</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.sellPercent}" pattern="#,###" />%</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.myAverageUnitPrice}" pattern="#,###" />원</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.additionalBuyingQuantity}" pattern="#,###" />주</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.additionalBuyingAmount}" pattern="#,###" />원</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.additionalSellingQuantity}" pattern="#,###" />주</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.additionalSellingAmount}" pattern="#,###" />원</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.commission}" pattern="#,###" />원</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.realizedEarningAmount}" pattern="#,###" />원</td>
-                                        <td><fmt:formatNumber value="${dailyDealHistory.remainingAmount}" pattern="#,###" />원</td>
-                                    </tr>
-                                </c:if>
-                            </c:forEach>
+                                <script>
+                                for(let idx=0; idx < dailyDealHistories.length; idx++) {
+                                    if( dailyDealHistories[idx].myAverageUnitPrice !== 0 ){
+                                        document.write('<tr>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].dealDate) + '</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].buyPrice) + '원</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].buyPercent) + '%</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].sellPrice) + '원</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].sellPercent) + '%</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].myAverageUnitPrice) + '원</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].additionalBuyingQuantity) + '주</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].additionalBuyingAmount) + '원</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].additionalSellingQuantity) + '주</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].additionalSellingAmount) + '원</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].commission) + '원</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].realizedEarningAmount) + '원</td>');
+                                        document.write('<td>' + makeComma(dailyDealHistories[idx].remainingAmount) + '원</td>');
+                                        document.write('</tr>');
+                                    }
+                                };
+                                </script>
                             </tbody>
                         </table>
                     </div>
