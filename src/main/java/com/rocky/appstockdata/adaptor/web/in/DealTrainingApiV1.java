@@ -70,15 +70,14 @@ public class DealTrainingApiV1 {
         modelMap.put("startDate", dealTrainingResult.getStartDate());
         modelMap.put("endDate", dealTrainingResult.getEndDate());
         modelMap.put("itemName", dealTrainingResult.getItemName());
-        modelMap.put("dailyDealHistories", dealTrainingResult.getDailyDealHistories());
+        modelMap.put("dailyDealHistories", JSONArray.fromObject(dealTrainingResult.getDailyDealHistories()));
         modelMap.put("dailyDealHistoriesDesc", dealTrainingResult.getDailyDealHistoriesDesc());
         modelMap.put("initialPortion", dealTrainingSourceDTO.getPortion());
         modelMap.put("slotAmount", dealTrainingSourceDTO.getSlotAmount());
         modelMap.put("portion", 100.0 - dealTrainingResult.getRemainingPortion());
         modelMap.put("remainingSlotAmount", dealTrainingResult.getRemainingSlotAmount());
         modelMap.put("remainingPortion", dealTrainingResult.getRemainingPortion());
-        modelMap.put("dealModifications", dealTrainingResult.getDealModifications());
-        modelMap.put("dealModifications2", JSONArray.fromObject(dealTrainingResult.getDealModifications()));
+        modelMap.put("dealModifications", JSONArray.fromObject(dealTrainingResult.getDealModifications()));
         modelMap.put("totalAmount", dealTrainingResult.getTotalAmount());
         modelMap.put("valuationPercent", dealTrainingResult.getValuationPercent());
         modelMap.put("averageUnitPrice", dealTrainingResult.getAverageUnitPrice());

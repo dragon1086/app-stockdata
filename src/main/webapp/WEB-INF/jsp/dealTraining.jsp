@@ -55,8 +55,14 @@
         var nextTryDate = "${nextTryDate}";
         var currentClosingPrice = "${currentClosingPrice}";
         var dealModifications = [];
+        var dailyDealHistories = [];
 
         //candleStick setting values
+        var itemName = "${itemName}";
+        var companyName = "${companyName}";
+        var startDate = "${startDate}";
+        var endDate = "${endDate}";
+        var initialPortion = "${initialPortion}";
         var candleStickDataList = [];
         var volumeList = [];
         var portionList = [];
@@ -111,9 +117,14 @@
             $(".totalAmount").text(makeComma(totalAmount));
             $(".valuationPercent").text(makeComma(valuationPercent));
             $(".averageUnitPrice").text(makeComma(averageUnitPrice));
+            $('input[id=inputCompanyName]').attr('value',companyName);
+            $('input[id=inputStartDate]').attr('value',startDate);
+            $('input[id=inputEndDate]').attr('value',endDate);
+            $('input[id=inputSlotAmount]').attr('value',makeComma(slotAmount));
+            $('input[id=inputPortion]').attr('value', makeComma(initialPortion));
             document.cookie = "SameSite=None; Secure";
 
-            <c:forEach items="${dealModifications2}" var="dealModification">
+            <c:forEach items="${dealModifications}" var="dealModification">
                 dealModifications.push(${dealModification});
             </c:forEach>
 
@@ -239,35 +250,39 @@
                     <div id="container" style="height: 1000px; min-width: 310px"></div>
                     <script>
                         function drawCandleStickChart(){
+                            <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
+                                dailyDealHistories.push(${dailyDealHistory});
+                            </c:forEach>
+
                             if (isError === 'false'){
-                                <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
-                                candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
-                                volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
-                                portionList.push([${dailyDealHistory.dealDateForTimestamp}, <fmt:formatNumber value="${dailyDealHistory.portion}" pattern="#,###" />])
-                                <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
-                                myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
-                                </c:if>
-                                <c:if test="${dailyDealHistory.additionalBuyingQuantity != 0}">
-                                additionalBuyingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount / dailyDealHistory.additionalBuyingQuantity}]);
-                                additionalBuyingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalBuyingAmount}]);
-                                </c:if>
-                                <c:if test="${dailyDealHistory.additionalSellingQuantity != 0}">
-                                additionalSellingPrice.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount / dailyDealHistory.additionalSellingQuantity}]);
-                                additionalSellingAmount.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.additionalSellingAmount}]);
-                                </c:if>
-                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('5') != null}">
-                                fiveMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('5')}]);
-                                </c:if>
-                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('20') != null}">
-                                twentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('20')}]);
-                                </c:if>
-                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('60') != null}">
-                                sixtyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('60')}]);
-                                </c:if>
-                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('120') != null}">
-                                oneTwentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('120')}]);
-                                </c:if>
-                                </c:forEach>
+                                for(let idx=0; idx < dailyDealHistories.length; idx++) {
+                                    candleStickDataList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].startPrice, dailyDealHistories[idx].highPrice, dailyDealHistories[idx].lowPrice, dailyDealHistories[idx].closingPrice]);
+                                    volumeList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].tradeVolume]);
+                                    portionList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].portion]);
+                                    if( dailyDealHistories[idx].myAverageUnitPrice !== 0 ) {
+                                        myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
+                                    }
+                                    if( dailyDealHistories[idx].additionalBuyingQuantity !== 0 ) {
+                                        additionalBuyingPrice.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalBuyingAmount / dailyDealHistories[idx].additionalBuyingQuantity]);
+                                        additionalBuyingAmount.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalBuyingAmount]);
+                                    }
+                                    if( dailyDealHistories[idx].additionalSellingQuantity !== 0 ) {
+                                        additionalSellingPrice.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalSellingAmount / dailyDealHistories[idx].additionalSellingQuantity]);
+                                        additionalSellingAmount.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalSellingAmount]);
+                                    }
+                                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.five ) {
+                                        fiveMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.five]);
+                                    }
+                                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.twenty ) {
+                                        twentyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.twenty]);
+                                    }
+                                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.sixty ) {
+                                        sixtyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.sixty]);
+                                    }
+                                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.oneHundredTwenty ) {
+                                        oneTwentyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.oneHundredTwenty]);
+                                    }
+                                };
                             }
 
                             document.addEventListener('DOMContentLoaded', function () {
@@ -295,7 +310,7 @@
                                 );
                                 const chart = Highcharts.stockChart('container', {
                                     title: {
-                                        text: '일봉차트와 평균단가 그래프(${itemName})',
+                                        text: '일봉차트와 평균단가 그래프(' + itemName + ')',
                                         style:{
                                             color: '#00443a',
                                             fontSize: '24px',
@@ -410,7 +425,7 @@
                                     },
                                     series: [{
                                         id: 'candle',
-                                        name: '${itemName}',
+                                        name: itemName,
                                         type: 'candlestick',
                                         data: candleStickDataList,
                                         tooltip: {
@@ -640,14 +655,6 @@
                                 <span class="input-group-text" id="input-addon5">시작 비중%</span>
                                 <input readonly="true" type="text" id="inputPortion" class="form-control" name="portion" aria-label="portion" aria-describedby="input-addon5" value="">
                             </div>
-
-                            <script>
-                                $('input[id=inputCompanyName]').attr('value',"${companyName}");
-                                $('input[id=inputStartDate]').attr('value',"${startDate}");
-                                $('input[id=inputEndDate]').attr('value',"${endDate}");
-                                $('input[id=inputSlotAmount]').attr('value',"${slotAmount}");
-                                $('input[id=inputPortion]').attr('value',<fmt:formatNumber value="${initialPortion}" pattern="#,###" />);
-                            </script>
                         </div>
                     </div>
 
