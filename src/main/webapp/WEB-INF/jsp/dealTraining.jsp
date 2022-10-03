@@ -269,8 +269,8 @@
                         additionalBuyingSellHistory();
                         showDealStatus();
                         drawDealStatus();
-
                         drawChart();
+                        drawAllHistoryTable();
                     },
                     error: function(request, status, error) {
                         // Some error in ajax call
@@ -278,8 +278,7 @@
                         console.error(error);
                     },
                     complete: function(data){
-                        alert(data.status);
-
+                        // alert(data.status);
                     }
                 });
 
@@ -373,25 +372,35 @@
         }
 
         function drawAllHistoryTable(){
+            //initialize
+            document.getElementById("dailyHistoryTableBody").innerHTML = "";
+
+            var rows = "";
             for(let idx=0; idx < dailyDealHistories.length; idx++) {
                 if( dailyDealHistories[idx].myAverageUnitPrice !== 0 ){
-                    document.write('<tr>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].dealDate) + '</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].buyPrice) + '원</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].buyPercent) + '%</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].sellPrice) + '원</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].sellPercent) + '%</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].myAverageUnitPrice) + '원</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].additionalBuyingQuantity) + '주</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].additionalBuyingAmount) + '원</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].additionalSellingQuantity) + '주</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].additionalSellingAmount) + '원</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].commission) + '원</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].realizedEarningAmount) + '원</td>');
-                    document.write('<td>' + makeComma(dailyDealHistories[idx].remainingAmount) + '원</td>');
-                    document.write('</tr>');
+                    rows += '<tr>' +
+                        '<td>' + dailyDealHistories[idx].dealDate + '</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].buyPrice) + '원</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].buyPercent) + '%</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].sellPrice) + '원</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].sellPercent) + '%</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].myAverageUnitPrice) + '원</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].additionalBuyingQuantity) + '주</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].additionalBuyingAmount) + '원</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].additionalSellingQuantity) + '주</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].additionalSellingAmount) + '원</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].commission) + '원</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].realizedEarningAmount) + '원</td>' +
+                        '<td>' + makeComma(dailyDealHistories[idx].remainingAmount) + '원</td>' +
+                        '</tr>';
                 }
             };
+
+            // get the current table body html as a string, and append the new row
+            var html = document.getElementById("dailyHistoryTableBody").innerHTML + rows;
+
+            // set the table body to the new html code
+            document.getElementById("dailyHistoryTableBody").innerHTML = html;
         }
 
         function drawCandleStickChart(){
@@ -883,10 +892,7 @@
                                 <th scope="col">예수금</th>
                             </tr>
                             </thead>
-                            <tbody>
-                                <script>
-                                    drawAllHistoryTable();
-                                </script>
+                            <tbody id="dailyHistoryTableBody">
                             </tbody>
                         </table>
                     </div>
