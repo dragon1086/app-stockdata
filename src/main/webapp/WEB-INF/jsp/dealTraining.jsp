@@ -124,17 +124,153 @@
             $('input[id=inputPortion]').attr('value', makeComma(initialPortion));
             $("#submitButton").on("click",function(event) {
                 event.preventDefault(); //submit 메소드 두 번 실행 방지
-                var form = $("#modifyCalculation");
-                var url = form.attr('action');
+                var url = "/deal-calculate-modify";
+                var zero = "0";
+                var modifyDate = $('input[name=modifyDate]').map(function(){return $(this).val();}).get();
+                var sellPercent = $('input[name=sellPercent]').map(function(){return $(this).val();}).get();
+                var sellPrice = $('input[name=sellPrice]').map(function(){return $(this).val();}).get();
+                var buyPercent = $('input[name=buyPercent]').map(function(){return $(this).val();}).get();
+                var buyPrice = $('input[name=buyPrice]').map(function(){return $(this).val();}).get();
+
+                var requestData = {
+                    modifyDates: modifyDate,
+                    sellPercents: sellPercent,
+                    sellPrices: sellPrice,
+                    buyPercents: buyPercent,
+                    buyPrices: buyPrice,
+                    companyName: companyName,
+                    startDate: startDate,
+                    endDate: endDate,
+                    slotAmount: slotAmount,
+                    portion: portion
+                };
+
                 $.ajax({
-                    type: "POST",
+                    type: "post",
                     url: url,
-                    data: form.serialize(),
+                    accept: "application/json",
+                    dataType: "json",
+                    contentType: "application/json",
+                    data: JSON.stringify(requestData),
                     success: function(data) {
                         // Ajax call completed successfully
-                        alert("Form Submited Successfully");
-                        console.log("Form Submited Successfully");
-                        console.log(data);
+                        nextTryDate = data.nextTryDate;
+                        $('input[id=thisModifyDate]').attr('value',nextTryDate);
+
+                        //update result setting values
+                        currentClosingPrice = data.currentClosingPrice;
+                        $('input[id=sellPrice]').attr('value',currentClosingPrice);
+                        $('input[id=buyPrice]').attr('value',currentClosingPrice);
+                        $('input[id=sellPercent]').val('0');
+                        $('input[id=buyPercent]').val('0');
+                        $(".currentClosingPrice").text(makeComma(currentClosingPrice));
+
+                        dealModifications = data.dealModifications;
+
+                        dailyDealHistories.pop();
+                        dailyDealHistories.push(data.oneDayAgoDailyDealHistory);
+                        dailyDealHistories.push(data.lastDailyDealHistory);
+
+                        //update candleStick setting values
+                        itemName = data.itemName;
+                        companyName = data.companyName;
+                        $('input[id=inputCompanyName]').attr('value',companyName);
+                        startDate = data.startDate;
+                        $('input[id=inputStartDate]').attr('value',startDate);
+                        endDate = data.endDate;
+                        $('input[id=inputEndDate]').attr('value',endDate);
+                        initialPortion= data.initialPortion;
+
+                        candleStickDataList.pop();
+                        candleStickDataList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.startPrice, data.oneDayAgoDailyDealHistory.highPrice, data.oneDayAgoDailyDealHistory.lowPrice, data.oneDayAgoDailyDealHistory.closingPrice]);
+                        candleStickDataList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.startPrice, data.lastDailyDealHistory.highPrice, data.lastDailyDealHistory.lowPrice, data.lastDailyDealHistory.closingPrice]);
+
+                        volumeList.pop();
+                        volumeList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.tradeVolume]);
+                        volumeList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.tradeVolume]);
+
+                        portionList.pop();
+                        portionList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, Number(data.oneDayAgoDailyDealHistory.portion.toFixed(0))]);
+                        portionList.push([data.lastDailyDealHistory.dealDateForTimestamp, Number(data.lastDailyDealHistory.portion.toFixed(0))]);
+                        if( data.oneDayAgoDailyDealHistory.myAverageUnitPrice !== 0 ) {
+                            myAverageUnitPriceList.pop();
+                            myAverageUnitPriceList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.myAverageUnitPrice]);
+                            myAverageUnitPriceList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.myAverageUnitPrice]);
+                        }
+                        if( data.oneDayAgoDailyDealHistory.additionalBuyingQuantity !== 0 ) {
+                            additionalBuyingPrice.pop();
+                            additionalBuyingPrice.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalBuyingAmount / data.oneDayAgoDailyDealHistory.additionalBuyingQuantity]);
+                            additionalBuyingPrice.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalBuyingAmount / data.lastDailyDealHistory.additionalBuyingQuantity]);
+
+                            additionalBuyingAmount.pop();
+                            additionalBuyingAmount.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalBuyingAmount]);
+                            additionalBuyingAmount.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalBuyingAmount]);
+                        }
+                        if( data.oneDayAgoDailyDealHistory.additionalSellingQuantity !== 0 ) {
+                            additionalSellingPrice.pop();
+                            additionalSellingPrice.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalSellingAmount / data.oneDayAgoDailyDealHistory.additionalSellingQuantity]);
+                            additionalSellingPrice.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalSellingAmount / data.lastDailyDealHistory.additionalSellingQuantity]);
+
+                            additionalSellingAmount.pop();
+                            additionalSellingAmount.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalSellingAmount]);
+                            additionalSellingAmount.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalSellingAmount]);
+                        }
+                        if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.five ) {
+                            fiveMovingAverageList.pop();
+                            fiveMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.five]);
+                            fiveMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.five]);
+                        }
+                        if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.twenty ) {
+                            twentyMovingAverageList.pop();
+                            twentyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.twenty]);
+                            twentyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.twenty]);
+                        }
+                        if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.sixty ) {
+                            sixtyMovingAverageList.pop();
+                            sixtyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.sixty]);
+                            sixtyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.sixty]);
+                        }
+                        if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.oneHundredTwenty ) {
+                            oneTwentyMovingAverageList.pop();
+                            oneTwentyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.oneHundredTwenty]);
+                            oneTwentyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.oneHundredTwenty]);
+                        }
+
+                        earningRate = data.earningRate;
+                        $(".earningRate").text(makeCommaWithDecimal(earningRate));
+                        earningAmount = data.earningAmount;
+                        $(".earningAmount").text(makeComma(earningAmount));
+                        slotAmount = data.slotAmount;
+                        $(".slotAmount").text(makeComma(slotAmount));
+                        portion = data.portion;
+                        $(".portion").text(makeComma(portion));
+                        remainingSlotAmount = data.remainingSlotAmount;
+                        $(".remainingSlotAmount").text(makeComma(remainingSlotAmount));
+                        remainingPortion = data.remainingPortion;
+                        $(".remainingPortion").text(makeComma(remainingPortion));
+                        sumOfPurchaseAmount = data.sumOfPurchaseAmount;
+                        $(".sumOfPurchaseAmount").text(makeComma(sumOfPurchaseAmount));
+                        sumOfSellingAmount = data.sumOfSellingAmount;
+                        $(".sumOfSellingAmount").text(makeComma(sumOfSellingAmount));
+                        sumOfPurchaseQuantity = data.sumOfPurchaseQuantity;
+                        $(".sumOfPurchaseQuantity").text(makeComma(sumOfPurchaseQuantity));
+                        sumOfSellingQuantity = data.sumOfSellingQuantity;
+                        $(".sumOfSellingQuantity").text(makeComma(sumOfSellingQuantity));
+                        sumOfCommission = data.sumOfCommission;
+                        $(".sumOfCommission").text(makeComma(sumOfCommission));
+                        totalAmount = data.totalAmount;
+                        $(".totalAmount").text(makeComma(totalAmount));
+                        valuationPercent = data.valuationPercent;
+                        $(".valuationPercent").text(makeCommaWithDecimal(valuationPercent));
+                        averageUnitPrice = data.averageUnitPrice;
+                        $(".averageUnitPrice").text(makeComma(averageUnitPrice));
+
+                        //re-draw elements
+                        additionalBuyingSellHistory();
+                        showDealStatus();
+                        drawDealStatus();
+
+                        drawChart();
                     },
                     error: function(request, status, error) {
                         // Some error in ajax call
@@ -144,9 +280,6 @@
                     complete: function(data){
                         alert(data.status);
 
-                        nextTryDate = data.nextTryDate;
-                        $('input[id=thisModifyDate]').attr('value',nextTryDate);
-                        drawCandleStickChart();
                     }
                 });
 
@@ -161,6 +294,7 @@
             additionalBuyingSellHistory();
             showDealStatus();
             drawDealStatus();
+            drawCandleStickChart();
         });
 
         function makeComma(originalNumber){
@@ -168,7 +302,17 @@
             return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
 
+        function makeCommaWithDecimal(originalNumber){
+            return originalNumber.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
         function additionalBuyingSellHistory(){
+            //initilize all childs
+            let element = document.getElementById("additionalBuyingSellHistory");
+            while (element.firstChild) {
+                element.removeChild(element.firstChild);
+            }
+
             for(let idx=0; idx < dealModifications.length; idx++) {
                 if( ( dealModifications[idx].buyPercent !== 0 && dealModifications[idx].buyPrice !== 0 ) || ( dealModifications[idx].sellPercent !== 0 && dealModifications[idx].sellPrice !== 0 ) ){
                     var innerDivTagForDate = $('<div/>', {class: 'input-group mb-3'});
@@ -227,6 +371,364 @@
                 dealStatusWithEmptyEarningRate.style.display = "block";
             }
         }
+
+        function drawAllHistoryTable(){
+            for(let idx=0; idx < dailyDealHistories.length; idx++) {
+                if( dailyDealHistories[idx].myAverageUnitPrice !== 0 ){
+                    document.write('<tr>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].dealDate) + '</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].buyPrice) + '원</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].buyPercent) + '%</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].sellPrice) + '원</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].sellPercent) + '%</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].myAverageUnitPrice) + '원</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].additionalBuyingQuantity) + '주</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].additionalBuyingAmount) + '원</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].additionalSellingQuantity) + '주</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].additionalSellingAmount) + '원</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].commission) + '원</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].realizedEarningAmount) + '원</td>');
+                    document.write('<td>' + makeComma(dailyDealHistories[idx].remainingAmount) + '원</td>');
+                    document.write('</tr>');
+                }
+            };
+        }
+
+        function drawCandleStickChart(){
+            <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
+            dailyDealHistories.push(${dailyDealHistory});
+            </c:forEach>
+
+            if (isError === 'false'){
+                for(let idx=0; idx < dailyDealHistories.length; idx++) {
+                    candleStickDataList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].startPrice, dailyDealHistories[idx].highPrice, dailyDealHistories[idx].lowPrice, dailyDealHistories[idx].closingPrice]);
+                    volumeList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].tradeVolume]);
+                    portionList.push([dailyDealHistories[idx].dealDateForTimestamp, Number(dailyDealHistories[idx].portion.toFixed(0))]);
+                    if( dailyDealHistories[idx].myAverageUnitPrice !== 0 ) {
+                        myAverageUnitPriceList.push([dailyDealHistories[idx].dealDateForTimestamp,dailyDealHistories[idx].myAverageUnitPrice]);
+                    }
+                    if( dailyDealHistories[idx].additionalBuyingQuantity !== 0 ) {
+                        additionalBuyingPrice.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalBuyingAmount / dailyDealHistories[idx].additionalBuyingQuantity]);
+                        additionalBuyingAmount.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalBuyingAmount]);
+                    }
+                    if( dailyDealHistories[idx].additionalSellingQuantity !== 0 ) {
+                        additionalSellingPrice.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalSellingAmount / dailyDealHistories[idx].additionalSellingQuantity]);
+                        additionalSellingAmount.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalSellingAmount]);
+                    }
+                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.five ) {
+                        fiveMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.five]);
+                    }
+                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.twenty ) {
+                        twentyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.twenty]);
+                    }
+                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.sixty ) {
+                        sixtyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.sixty]);
+                    }
+                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.oneHundredTwenty ) {
+                        oneTwentyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.oneHundredTwenty]);
+                    }
+                };
+            }
+
+            document.addEventListener('DOMContentLoaded', drawChart());
+        }
+        function drawChart() {
+            const highchartsOptions = Highcharts.setOptions({
+                    lang: {
+                        loading: '로딩중입니다...',
+                        months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                        weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+                        shortMonths: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                        exportButtonTitle: "Export",
+                        printButtonTitle: "프린트",
+                        rangeSelectorFrom: "From",
+                        rangeSelectorTo: "To",
+                        rangeSelectorZoom: "확대범위",
+                        downloadPNG: 'PNG로 다운로드',
+                        downloadJPEG: 'JPEG로 다운로드',
+                        downloadPDF: 'PDF로 다운로드',
+                        downloadSVG: 'SVG로 다운로드',
+                        resetZoom: "Reset",
+                        resetZoomTitle: "Reset",
+                        thousandsSep: ",",
+                        decimalPoint: '.'
+                    }
+                }
+            );
+            const chart = Highcharts.stockChart('container', {
+                title: {
+                    text: '일봉차트와 평균단가 그래프(' + itemName + ')',
+                    style:{
+                        color: '#00443a',
+                        fontSize: '24px',
+                        fontWeight: 'bold'
+                    }
+                },
+                subtitle: {
+                    text: '<b>캔들이 좁게 보일 때 범례의 평균/매수/매도 단가를 클릭해서 없애면, 캔들차트가 더 잘 보입니다</b>',
+                    align: 'left'
+                },
+                chart: {
+                    zoomType: 'x'
+                },
+                time:{
+                    useUTC: false,
+                    timezone: 'Asia/Seoul',
+                },
+                legend: {
+                    enabled: true,
+                    align: 'center',
+                    backgroundColor: '#FCFFC5',
+                    borderColor: 'black',
+                    borderWidth: 2,
+                    shadow: true
+                },
+                rangeSelector: {
+                    selected: 1,
+                },
+                yAxis: [{
+                    labels: {
+                        align: 'right',
+                        x: -3
+                    },
+                    title: {
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -10,
+                        x: -20,
+                        reserveSpace: false,
+                        text: '가격'
+                    },
+                    height: '55%',
+                    lineWidth: 2,
+                    resize: {
+                        enabled: true
+                    }
+                }, {
+                    labels: {
+                        align: 'right',
+                        x: -3
+                    },
+                    title: {
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -10,
+                        x: -30,
+                        reserveSpace: false,
+                        text: '거래량'
+                    },
+                    top: '60%',
+                    height: '10%',
+                    offset: 0,
+                    lineWidth: 2
+                }, {
+                    labels: {
+                        align: 'right',
+                        x: -3
+                    },
+                    title: {
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -10,
+                        x: -20,
+                        reserveSpace: false,
+                        text: '비중'
+                    },
+                    top: '75%',
+                    height: '10%',
+                    offset: 0,
+                    lineWidth: 2
+                }, {
+                    labels: {
+                        align: 'right',
+                        x: -3
+                    },
+                    title: {
+                        align: 'high',
+                        textAlign: 'left',
+                        offset: 0,
+                        rotation: 0,
+                        y: -10,
+                        x: -60,
+                        reserveSpace: false,
+                        text: '매수/매도 금액'
+                    },
+                    top: '90%',
+                    height: '10%',
+                    offset: 0,
+                    lineWidth: 2
+                }],
+                plotOptions: {
+                    candlestick: {
+                        color: 'blue',
+                        upColor: 'red'
+                    }
+                },
+                tooltip: {
+                    split: true
+                },
+                series: [{
+                    id: 'candle',
+                    name: itemName,
+                    type: 'candlestick',
+                    data: candleStickDataList,
+                    tooltip: {
+                        valueDecimals: 0
+                    },
+                    dataGrouping: {
+                        units: groupingUnits
+                    }
+                }, {
+                    type: 'column',
+                    name: '거래량',
+                    data: volumeList,
+                    yAxis: 1,
+                    dataGrouping: {
+                        units: groupingUnits
+                    }
+                }, {
+                    type: 'spline',
+                    name: '평균단가',
+                    data: myAverageUnitPriceList,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#b4aa36',
+                    lineWidth: 4,
+                    onSeries: 'candle'
+                }, {
+                    type: 'scatter',
+                    name: '추가 매수단가',
+                    data: additionalBuyingPrice,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#afa400',
+                    onSeries: 'candle',
+                    dataLabels: {
+                        enabled: true,
+                        borderRadius: 20,
+                        borderColor: 'red',
+                        y: -5,
+                        shape: 'callout',
+                        rotation: 20
+                    },
+                    marker: {
+                        symbol: 'url(resources/images/redArrow.jpg)'
+                    }
+                }, {
+                    type: 'scatter',
+                    name: '추가 매도단가',
+                    data: additionalSellingPrice,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#007eff',
+                    onSeries: 'candle',
+                    dataLabels: {
+                        enabled: true,
+                        borderRadius: 20,
+                        borderColor: 'blue',
+                        y: 5,
+                        shape: null,
+                        rotation: 20
+                    },
+                    marker: {
+                        symbol: 'url(resources/images/blueArrow.jpg)'
+                    }
+                }, {
+                    type: 'spline',
+                    name: '5일 이동평균',
+                    data: fiveMovingAverageList,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#383832',
+                    lineWidth: 1,
+                    onSeries: 'candle'
+                }, {
+                    type: 'spline',
+                    name: '20일 이동평균',
+                    data: twentyMovingAverageList,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#ff0000',
+                    lineWidth: 1,
+                    onSeries: 'candle'
+                }, {
+                    type: 'spline',
+                    name: '60일 이동평균',
+                    data: sixtyMovingAverageList,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#514fff',
+                    lineWidth: 1,
+                    onSeries: 'candle'
+                }, {
+                    type: 'spline',
+                    name: '120일 이동평균',
+                    data: oneTwentyMovingAverageList,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#ffae00',
+                    lineWidth: 1,
+                    onSeries: 'candle'
+                }, {
+                    type: 'line',
+                    id: 'portion',
+                    name: '비중',
+                    data: portionList,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    dataLabels: {
+                        enabled: true
+                    },
+                    yAxis: 2,
+                    color: '#000000',
+                    onSeries: 'candle'
+                }, {
+                    type: 'column',
+                    id: 'buyingAmount',
+                    name: '매수 금액',
+                    data: additionalBuyingAmount,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    yAxis: 3,
+                    color: '#FF0000'
+                }, {
+                    type: 'column',
+                    name: '매도 금액',
+                    data: additionalSellingAmount,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    yAxis: 3,
+                    color: '#0022ff',
+                    onSeries: 'buyingAmount'
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 800
+                        },
+                        chartOptions: {
+                            rangeSelector: {
+                                inputEnabled: false
+                            }
+                        }
+                    }]
+                }
+            });
+        }
+
     </script>
 </head>
 <body>
@@ -242,7 +744,7 @@
     <div class="container-fluid">
         <div class="row">
             <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4">
-                <form id="modifyCalculation" action="deal-calculate-modify" method="post" name="calculateRequestFrom">
+                <form id="modifyCalculation" name="calculateRequestFrom">
                     <div class="px-4 py-5 my-5 text-left" id="parentDivForModifiyCalculation">
                         <h2><strong>매매 시뮬레이션</strong></h2>
                         <p></p>
@@ -273,348 +775,12 @@
                     </div>
 
                     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                        <button type="button" id="submitButton" class="btn btn-primary btn-lg px-4 gap-3" onsubmit="return false;">다음</button>
+                        <button type="button" id="submitButton" class="btn btn-primary btn-lg px-4 gap-3">다음</button>
                     </div>
 
                     <hr style="height:3px;color:#dc874f">
 
                     <div id="container" style="height: 1000px; min-width: 310px"></div>
-                    <script>
-                        function drawCandleStickChart(){
-                            <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
-                                dailyDealHistories.push(${dailyDealHistory});
-                            </c:forEach>
-
-                            if (isError === 'false'){
-                                for(let idx=0; idx < dailyDealHistories.length; idx++) {
-                                    candleStickDataList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].startPrice, dailyDealHistories[idx].highPrice, dailyDealHistories[idx].lowPrice, dailyDealHistories[idx].closingPrice]);
-                                    volumeList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].tradeVolume]);
-                                    portionList.push([dailyDealHistories[idx].dealDateForTimestamp, Number(dailyDealHistories[idx].portion.toFixed(0))]);
-                                    if( dailyDealHistories[idx].myAverageUnitPrice !== 0 ) {
-                                        myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
-                                    }
-                                    if( dailyDealHistories[idx].additionalBuyingQuantity !== 0 ) {
-                                        additionalBuyingPrice.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalBuyingAmount / dailyDealHistories[idx].additionalBuyingQuantity]);
-                                        additionalBuyingAmount.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalBuyingAmount]);
-                                    }
-                                    if( dailyDealHistories[idx].additionalSellingQuantity !== 0 ) {
-                                        additionalSellingPrice.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalSellingAmount / dailyDealHistories[idx].additionalSellingQuantity]);
-                                        additionalSellingAmount.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalSellingAmount]);
-                                    }
-                                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.five ) {
-                                        fiveMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.five]);
-                                    }
-                                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.twenty ) {
-                                        twentyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.twenty]);
-                                    }
-                                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.sixty ) {
-                                        sixtyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.sixty]);
-                                    }
-                                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.oneHundredTwenty ) {
-                                        oneTwentyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.oneHundredTwenty]);
-                                    }
-                                };
-                            }
-
-                            document.addEventListener('DOMContentLoaded', function () {
-                                const highchartsOptions = Highcharts.setOptions({
-                                        lang: {
-                                            loading: '로딩중입니다...',
-                                            months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-                                            weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
-                                            shortMonths: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-                                            exportButtonTitle: "Export",
-                                            printButtonTitle: "프린트",
-                                            rangeSelectorFrom: "From",
-                                            rangeSelectorTo: "To",
-                                            rangeSelectorZoom: "확대범위",
-                                            downloadPNG: 'PNG로 다운로드',
-                                            downloadJPEG: 'JPEG로 다운로드',
-                                            downloadPDF: 'PDF로 다운로드',
-                                            downloadSVG: 'SVG로 다운로드',
-                                            resetZoom: "Reset",
-                                            resetZoomTitle: "Reset",
-                                            thousandsSep: ",",
-                                            decimalPoint: '.'
-                                        }
-                                    }
-                                );
-                                const chart = Highcharts.stockChart('container', {
-                                    title: {
-                                        text: '일봉차트와 평균단가 그래프(' + itemName + ')',
-                                        style:{
-                                            color: '#00443a',
-                                            fontSize: '24px',
-                                            fontWeight: 'bold'
-                                        }
-                                    },
-                                    subtitle: {
-                                        text: '<b>캔들이 좁게 보일 때 범례의 평균/매수/매도 단가를 클릭해서 없애면, 캔들차트가 더 잘 보입니다</b>',
-                                        align: 'left'
-                                    },
-                                    chart: {
-                                        zoomType: 'x'
-                                    },
-                                    time:{
-                                        useUTC: false,
-                                        timezone: 'Asia/Seoul',
-                                    },
-                                    legend: {
-                                        enabled: true,
-                                        align: 'center',
-                                        backgroundColor: '#FCFFC5',
-                                        borderColor: 'black',
-                                        borderWidth: 2,
-                                        shadow: true
-                                    },
-                                    rangeSelector: {
-                                        selected: 1,
-                                    },
-                                    yAxis: [{
-                                        labels: {
-                                            align: 'right',
-                                            x: -3
-                                        },
-                                        title: {
-                                            align: 'high',
-                                            offset: 0,
-                                            rotation: 0,
-                                            y: -10,
-                                            x: -20,
-                                            reserveSpace: false,
-                                            text: '가격'
-                                        },
-                                        height: '55%',
-                                        lineWidth: 2,
-                                        resize: {
-                                            enabled: true
-                                        }
-                                    }, {
-                                        labels: {
-                                            align: 'right',
-                                            x: -3
-                                        },
-                                        title: {
-                                            align: 'high',
-                                            offset: 0,
-                                            rotation: 0,
-                                            y: -10,
-                                            x: -30,
-                                            reserveSpace: false,
-                                            text: '거래량'
-                                        },
-                                        top: '60%',
-                                        height: '10%',
-                                        offset: 0,
-                                        lineWidth: 2
-                                    }, {
-                                        labels: {
-                                            align: 'right',
-                                            x: -3
-                                        },
-                                        title: {
-                                            align: 'high',
-                                            offset: 0,
-                                            rotation: 0,
-                                            y: -10,
-                                            x: -20,
-                                            reserveSpace: false,
-                                            text: '비중'
-                                        },
-                                        top: '75%',
-                                        height: '10%',
-                                        offset: 0,
-                                        lineWidth: 2
-                                    }, {
-                                        labels: {
-                                            align: 'right',
-                                            x: -3
-                                        },
-                                        title: {
-                                            align: 'high',
-                                            textAlign: 'left',
-                                            offset: 0,
-                                            rotation: 0,
-                                            y: -10,
-                                            x: -60,
-                                            reserveSpace: false,
-                                            text: '매수/매도 금액'
-                                        },
-                                        top: '90%',
-                                        height: '10%',
-                                        offset: 0,
-                                        lineWidth: 2
-                                    }],
-                                    plotOptions: {
-                                        candlestick: {
-                                            color: 'blue',
-                                            upColor: 'red'
-                                        }
-                                    },
-                                    tooltip: {
-                                        split: true
-                                    },
-                                    series: [{
-                                        id: 'candle',
-                                        name: itemName,
-                                        type: 'candlestick',
-                                        data: candleStickDataList,
-                                        tooltip: {
-                                            valueDecimals: 0
-                                        },
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        }
-                                    }, {
-                                        type: 'column',
-                                        name: '거래량',
-                                        data: volumeList,
-                                        yAxis: 1,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        }
-                                    }, {
-                                        type: 'spline',
-                                        name: '평균단가',
-                                        data: myAverageUnitPriceList,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        },
-                                        color: '#b4aa36',
-                                        lineWidth: 4,
-                                        onSeries: 'candle'
-                                    }, {
-                                        type: 'scatter',
-                                        name: '추가 매수단가',
-                                        data: additionalBuyingPrice,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        },
-                                        color: '#afa400',
-                                        onSeries: 'candle',
-                                        dataLabels: {
-                                            enabled: true,
-                                            borderRadius: 20,
-                                            borderColor: 'red',
-                                            y: -5,
-                                            shape: 'callout',
-                                            rotation: 20
-                                        },
-                                        marker: {
-                                            symbol: 'url(resources/images/redArrow.jpg)'
-                                        }
-                                    }, {
-                                        type: 'scatter',
-                                        name: '추가 매도단가',
-                                        data: additionalSellingPrice,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        },
-                                        color: '#007eff',
-                                        onSeries: 'candle',
-                                        dataLabels: {
-                                            enabled: true,
-                                            borderRadius: 20,
-                                            borderColor: 'blue',
-                                            y: 5,
-                                            shape: null,
-                                            rotation: 20
-                                        },
-                                        marker: {
-                                            symbol: 'url(resources/images/blueArrow.jpg)'
-                                        }
-                                    }, {
-                                        type: 'spline',
-                                        name: '5일 이동평균',
-                                        data: fiveMovingAverageList,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        },
-                                        color: '#383832',
-                                        lineWidth: 1,
-                                        onSeries: 'candle'
-                                    }, {
-                                        type: 'spline',
-                                        name: '20일 이동평균',
-                                        data: twentyMovingAverageList,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        },
-                                        color: '#ff0000',
-                                        lineWidth: 1,
-                                        onSeries: 'candle'
-                                    }, {
-                                        type: 'spline',
-                                        name: '60일 이동평균',
-                                        data: sixtyMovingAverageList,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        },
-                                        color: '#514fff',
-                                        lineWidth: 1,
-                                        onSeries: 'candle'
-                                    }, {
-                                        type: 'spline',
-                                        name: '120일 이동평균',
-                                        data: oneTwentyMovingAverageList,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        },
-                                        color: '#ffae00',
-                                        lineWidth: 1,
-                                        onSeries: 'candle'
-                                    }, {
-                                        type: 'line',
-                                        id: 'portion',
-                                        name: '비중',
-                                        data: portionList,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        },
-                                        dataLabels: {
-                                            enabled: true
-                                        },
-                                        yAxis: 2,
-                                        color: '#000000',
-                                        onSeries: 'candle'
-                                    }, {
-                                        type: 'column',
-                                        id: 'buyingAmount',
-                                        name: '매수 금액',
-                                        data: additionalBuyingAmount,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        },
-                                        yAxis: 3,
-                                        color: '#FF0000'
-                                    }, {
-                                        type: 'column',
-                                        name: '매도 금액',
-                                        data: additionalSellingAmount,
-                                        dataGrouping: {
-                                            units: groupingUnits
-                                        },
-                                        yAxis: 3,
-                                        color: '#0022ff',
-                                        onSeries: 'buyingAmount'
-                                    }],
-                                    responsive: {
-                                        rules: [{
-                                            condition: {
-                                                maxWidth: 800
-                                            },
-                                            chartOptions: {
-                                                rangeSelector: {
-                                                    inputEnabled: false
-                                                }
-                                            }
-                                        }]
-                                    }
-                                });
-                            });
-                        }
-                        drawCandleStickChart();
-                    </script>
 
                     <hr style="height:3px;color:#dc874f">
 
@@ -719,25 +885,7 @@
                             </thead>
                             <tbody>
                                 <script>
-                                for(let idx=0; idx < dailyDealHistories.length; idx++) {
-                                    if( dailyDealHistories[idx].myAverageUnitPrice !== 0 ){
-                                        document.write('<tr>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].dealDate) + '</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].buyPrice) + '원</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].buyPercent) + '%</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].sellPrice) + '원</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].sellPercent) + '%</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].myAverageUnitPrice) + '원</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].additionalBuyingQuantity) + '주</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].additionalBuyingAmount) + '원</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].additionalSellingQuantity) + '주</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].additionalSellingAmount) + '원</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].commission) + '원</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].realizedEarningAmount) + '원</td>');
-                                        document.write('<td>' + makeComma(dailyDealHistories[idx].remainingAmount) + '원</td>');
-                                        document.write('</tr>');
-                                    }
-                                };
+                                    drawAllHistoryTable();
                                 </script>
                             </tbody>
                         </table>

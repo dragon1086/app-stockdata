@@ -7,15 +7,17 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
 public class DealTrainingResponseDTO {
     private String companyName;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private String startDate;
+    private String endDate;
     private String itemName;
     private JSONObject lastDailyDealHistory;
+    private JSONObject oneDayAgoDailyDealHistory;
     private Double portion;
     private Long slotAmount;
     private double remainingPortion;
@@ -36,12 +38,15 @@ public class DealTrainingResponseDTO {
     private boolean isError;
     private String errorMessage;
 
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
     @Builder
     public DealTrainingResponseDTO(String companyName,
                                    LocalDate startDate,
                                    LocalDate endDate,
                                    String itemName,
                                    JSONObject lastDailyDealHistory,
+                                   JSONObject oneDayAgoDailyDealHistory,
                                    Double portion,
                                    Long slotAmount,
                                    double remainingPortion,
@@ -62,10 +67,11 @@ public class DealTrainingResponseDTO {
                                    boolean isError,
                                    String errorMessage) {
         this.companyName = companyName;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startDate = startDate.format(formatter);
+        this.endDate = endDate.format(formatter);
         this.itemName = itemName;
         this.lastDailyDealHistory = lastDailyDealHistory;
+        this.oneDayAgoDailyDealHistory = oneDayAgoDailyDealHistory;
         this.portion = portion;
         this.slotAmount = slotAmount;
         this.remainingPortion = remainingPortion;

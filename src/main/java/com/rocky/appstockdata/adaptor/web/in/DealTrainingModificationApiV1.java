@@ -3,6 +3,7 @@ package com.rocky.appstockdata.adaptor.web.in;
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
 import com.rocky.appstockdata.domain.DealModification;
 import com.rocky.appstockdata.domain.DealTrainingResult;
+import com.rocky.appstockdata.domain.dto.DealTrainingModificationSourceDTO;
 import com.rocky.appstockdata.domain.dto.DealTrainingResponseDTO;
 import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
@@ -13,10 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -35,25 +33,21 @@ public class DealTrainingModificationApiV1 {
     @PostMapping("/deal-calculate-modify")
     @ResponseBody
     public void dealCalculateModify(HttpServletResponse response,
-                                    @RequestParam(value = "companyName") String companyName,
-                                    @RequestParam("startDate") String startDate,
-                                    @RequestParam("endDate") String endDate,
-                                    @RequestParam(value = "slotAmount") String slotAmount,
-                                    @RequestParam(value = "portion") String portion,
-                                    @RequestParam("modifyDate") String[] modifyDates,
-                                    @RequestParam(value = "sellPercent", defaultValue = "0") String[] sellPercents,
-                                    @RequestParam(value = "sellPrice", defaultValue = "0") String[] sellPrices,
-                                    @RequestParam(value = "buyPercent", defaultValue = "0") String[] buyPercents,
-                                    @RequestParam(value = "buyPrice", defaultValue = "0") String[] buyPrices) throws IOException {
+                                    @RequestBody DealTrainingModificationSourceDTO request) throws IOException {
 
         try{
             DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
-                    .companyName(companyName)
-                    .startDate(startDate)
-                    .endDate(endDate)
-                    .slotAmount(slotAmount)
-                    .portion(portion)
-                    .dealModifications(createDealModifications(modifyDates, sellPercents, sellPrices, buyPercents, buyPrices))
+                    .companyName(request.getCompanyName())
+                    .startDate(request.getStartDate())
+                    .endDate(request.getEndDate())
+                    .slotAmount(request.getSlotAmount())
+                    .portion(request.getPortion())
+                    .dealModifications(createDealModifications(
+                            request.getModifyDates(),
+                            request.getSellPercents(),
+                            request.getSellPrices(),
+                            request.getBuyPercents(),
+                            request.getBuyPrices()))
                     .build();
 
             DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
@@ -69,6 +63,7 @@ public class DealTrainingModificationApiV1 {
                     .endDate(dealTrainingResult.getEndDate())
                     .itemName(dealTrainingResult.getItemName())
                     .lastDailyDealHistory(JSONObject.fromObject(dealTrainingResult.getDailyDealHistories().get(dealTrainingResult.getDailyDealHistories().size() - 1)))
+                    .oneDayAgoDailyDealHistory(JSONObject.fromObject(dealTrainingResult.getDailyDealHistories().get(dealTrainingResult.getDailyDealHistories().size() - 2)))
                     .slotAmount(dealTrainingSourceDTO.getSlotAmount())
                     .portion(100.0 - dealTrainingResult.getRemainingPortion())
                     .remainingSlotAmount(dealTrainingResult.getRemainingSlotAmount())
@@ -105,19 +100,19 @@ public class DealTrainingModificationApiV1 {
         }
     }
 
-    private List<DealModification> createDealModifications(String[] modifyDates, String[] sellPercents, String[] sellPrices, String[] buyPercents, String[] buyPrices) {
+    private List<DealModification> createDealModifications(List<String> modifyDates, List<String> sellPercents, List<String> sellPrices, List<String> buyPercents, List<String> buyPrices) {
         List<DealModification> dealModifications = new ArrayList<>();
-        for(int i = 0; i < modifyDates.length; i++){
-            if(StringUtils.isEmpty(modifyDates[i])){
+        for(int i = 0; i < modifyDates.size(); i++){
+            if(StringUtils.isEmpty(modifyDates.get(i))){
                 continue;
             }
 
             dealModifications.add(DealModification.builder()
-                    .modifyDate(modifyDates[i])
-                    .buyPercent(buyPercents[i])
-                    .buyPrice(buyPrices[i])
-                    .sellPercent(sellPercents[i])
-                    .sellPrice(sellPrices[i])
+                    .modifyDate(modifyDates.get(i))
+                    .buyPercent(buyPercents.get(i))
+                    .buyPrice(buyPrices.get(i))
+                    .sellPercent(sellPercents.get(i))
+                    .sellPrice(sellPrices.get(i))
                     .build());
         }
         return dealModifications;
