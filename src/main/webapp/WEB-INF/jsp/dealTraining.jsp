@@ -122,6 +122,36 @@
             $('input[id=inputEndDate]').attr('value',endDate);
             $('input[id=inputSlotAmount]').attr('value',slotAmount);
             $('input[id=inputPortion]').attr('value', makeComma(initialPortion));
+            $("#submitButton").on("click",function(event) {
+                event.preventDefault(); //submit 메소드 두 번 실행 방지
+                var form = $("#modifyCalculation");
+                var url = form.attr('action');
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: form.serialize(),
+                    success: function(data) {
+                        // Ajax call completed successfully
+                        alert("Form Submited Successfully");
+                        console.log("Form Submited Successfully");
+                        console.log(data);
+                    },
+                    error: function(request, status, error) {
+                        // Some error in ajax call
+                        alert("code : "+status+"\n message : "+request.responseText+"\n Error : " + error);
+                        console.error(error);
+                    },
+                    complete: function(data){
+                        alert(data.status);
+
+                        nextTryDate = data.nextTryDate;
+                        $('input[id=thisModifyDate]').attr('value',nextTryDate);
+                        drawCandleStickChart();
+                    }
+                });
+
+                return false;
+            });
             document.cookie = "SameSite=None; Secure";
 
             <c:forEach items="${dealModifications}" var="dealModification">
@@ -243,7 +273,7 @@
                     </div>
 
                     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                        <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">다음</button>
+                        <button type="button" id="submitButton" class="btn btn-primary btn-lg px-4 gap-3" onsubmit="return false;">다음</button>
                     </div>
 
                     <hr style="height:3px;color:#dc874f">

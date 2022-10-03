@@ -1,7 +1,6 @@
 package com.rocky.appstockdata.adaptor.web.in;
 
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
-import com.rocky.appstockdata.domain.DealModification;
 import com.rocky.appstockdata.domain.DealTrainingResult;
 import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
@@ -10,14 +9,12 @@ import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 @Slf4j
@@ -33,7 +30,7 @@ public class DealTrainingApiV1 {
         return "dealTrainingIndex";
     }
 
-    @PostMapping("/deal-calculate")
+    @PostMapping(path = "/deal-calculate", produces = MediaType.APPLICATION_JSON_VALUE)
     public String dealCalculate(ModelMap modelMap,
                                 @RequestParam(value = "companyName", required = false) String companyName,
                                 @RequestParam(value = "slotAmount", required = false) String slotAmount,
@@ -98,71 +95,8 @@ public class DealTrainingApiV1 {
         return "dealTraining";
     }
 
-    @PostMapping("/deal-calculate-modify")
-    public String dealCalculateModify(ModelMap modelMap,
-                                      @RequestParam(value = "companyName") String companyName,
-                                      @RequestParam("startDate") String startDate,
-                                      @RequestParam("endDate") String endDate,
-                                      @RequestParam(value = "slotAmount") String slotAmount,
-                                      @RequestParam(value = "portion") String portion,
-                                      @RequestParam("modifyDate") String[] modifyDates,
-                                      @RequestParam(value = "sellPercent", defaultValue = "0") String[] sellPercents,
-                                      @RequestParam(value = "sellPrice", defaultValue = "0") String[] sellPrices,
-                                      @RequestParam(value = "buyPercent", defaultValue = "0") String[] buyPercents,
-                                      @RequestParam(value = "buyPrice", defaultValue = "0") String[] buyPrices){
-
-        try{
-            DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
-                    .companyName(companyName)
-                    .startDate(startDate)
-                    .endDate(endDate)
-                    .slotAmount(slotAmount)
-                    .portion(portion)
-                    .dealModifications(createDealModifications(modifyDates, sellPercents, sellPrices, buyPercents, buyPrices))
-                    .build();
-
-            DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
-
-            DealTrainingResult dealTrainingResult = dealTrainingUseCase.modifyDailyDeal(dealTrainingSourceDTO);
-            setModelMap(modelMap, dealTrainingResult, dealTrainingSourceDTO);
-
-        } catch (NumberFormatException e){
-            return createModelMapWithFail(modelMap, "올바른 데이터 입력 형식이 아닙니다. 뒤로 돌아가서 정확한 형식으로 넣어주세요.", "dealTraining");
-        } catch (Exception e){
-            log.error("서버 오류 발생하였습니다. : {}", e.getMessage());
-            e.printStackTrace();
-            return createModelMapWithFail(modelMap, "서버 오류 발생하였습니다.", "dealTraining");
-        }
-
-        return "dealTraining";
-    }
-
-    private List<DealModification> createDealModifications(String[] modifyDates, String[] sellPercents, String[] sellPrices, String[] buyPercents, String[] buyPrices) {
-        List<DealModification> dealModifications = new ArrayList<>();
-        for(int i = 0; i < modifyDates.length; i++){
-            if(StringUtils.isEmpty(modifyDates[i])){
-                continue;
-            }
-
-            dealModifications.add(DealModification.builder()
-                    .modifyDate(modifyDates[i])
-                    .buyPercent(buyPercents[i])
-                    .buyPrice(buyPrices[i])
-                    .sellPercent(sellPercents[i])
-                    .sellPrice(sellPrices[i])
-                    .build());
-        }
-        return dealModifications;
-    }
-
     @GetMapping("/dealTrainingManual")
     public String dealTrainingManual(){
         return "dealTrainingManual";
-    }
-
-    private String createModelMapWithFail(ModelMap modelMap, String message, String viewFileName) {
-        modelMap.put("isError", "true");
-        modelMap.put("errorMessage", message);
-        return viewFileName;
     }
 }
