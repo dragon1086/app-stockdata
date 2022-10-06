@@ -159,8 +159,8 @@
 
                         //update result setting values
                         currentClosingPrice = data.currentClosingPrice;
-                        $('input[id=sellPrice]').attr('value',currentClosingPrice);
-                        $('input[id=buyPrice]').attr('value',currentClosingPrice);
+                        $('input[id=sellPrice]').prop('value',currentClosingPrice);
+                        $('input[id=buyPrice]').prop('value',currentClosingPrice);
                         $('input[id=sellPercent]').val('0');
                         $('input[id=buyPercent]').val('0');
                         $(".currentClosingPrice").text(makeComma(currentClosingPrice));
