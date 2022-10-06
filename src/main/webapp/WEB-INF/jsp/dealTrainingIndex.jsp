@@ -134,7 +134,7 @@
     </div>
     <form action="deal-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
-            <h1 class="display-3 fw-bold">상추매매 일봉 시뮬레이션</h1>
+            <h1 class="display-3 fw-bold">과거 일봉차트 매매 시뮬레이션</h1>
             <div class="input-group mb-3" style="margin-top: 25px;">
                 <span class="input-group-text mb-1" id="basic-addon0">난이도 선택(시작비중 있을때만 적용)</span>
                 <select class="form-select form-select-lg mb-1" name="level" aria-label="level" aria-describedby="basic-addon0">
@@ -197,7 +197,6 @@
         <p class="lead mb-4" style="font-size:17px;">난이도를 "-50% ~ +50%"로 선택하시면 평가손익의 범위는 -50% ~ +50% 입니다.</p>
         <p class="lead mb-4" style="font-size:17px;">난이도를 "-80% ~ +80%"로 선택하시면 평가손익의 범위는 -80% ~ +80% 입니다.</p>
         <p></p>
-        <p class="lead mb-4" style="font-size:17px;">데이터는 지금 2000.01.01 ~ 2022.07.07 까지 있습니다. (수정주가 반영되어 있습니다.)</p>
 
     </div>
     <div class="px-4 py-5 my-5 text-center">

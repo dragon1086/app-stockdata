@@ -15,24 +15,24 @@ public class MovingAverageUtilTest {
     public void addMovingAverage_FiveDays(){
         List<DailyDeal> result = addMovingAverage(Fixtures.DAILY_DEALS);
 
-        Assertions.assertThat(result.get(0).getMovingAverage().getMovingAverageMap().get("5")).isNull();
-        Assertions.assertThat(result.get(3).getMovingAverage().getMovingAverageMap().get("5")).isNull();
-        Assertions.assertThat(result.get(4).getMovingAverage().getMovingAverageMap().get("5")).isEqualTo(3L);
-        Assertions.assertThat(result.get(9).getMovingAverage().getMovingAverageMap().get("5")).isEqualTo(8L);
-        Assertions.assertThat(result.get(24).getMovingAverage().getMovingAverageMap().get("5")).isEqualTo(23L);
-        Assertions.assertThat(result.get(25).getMovingAverage().getMovingAverageMap().get("5")).isEqualTo(25L);
+        Assertions.assertThat(result.get(0).getMovingAverage().getMovingAverageMap().get("five")).isNull();
+        Assertions.assertThat(result.get(3).getMovingAverage().getMovingAverageMap().get("five")).isNull();
+        Assertions.assertThat(result.get(4).getMovingAverage().getMovingAverageMap().get("five")).isEqualTo(3L);
+        Assertions.assertThat(result.get(9).getMovingAverage().getMovingAverageMap().get("five")).isEqualTo(8L);
+        Assertions.assertThat(result.get(24).getMovingAverage().getMovingAverageMap().get("five")).isEqualTo(23L);
+        Assertions.assertThat(result.get(25).getMovingAverage().getMovingAverageMap().get("five")).isEqualTo(25L);
     }
 
     @Test
     public void addMovingAverage_TwentyDays(){
         List<DailyDeal> result = addMovingAverage(Fixtures.DAILY_DEALS);
 
-        Assertions.assertThat(result.get(0).getMovingAverage().getMovingAverageMap().get("20")).isNull();
-        Assertions.assertThat(result.get(3).getMovingAverage().getMovingAverageMap().get("20")).isNull();
-        Assertions.assertThat(result.get(4).getMovingAverage().getMovingAverageMap().get("20")).isNull();
-        Assertions.assertThat(result.get(19).getMovingAverage().getMovingAverageMap().get("20")).isEqualTo(11L);
-        Assertions.assertThat(result.get(24).getMovingAverage().getMovingAverageMap().get("20")).isEqualTo(16L);
-        Assertions.assertThat(result.get(25).getMovingAverage().getMovingAverageMap().get("20")).isEqualTo(17L);
+        Assertions.assertThat(result.get(0).getMovingAverage().getMovingAverageMap().get("twenty")).isNull();
+        Assertions.assertThat(result.get(3).getMovingAverage().getMovingAverageMap().get("twenty")).isNull();
+        Assertions.assertThat(result.get(4).getMovingAverage().getMovingAverageMap().get("twenty")).isNull();
+        Assertions.assertThat(result.get(19).getMovingAverage().getMovingAverageMap().get("twenty")).isEqualTo(11L);
+        Assertions.assertThat(result.get(24).getMovingAverage().getMovingAverageMap().get("twenty")).isEqualTo(16L);
+        Assertions.assertThat(result.get(25).getMovingAverage().getMovingAverageMap().get("twenty")).isEqualTo(17L);
     }
 
     private static class Fixtures{

@@ -17,7 +17,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.rocky.appstockdata.domain.utils.BuildUpUtil.transformDate;
-import static com.rocky.appstockdata.domain.utils.DealTrainingUtil.sortDesc;
 import static com.rocky.appstockdata.domain.utils.MovingAverageUtil.addMovingAverage;
 
 @Service
@@ -39,7 +38,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
             requestData = dealTrainingSourceDTO.createRandomCompanyName(companyNameSearchUseCase.getRandomCompanyName());
         }
 
-        final int YEAR_CONST = 2;
+        final int YEAR_CONST = 3;
         LocalDate endDate = createEndDate(requestData);
         LocalDate startDate = endDate.minusYears(YEAR_CONST);
 
