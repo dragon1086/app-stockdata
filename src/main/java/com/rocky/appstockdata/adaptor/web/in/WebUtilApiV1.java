@@ -15,6 +15,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,9 +55,11 @@ public class WebUtilApiV1 {
                 "Disallow: /resources/";
     }
 
-    @RequestMapping(value = "/ads.txt", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public @ResponseBody byte[] getAdsFile() throws IOException {
-        File file = ResourceUtils.getFile("classpath:static/ads/ads.txt");
-        return FileUtils.readFileToByteArray(file);
+    @RequestMapping(value = "/ads.txt", method = RequestMethod.GET)
+    @ResponseBody
+    public String getAdsFile(HttpServletResponse response) throws IOException {
+        String fileName = "ads.txt";
+        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+        return "google.com, pub-3126725853648403, DIRECT, f08c47fec0942fa0";
     }
 }
