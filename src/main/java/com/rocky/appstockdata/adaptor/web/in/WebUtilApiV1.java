@@ -3,15 +3,20 @@ package com.rocky.appstockdata.adaptor.web.in;
 import com.rocky.appstockdata.application.service.SitemapService;
 import com.rocky.appstockdata.domain.utils.XmlUrlSet;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,5 +52,11 @@ public class WebUtilApiV1 {
         return "User-agent: *\n" +
                 "Disallow: /company\n" +
                 "Disallow: /resources/";
+    }
+
+    @RequestMapping(value = "/ads.txt", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public @ResponseBody byte[] getAdsFile() throws IOException {
+        File file = ResourceUtils.getFile("classpath:static/ads/ads.txt");
+        return FileUtils.readFileToByteArray(file);
     }
 }
