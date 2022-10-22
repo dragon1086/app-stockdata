@@ -125,12 +125,19 @@
             $("#submitButton").on("click",function(event) {
                 event.preventDefault(); //submit 메소드 두 번 실행 방지
                 var url = "/deal-calculate-modify";
-                var zero = "0";
                 var modifyDate = $('input[name=modifyDate]').map(function(){return $(this).val();}).get();
                 var sellPercent = $('input[name=sellPercent]').map(function(){return $(this).val();}).get();
                 var sellPrice = $('input[name=sellPrice]').map(function(){return $(this).val();}).get();
                 var buyPercent = $('input[name=buyPercent]').map(function(){return $(this).val();}).get();
                 var buyPrice = $('input[name=buyPrice]').map(function(){return $(this).val();}).get();
+
+                if(!validatePrices(sellPrice, buyPrice)){
+                    return false;
+                }
+
+                if(!confirmPercents(sellPercent, buyPercent)){
+                    return false;
+                }
 
                 var requestData = {
                     modifyDates: modifyDate,
@@ -295,6 +302,41 @@
             drawDealStatus();
             drawCandleStickChart();
         });
+
+        function validatePrices(sellPrice, buyPrice){
+            var lastDailyDealHistory = dailyDealHistories[dailyDealHistories.length - 1];
+            var lastHighPrice = lastDailyDealHistory.highPrice;
+            var lastLowPrice = lastDailyDealHistory.lowPrice;
+            if(sellPrice > lastHighPrice){
+                alert('매도금액이 고가를 넘어설 수 없습니다.');
+                return false;
+            }
+            if(sellPrice < lastLowPrice){
+                alert('매도금액이 저가보다 낮을 수 없습니다.');
+                return false;
+            }
+            if(buyPrice > lastHighPrice){
+                alert('매수금액이 고가를 넘어설 수 없습니다.');
+                return false;
+            }
+            if(buyPrice < lastLowPrice){
+                alert('매수금액이 저가보다 낮을 수 없습니다.');
+                return false;
+            }
+
+            return true;
+        }
+
+        function confirmPercents(sellPercent, buyPercent){
+            if(sellPercent[0] > 100){
+                return confirm('매도비중이 100%를 넘어갑니다. 그래도 계속 진행하시겠습니까?');
+            }
+            if(buyPercent[0] > 100){
+                return confirm('매수비중이 100%를 넘어갑니다. 그래도 계속 진행하시겠습니까?');
+            }
+
+            return true;
+        }
 
         function makeComma(originalNumber){
             var parts = originalNumber.toString().split(".");
