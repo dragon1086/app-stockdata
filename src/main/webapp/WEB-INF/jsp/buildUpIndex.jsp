@@ -107,11 +107,11 @@
 </head>
 <body>
     <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-secondary" onclick="location.href='/'" style="height:50px;width:250px;font-size:18px;">상추매매 하러 가기</button>
+        <button type="button" class="btn btn-secondary" onclick="location.href='/'" style="height:50px;width:370px;font-size:18px;">과거 일봉차트 매매 시뮬레이션 하러 가기</button>
     </div>
     <form action="buildup-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
-            <h1 class="display-3 fw-bold">빌드업 자동 시뮬레이션기</h1>
+            <h1 class="display-3 fw-bold">빌드업 자동 시뮬레이션</h1>
             <div class="input-group mb-3" style="margin-top: 25px;">
                 <span class="input-group-text mb-3" id="basic-addon0">시뮬레이션 모드</span>
                 <select class="form-select form-select-lg mb-3" name="simulationMode" aria-label="simulationMode" aria-describedby="basic-addon0">
@@ -139,11 +139,11 @@
             </div>
 
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">전송</button>
+                <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">시뮬레이션 시작</button>
             </div>
         </div>
     </form>
-    <div class="display-3 mx-auto">
+    <div class="display-3" style="margin-left:20px">
         <h1 class="lead mb-4 fw-bold" style="font-size:20px;">기능 개요</h1>
         <p class="lead mb-4 "style="font-size:17px;">일정한 규칙을 정해서 매수/매도를 하면, 투입금액 대비 얼마나 수익날 지 시뮬레이션하는 프로그램입니다.</p>
         <p class="lead mb-4 "style="font-size:17px;">아이디어는 어니스트와 주식빌드업 유튜브 채널을 참고했습니다.</p>

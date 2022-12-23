@@ -135,14 +135,6 @@
     <form action="deal-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
             <h1 class="display-3 fw-bold">과거 일봉차트 매매 시뮬레이션</h1>
-            <div class="input-group mb-3" style="margin-top: 25px;">
-                <span class="input-group-text mb-1" id="basic-addon0">난이도 선택(시작비중 있을때만 적용)</span>
-                <select class="form-select form-select-lg mb-1" name="level" aria-label="level" aria-describedby="basic-addon0">
-                    <option value="beginner" selected>-20%~+20%</option>
-                    <option value="intermediate">-50%~+50%</option>
-                    <option value="master">-80%~+80%</option>
-                </select>
-            </div>
             <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">기업 이름(기본 랜덤)</span>
                 <input type="text" id="companyNameInput" class="form-control"  name="companyName" placeholder="기업 랜덤 선택. 기업명을 입력하시려면 오른쪽 체크박스 체크." aria-label="companyName" aria-describedby="basic-addon1" disabled>
@@ -169,6 +161,14 @@
                 <input type="checkbox" id="valuationPercentCheck" name="valuationPercentCheck" onclick="valuationPercentOnOff()">
                 <label for="valuationPercentCheck" style="margin: auto">시작평가손익 설정(기본 랜덤)</label>
             </div>
+            <div class="input-group mb-3" style="margin-top: 25px;">
+                <span class="input-group-text mb-1" id="basic-addon0">난이도 선택(시작비중 있을때만 적용)</span>
+                <select class="form-select form-select-lg mb-1" name="level" aria-label="level" aria-describedby="basic-addon0">
+                    <option value="beginner" selected>-20%~+20%</option>
+                    <option value="intermediate">-50%~+50%</option>
+                    <option value="master">-80%~+80%</option>
+                </select>
+            </div>
 
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
                 <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">시뮬레이션 시작</button>
@@ -176,7 +176,7 @@
         </div>
     </form>
 
-    <div class="display-3 mx-auto">
+    <div class="display-3" style="margin-left:20px">
         <h1 class="lead mb-4 fw-bold" style="font-size:20px;">기능 개요</h1>
         <p class="lead mb-4" style="font-size:17px;">일봉 기준으로 종목을 관찰하고 매매를 시뮬레이션 해보는 프로그램입니다.</p>
         <p class="lead mb-4" style="font-size:17px;">아이디어는 어니스트와 주식빌드업 유튜브 채널을 참고했습니다.</p>
@@ -191,8 +191,8 @@
         <p class="lead mb-4" style="font-size:17px;">평가 손익은 난이도에 따라 다르게 설정되며, 여러분이 과거 특정 시점부터 관리해온 손익이라고 가정했습니다.</p>
         <p class="lead mb-4" style="font-size:17px;">만약 "시작 비중"을 0으로 입력하면, 난이도에 상관없이 처음부터 새로 시작할 수 있습니다.</p>
         <p></p>
-        <p class="lead mb-4" style="font-size:17px;">고수일수록 소위 "똥"이라고 불리는, 물린 종목을 잘 풀어내서 수익으로 마무리 지을 수 있어야 합니다.</p>
-        <p class="lead mb-4" style="font-size:17px;">그런 의미에서 난이도는 올라갈수록 평가 손익의 복불복 범위를 크게 설정했습니다.</p>
+        <p class="lead mb-4" style="font-size:17px;">시작비중이 0 이상이고, 평가손익을 랜덤으로 설정할 경우 난이도를 설정할 수 있습니다</p>
+        <p class="lead mb-4" style="font-size:17px;">난이도는 올라갈수록 평가 손익의 복불복 범위를 크게 설정했습니다.</p>
         <p class="lead mb-4" style="font-size:17px;">난이도를 "-20% ~ +20%"로 선택하시면 평가손익의 범위는 -20% ~ +20% 입니다.</p>
         <p class="lead mb-4" style="font-size:17px;">난이도를 "-50% ~ +50%"로 선택하시면 평가손익의 범위는 -50% ~ +50% 입니다.</p>
         <p class="lead mb-4" style="font-size:17px;">난이도를 "-80% ~ +80%"로 선택하시면 평가손익의 범위는 -80% ~ +80% 입니다.</p>
