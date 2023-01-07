@@ -18,10 +18,10 @@
     <!-- End Google AdSense -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="빌드업 시뮬레이션기">
+    <meta name="description" content="자동 시뮬레이션기">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.1">
-    <title>빌드업 자동 시뮬레이션기 메뉴얼</title>
+    <title>자동 시뮬레이션기 메뉴얼</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
@@ -71,7 +71,7 @@
 
     <div class="px-4 py-5 my-5">
         <div class="text-center">
-            <h1 class="display-3 fw-bold">빌드업 시뮬레이션</h1>
+            <h1 class="display-3 fw-bold">자동 시뮬레이션</h1>
             <h1 class="display-3 fw-bold">사용메뉴얼</h1>
             <h3 class="pb-4 mb-4 fst-italic border-bottom">
                 계좌의 뒤를 지켜줄 든든한 시드를 성장시켜보아요
@@ -89,13 +89,13 @@
             <p>주월클 회원분들도 아시겠지만, 제가 배운 계좌의 중심을 만드는 방법은 내가 목표한 주식을 매일매일 매수를 하면서 적금처럼 모아가는 것입니다.</p>
             <p>우리나라 주식은 박스를 그리며 싸이클을 탑니다. 이 상승과 하락을 이용해서 계속 모아가다가 수익을 내고, 다음 종목 정해서 또 시작하는 것이 좋다고 생각했습니다.</p>
             <p>그러면 어떤 종목이 박스가 길고 짧을까? 이 종목은 어느정도 모아가면 수익을 낼 수 있을까? 만약 내가 삼성전자를 10년간 모아갔다면 얼마나 수익이 날까?</p>
-            <p>등등 다양한 궁금증이 생깁니다. 이 궁금증을 충족시키기 위해 '빌드업 시뮬레이션기'를 만들었습니다.</p>
+            <p>등등 다양한 궁금증이 생깁니다. 이 궁금증을 충족시키기 위해 '자동 시뮬레이션기'를 만들었습니다.</p>
             <hr>
             <div class="text-center">
                 <h2><strong>기능 설명</strong></h2>
                 <h4 class="blog-post-meta">2022년 1월 20일 by 펭수르</h4>
             </div>
-            <p>우선 메인화면에서 "매일 종가매수 시뮬레이션 하러 가기"를 클릭합니다.</p>
+            <p>우선 메인화면에서 "자동 시뮬레이션 하러 가기"를 클릭합니다.</p>
             <img src="resources/images/buildUpMain2.png" style="width:60%;margin: auto" loading="lazy">
             <p>이후 종가매수 할 시뮬레이션 종목명, 시작날짜, 종료 및 전량매도날짜, 매일 매수 할 금액을 입력하고 "전송"을 클릭합니다.</p>
             <img src="resources/images/buildUpMain.png" style="width:60%;margin: auto" loading="lazy">

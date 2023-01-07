@@ -18,10 +18,10 @@
     <!-- End Google AdSense -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="빌드업 시뮬레이션기">
+    <meta name="description" content="자동 시뮬레이션기">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.2">
-    <title>빌드업 시뮬레이션기</title>
+    <title>자동 시뮬레이션기</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
@@ -111,7 +111,7 @@
     </div>
     <form action="buildup-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
-            <h1 class="display-3 fw-bold">빌드업 자동 시뮬레이션</h1>
+            <h1 class="display-3 fw-bold">자동 시뮬레이션</h1>
             <div class="input-group mb-3" style="margin-top: 25px;">
                 <span class="input-group-text mb-3" id="basic-addon0">시뮬레이션 모드</span>
                 <select class="form-select form-select-lg mb-3" name="simulationMode" aria-label="simulationMode" aria-describedby="basic-addon0">
@@ -146,7 +146,6 @@
     <div class="display-3" style="margin-left:20px">
         <h1 class="lead mb-4 fw-bold" style="font-size:20px;">기능 개요</h1>
         <p class="lead mb-4 "style="font-size:17px;">일정한 규칙을 정해서 매수/매도를 하면, 투입금액 대비 얼마나 수익날 지 시뮬레이션하는 프로그램입니다.</p>
-        <p class="lead mb-4 "style="font-size:17px;">아이디어는 어니스트와 주식빌드업 유튜브 채널을 참고했습니다.</p>
         <p class="lead mb-4" style="font-size:17px;">(자세한 메뉴얼이 필요하시면 아래 메뉴얼 버튼을 클릭해주세요!)</p>
         <p class="lead mb-4 "style="font-size:17px;">시뮬레이션 모드는 현재 2가지가 있습니다.</p>
         <p class="lead mb-4 "style="font-size:17px;">1. 매일종가매수 및 마지막날 전량매도</p>
@@ -155,7 +154,7 @@
 
     </div>
     <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-info" onclick="location.href='/buildupManual'" style="height:30px;width:280px;font-size:14px;">빌드업 자동 시뮬레이션 메뉴얼</button>
+        <button type="button" class="btn btn-info" onclick="location.href='/buildupManual'" style="height:30px;width:280px;font-size:14px;">자동 시뮬레이션 메뉴얼</button>
     </div>
 
     <!-- Footer -->
