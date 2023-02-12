@@ -42,4 +42,38 @@ class BuildUpSourceValidatorTest {
 
         Assertions.assertThat(exception).isNotNull();
     }
+
+    @Test
+    void validate_buildup_period_Over_5Year() {
+        BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
+                .startDate("2017-10-10")
+                .endDate("2022-10-11")
+                .build();
+
+        Exception exception = null;
+        try{
+            BuildUpSourceValidator.validate(buildUpSourceDTO);
+        }catch(BuildUpSourceException e){
+            exception = e;
+        }
+
+        Assertions.assertThat(exception).isNotNull();
+    }
+
+    @Test
+    void validate_buildup_period_Under_5Year() {
+        BuildUpSourceDTO buildUpSourceDTO = BuildUpSourceDTO.builder()
+                .startDate("2017-10-10")
+                .endDate("2022-10-09")
+                .build();
+
+        Exception exception = null;
+        try{
+            BuildUpSourceValidator.validate(buildUpSourceDTO);
+        }catch(BuildUpSourceException e){
+            exception = e;
+        }
+
+        Assertions.assertThat(exception).isNull();
+    }
 }
