@@ -11,10 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -42,6 +42,7 @@ public class DealTrainingModificationApiV1 {
                     .endDate(request.getEndDate())
                     .slotAmount(request.getSlotAmount())
                     .portion(request.getPortion())
+                    .initialPortion(request.getInitialPortion())
                     .dealModifications(createDealModifications(
                             request.getModifyDates(),
                             request.getSellPercents(),
@@ -116,5 +117,74 @@ public class DealTrainingModificationApiV1 {
                     .build());
         }
         return dealModifications;
+    }
+
+    @PostMapping(path = "/deal-calculate-copy")
+    @ResponseBody
+    public void dealCalculateCopy(HttpServletResponse response,
+                                    @RequestBody DealTrainingModificationSourceDTO request) throws IOException {
+        try{
+            DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
+                    .companyName(request.getCompanyName())
+                    .startDate(request.getStartDate())
+                    .endDate(request.getEndDate())
+                    .slotAmount(request.getSlotAmount())
+                    .portion(request.getPortion())
+                    .dealModifications(createDealModifications(
+                            request.getModifyDates(),
+                            request.getSellPercents(),
+                            request.getSellPrices(),
+                            request.getBuyPercents(),
+                            request.getBuyPrices()))
+                    .build();
+
+            DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
+
+            DealTrainingResult dealTrainingResult = dealTrainingUseCase.modifyDailyDeal(dealTrainingSourceDTO);
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json;charset=UTF-8");
+            response.getWriter().print(JSONObject.fromObject(
+                    DealTrainingResponseDTO.builder()
+                            .redirectUrl("/deal-training-copy")
+                            .companyName(dealTrainingSourceDTO.getCompanyName())
+                            .startDate(dealTrainingResult.getStartDate())
+                            .endDate(dealTrainingResult.getEndDate())
+                            .itemName(dealTrainingResult.getItemName())
+                            .lastDailyDealHistory(JSONObject.fromObject(dealTrainingResult.getDailyDealHistories().get(dealTrainingResult.getDailyDealHistories().size() - 1)))
+                            .oneDayAgoDailyDealHistory(JSONObject.fromObject(dealTrainingResult.getDailyDealHistories().get(dealTrainingResult.getDailyDealHistories().size() - 2)))
+                            .slotAmount(dealTrainingSourceDTO.getSlotAmount())
+                            .portion(100.0 - dealTrainingResult.getRemainingPortion())
+                            .remainingSlotAmount(dealTrainingResult.getRemainingSlotAmount())
+                            .remainingPortion(dealTrainingResult.getRemainingPortion())
+                            .dealModifications(JSONArray.fromObject(dealTrainingResult.getDealModifications()))
+                            .totalAmount(dealTrainingResult.getTotalAmount())
+                            .valuationPercent(dealTrainingResult.getValuationPercent())
+                            .averageUnitPrice(dealTrainingResult.getAverageUnitPrice())
+                            .currentClosingPrice(dealTrainingResult.getCurrentClosingPrice())
+                            .nextTryDate(dealTrainingResult.getNextTryDate())
+                            .sumOfPurchaseAmount(dealTrainingResult.getSumOfPurchaseAmount())
+                            .sumOfSellingAmount(dealTrainingResult.getSumOfSellingAmount())
+                            .sumOfCommission(dealTrainingResult.getSumOfCommission())
+                            .sumOfPurchaseQuantity(dealTrainingResult.getSumOfPurchaseQuantity())
+                            .sumOfSellingQuantity(dealTrainingResult.getSumOfSellingQuantity())
+                            .earningRate(dealTrainingResult.getEarningRate())
+                            .earningAmount(dealTrainingResult.getEarningAmount())
+                            .dailyDealHistories(JSONArray.fromObject(dealTrainingResult.getDailyDealHistories()))
+                            .isError(false)
+                            .build()));
+        } catch (NumberFormatException e){
+            response.getWriter().print(
+                    DealTrainingResponseDTO.builder()
+                            .isError(true)
+                            .errorMessage("올바른 데이터 입력 형식이 아닙니다. 뒤로 돌아가서 정확한 형식으로 넣어주세요.")
+                            .build());
+        } catch (Exception e){
+            log.error("서버 오류 발생하였습니다. : {}", e.getMessage());
+            response.getWriter().print(
+                    DealTrainingResponseDTO.builder()
+                            .isError(true)
+                            .errorMessage("서버 오류 발생하였습니다.")
+                            .build());
+        }
     }
 }

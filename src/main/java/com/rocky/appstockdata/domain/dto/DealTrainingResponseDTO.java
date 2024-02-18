@@ -19,6 +19,7 @@ public class DealTrainingResponseDTO {
     private JSONObject lastDailyDealHistory;
     private JSONObject oneDayAgoDailyDealHistory;
     private Double portion;
+    private Double initialPortion;
     private Long slotAmount;
     private double remainingPortion;
     private long remainingSlotAmount;
@@ -37,6 +38,8 @@ public class DealTrainingResponseDTO {
     private Long earningAmount;
     private boolean isError;
     private String errorMessage;
+    private String redirectUrl;
+    private JSONArray dailyDealHistories;
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -48,6 +51,7 @@ public class DealTrainingResponseDTO {
                                    JSONObject lastDailyDealHistory,
                                    JSONObject oneDayAgoDailyDealHistory,
                                    Double portion,
+                                   Double initialPortion,
                                    Long slotAmount,
                                    double remainingPortion,
                                    long remainingSlotAmount,
@@ -65,7 +69,9 @@ public class DealTrainingResponseDTO {
                                    Double earningRate,
                                    Long earningAmount,
                                    boolean isError,
-                                   String errorMessage) {
+                                   String errorMessage,
+                                   String redirectUrl,
+                                   JSONArray dailyDealHistories) {
         this.companyName = companyName;
         this.startDate = startDate.format(formatter);
         this.endDate = endDate.format(formatter);
@@ -73,6 +79,7 @@ public class DealTrainingResponseDTO {
         this.lastDailyDealHistory = lastDailyDealHistory;
         this.oneDayAgoDailyDealHistory = oneDayAgoDailyDealHistory;
         this.portion = portion;
+        this.initialPortion = initialPortion;
         this.slotAmount = slotAmount;
         this.remainingPortion = remainingPortion;
         this.remainingSlotAmount = remainingSlotAmount;
@@ -91,5 +98,7 @@ public class DealTrainingResponseDTO {
         this.earningAmount = earningAmount;
         this.isError = isError;
         this.errorMessage = errorMessage;
+        this.redirectUrl = redirectUrl;
+        this.dailyDealHistories = dailyDealHistories;
     }
 }

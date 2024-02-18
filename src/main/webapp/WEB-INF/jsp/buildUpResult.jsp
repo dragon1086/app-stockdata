@@ -259,7 +259,10 @@
                                     }
                                 },
                                 tooltip: {
-                                    split: true
+                                    split: true,
+                                    style: {
+                                        fontSize: '10px'
+                                    }
                                 },
                                 series: [{
                                     id: 'candle',

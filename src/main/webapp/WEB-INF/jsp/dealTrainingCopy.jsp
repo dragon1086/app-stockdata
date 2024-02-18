@@ -23,7 +23,7 @@
     <meta name="description" content="주식 일봉매매 시뮬레이션">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.1">
-    <title>주식 일봉매매 시뮬레이션</title>
+    <title>주식 일봉매매 시뮬레이션(복제본)</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
@@ -51,49 +51,51 @@
     <!-- Custom styles for this template -->
     <link href="/resources/css/buildup.css" rel="stylesheet">
     <script>
+        // sessionStorage에서 데이터 읽어오기
+        var copyData = JSON.parse(sessionStorage.getItem('copyData'));
         //result setting values
-        var nextTryDate = "${nextTryDate}";
-        var currentClosingPrice = "${currentClosingPrice}";
-        var dealModifications = [];
-        var dailyDealHistories = [];
+        var nextTryDate = copyData.nextTryDate;
+        var currentClosingPrice = copyData.currentClosingPrice;
+        var dealModifications = copyData.dealModifications;
+        var dailyDealHistories = copyData.dailyDealHistories;
 
         //candleStick setting values
-        var itemName = "${itemName}";
-        var companyName = "${companyName}";
-        var startDate = "${startDate}";
-        var endDate = "${endDate}";
-        var initialPortion = "${initialPortion}";
-        var candleStickDataList = [];
-        var volumeList = [];
-        var portionList = [];
-        var myAverageUnitPriceList = [];
-        var additionalBuyingPrice = [];
-        var additionalSellingPrice = [];
-        var additionalBuyingAmount = [];
-        var additionalSellingAmount = [];
-        var fiveMovingAverageList = [];
-        var twentyMovingAverageList = [];
-        var sixtyMovingAverageList = [];
-        var oneTwentyMovingAverageList = [];
-        var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
-        var earningRate = "${earningRate}";
-        var earningAmount = "${earningAmount}";
-        var slotAmount = "${slotAmount}";
-        var portion = "${portion+((portion%1>0.5)?(1-(portion%1))%1:-(portion%1))}";
-        var remainingSlotAmount = "${remainingSlotAmount}";
-        var remainingPortion = "${remainingPortion+((remainingPortion%1>0.5)?(1-(remainingPortion%1))%1:-(remainingPortion%1))}";
-        var sumOfPurchaseAmount = "${sumOfPurchaseAmount}";
-        var sumOfSellingAmount = "${sumOfSellingAmount}";
-        var sumOfPurchaseQuantity = "${sumOfPurchaseQuantity}";
-        var sumOfSellingQuantity = "${sumOfSellingQuantity}";
-        var sumOfCommission = "${sumOfCommission}";
-        var totalAmount = "${totalAmount}";
-        var valuationPercent = "${valuationPercent}";
-        var averageUnitPrice = "${averageUnitPrice}";
+        var itemName = copyData.itemName;
+        var companyName = copyData.companyName;
+        var startDate = copyData.startDate;
+        var endDate = copyData.endDate;
+        var initialPortion = copyData.initialPortion;
+        var candleStickDataList = copyData.candleStickDataList;
+        var volumeList = copyData.volumeList;
+        var portionList = copyData.portionList;
+        var myAverageUnitPriceList = copyData.myAverageUnitPriceList;
+        var additionalBuyingPrice = copyData.additionalBuyingPrice;
+        var additionalSellingPrice = copyData.additionalSellingPrice;
+        var additionalBuyingAmount = copyData.additionalBuyingAmount;
+        var additionalSellingAmount = copyData.additionalSellingAmount;
+        var fiveMovingAverageList = copyData.fiveMovingAverageList;
+        var twentyMovingAverageList = copyData.twentyMovingAverageList;
+        var sixtyMovingAverageList = copyData.sixtyMovingAverageList;
+        var oneTwentyMovingAverageList = copyData.oneTwentyMovingAverageList;
+        var groupingUnits = copyData.groupingUnits;
+        var earningRate = copyData.earningRate;
+        var earningAmount = copyData.earningAmount;
+        var slotAmount = copyData.slotAmount;
+        var portion = copyData.portion;
+        var remainingSlotAmount = copyData.remainingSlotAmount;
+        var remainingPortion = copyData.remainingPortion;
+        var sumOfPurchaseAmount = copyData.sumOfPurchaseAmount;
+        var sumOfSellingAmount = copyData.sumOfSellingAmount;
+        var sumOfPurchaseQuantity = copyData.sumOfPurchaseQuantity;
+        var sumOfSellingQuantity = copyData.sumOfSellingQuantity;
+        var sumOfCommission = copyData.sumOfCommission;
+        var totalAmount = copyData.totalAmount;
+        var valuationPercent = copyData.valuationPercent;
+        var averageUnitPrice = copyData.averageUnitPrice;
 
         //etc
-        var isError = "${isError}"
-        var errorMessage = "${errorMessage}";
+        var isError = copyData.isError;
+        var errorMessage = copyData.errorMessage;
 
         $(function(){
             $('input[id=thisModifyDate]').attr('value',nextTryDate);
@@ -134,15 +136,12 @@
             });
             document.cookie = "SameSite=None; Secure";
 
-            <c:forEach items="${dealModifications}" var="dealModification">
-                dealModifications.push(${dealModification});
-            </c:forEach>
-
-
             additionalBuyingSellHistory();
             showDealStatus();
             drawDealStatus();
             drawCandleStickChart();
+
+            sessionStorage.clear();
         });
 
         function submitChart(){
@@ -472,10 +471,6 @@
         }
 
         function drawCandleStickChart(){
-            <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
-            dailyDealHistories.push(${dailyDealHistory});
-            </c:forEach>
-
             if (isError === 'false'){
                 for(let idx=0; idx < dailyDealHistories.length; idx++) {
                     candleStickDataList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].startPrice, dailyDealHistories[idx].highPrice, dailyDealHistories[idx].lowPrice, dailyDealHistories[idx].closingPrice]);
@@ -503,6 +498,18 @@
                     }
                     if( dailyDealHistories[idx].movingAverage.movingAverageMap.oneHundredTwenty ) {
                         oneTwentyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.oneHundredTwenty]);
+                    }
+
+                    //copy 한 뒤 첫 로딩에는 전날 매매이력이 있으면 현재일 허수 셋팅(이후 매매 하면 허수 데이터 pop한 뒤 신규데이터 push
+                    if(idx === dailyDealHistories.length - 1) {
+                        if( dailyDealHistories[idx - 1].additionalBuyingQuantity !== 0 ) {
+                            additionalBuyingPrice.push([dailyDealHistories[idx].dealDateForTimestamp, NaN]);
+                            additionalBuyingAmount.push([dailyDealHistories[idx].dealDateForTimestamp, NaN]);
+                        }
+                        if( dailyDealHistories[idx - 1].additionalSellingQuantity !== 0 ) {
+                            additionalSellingPrice.push([dailyDealHistories[idx].dealDateForTimestamp, NaN]);
+                            additionalSellingAmount.push([dailyDealHistories[idx].dealDateForTimestamp, NaN]);
+                        }
                     }
                 };
             }
@@ -919,26 +926,24 @@
                     <hr style="height:3px;color:#dc874f">
                     <div class="px-4 py-5 my-5 text-left">
                         <h2><strong>최초 입력 요청값</strong></h2>
-                        <div class="px-4 py-5 my-5 text-left">
+                        <div class="input-group mb-3">
                             <div class="input-group mb-3">
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="input-addon1">기업 이름</span>
-                                    <input readonly="true" type="text" id="inputCompanyName" class="form-control" name="companyName" aria-label="companyName" aria-describedby="input-addon1" value="">
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="input-addon2">시작 날짜</span>
-                                    <input readonly="true" type="date" id="inputStartDate" class="form-control" name="startDate" aria-label="startDate" aria-describedby="input-addon2" value="">
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="input-addon3">최근 날짜</span>
-                                    <input readonly="true" type="date" id="inputEndDate" class="form-control" name="endDate" aria-label="endDate" aria-describedby="input-addon3" value="">
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="input-addon4">설정 금액</span>
-                                    <input readonly="true" type="text" id="inputSlotAmount" class="form-control" name="slotAmount" aria-label="slotAmount" aria-describedby="input-addon4" value="">
-                                    <span class="input-group-text" id="input-addon5">시작 비중%</span>
-                                    <input readonly="true" type="text" id="inputPortion" class="form-control" name="portion" aria-label="portion" aria-describedby="input-addon5" value="">
-                                </div>
+                                <span class="input-group-text" id="input-addon1">기업 이름</span>
+                                <input readonly="true" type="text" id="inputCompanyName" class="form-control" name="companyName" aria-label="companyName" aria-describedby="input-addon1" value="">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="input-addon2">시작 날짜</span>
+                                <input readonly="true" type="date" id="inputStartDate" class="form-control" name="startDate" aria-label="startDate" aria-describedby="input-addon2" value="">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="input-addon3">최근 날짜</span>
+                                <input readonly="true" type="date" id="inputEndDate" class="form-control" name="endDate" aria-label="endDate" aria-describedby="input-addon3" value="">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="input-addon4">설정 금액</span>
+                                <input readonly="true" type="text" id="inputSlotAmount" class="form-control" name="slotAmount" aria-label="slotAmount" aria-describedby="input-addon4" value="">
+                                <span class="input-group-text" id="input-addon5">시작 비중%</span>
+                                <input readonly="true" type="text" id="inputPortion" class="form-control" name="portion" aria-label="portion" aria-describedby="input-addon5" value="">
                             </div>
                         </div>
                     </div>

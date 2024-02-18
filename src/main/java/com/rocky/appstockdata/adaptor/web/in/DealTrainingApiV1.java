@@ -1,20 +1,27 @@
 package com.rocky.appstockdata.adaptor.web.in;
 
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
+import com.rocky.appstockdata.domain.DealModification;
 import com.rocky.appstockdata.domain.DealTrainingResult;
+import com.rocky.appstockdata.domain.dto.DealTrainingModificationSourceDTO;
+import com.rocky.appstockdata.domain.dto.DealTrainingResponseDTO;
 import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
 import com.rocky.appstockdata.exceptions.DealTrainingSourceException;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @Slf4j
@@ -98,5 +105,10 @@ public class DealTrainingApiV1 {
     @GetMapping("/dealTrainingManual")
     public String dealTrainingManual(){
         return "dealTrainingManual";
+    }
+
+    @GetMapping("/deal-training-copy")
+    public String dealTrainingCopy(){
+        return "dealTrainingCopy";
     }
 }

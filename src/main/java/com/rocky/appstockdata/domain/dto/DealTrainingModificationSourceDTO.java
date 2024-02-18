@@ -14,6 +14,7 @@ public class DealTrainingModificationSourceDTO {
     private String endDate;
     private String slotAmount;
     private String portion;
+    private String initialPortion;
     private List<String> modifyDates;
     private List<String> sellPercents;
     private List<String> sellPrices;

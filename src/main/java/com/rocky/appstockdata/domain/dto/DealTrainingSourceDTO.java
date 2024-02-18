@@ -14,6 +14,7 @@ public class DealTrainingSourceDTO {
     private String companyName;
     private Long slotAmount;
     private Double portion;
+    private Double initialPortion;
     private List<DealModification> dealModifications;
     private String startDate;
     private String endDate;
@@ -24,6 +25,7 @@ public class DealTrainingSourceDTO {
     public DealTrainingSourceDTO(String companyName,
                                  String slotAmount,
                                  String portion,
+                                 String initialPortion,
                                  List<DealModification> dealModifications,
                                  String startDate,
                                  String endDate,
@@ -32,6 +34,7 @@ public class DealTrainingSourceDTO {
         this.companyName = StringUtils.isEmpty(companyName) ? null : companyName;
         this.slotAmount = StringUtils.isEmpty(slotAmount) ? null : Long.parseLong(slotAmount);
         this.portion = StringUtils.isEmpty(portion) ? null : Double.parseDouble(portion);
+        this.initialPortion = StringUtils.isEmpty(initialPortion) ? null : Double.parseDouble(initialPortion);
         this.dealModifications = dealModifications;
         this.startDate = StringUtils.isEmpty(startDate) ? null :startDate;
         this.endDate = StringUtils.isEmpty(endDate) ? null : endDate;

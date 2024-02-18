@@ -22,8 +22,8 @@ public class BuildUpSourceValidator {
         if(startDate.isAfter(endDate)){
             throw new BuildUpSourceException("시작날짜가 종료날짜보다 이후입니다.");
         }
-        if(endDate.minusDays(365 * 5).isAfter(startDate)){
-            throw new BuildUpSourceException("시뮬레이션 기간은 5년을 넘어서는 안됩니다.");
-        }
+//        if(endDate.minusDays(365 * 5).isAfter(startDate)){
+//            throw new BuildUpSourceException("시뮬레이션 기간은 5년을 넘어서는 안됩니다.");
+//        }
     }
 }
