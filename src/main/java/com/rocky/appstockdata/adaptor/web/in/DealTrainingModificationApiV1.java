@@ -1,6 +1,7 @@
 package com.rocky.appstockdata.adaptor.web.in;
 
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
+import com.rocky.appstockdata.domain.DailyDealHistory;
 import com.rocky.appstockdata.domain.DealModification;
 import com.rocky.appstockdata.domain.DealTrainingResult;
 import com.rocky.appstockdata.domain.dto.DealTrainingModificationSourceDTO;
@@ -49,11 +50,14 @@ public class DealTrainingModificationApiV1 {
                             request.getSellPrices(),
                             request.getBuyPercents(),
                             request.getBuyPrices()))
+                    .jumpDate(request.getJumpDate())
                     .build();
 
             DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
 
             DealTrainingResult dealTrainingResult = dealTrainingUseCase.modifyDailyDeal(dealTrainingSourceDTO);
+            List<DailyDealHistory> dailyDealHistories = dealTrainingResult.getDailyDealHistories();
+            int deltaCountByJump = dealTrainingResult.getDeltaCountByJump();
 
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json;charset=UTF-8");
@@ -63,8 +67,8 @@ public class DealTrainingModificationApiV1 {
                     .startDate(dealTrainingResult.getStartDate())
                     .endDate(dealTrainingResult.getEndDate())
                     .itemName(dealTrainingResult.getItemName())
-                    .lastDailyDealHistory(JSONObject.fromObject(dealTrainingResult.getDailyDealHistories().get(dealTrainingResult.getDailyDealHistories().size() - 1)))
-                    .oneDayAgoDailyDealHistory(JSONObject.fromObject(dealTrainingResult.getDailyDealHistories().get(dealTrainingResult.getDailyDealHistories().size() - 2)))
+                    .lastDailyDealHistory(JSONObject.fromObject(dailyDealHistories.get(dailyDealHistories.size() - 1)))
+                    .oneDayAgoDailyDealHistory(JSONObject.fromObject(dailyDealHistories.get(dailyDealHistories.size() - 2)))
                     .slotAmount(dealTrainingSourceDTO.getSlotAmount())
                     .portion(100.0 - dealTrainingResult.getRemainingPortion())
                     .remainingSlotAmount(dealTrainingResult.getRemainingSlotAmount())
@@ -82,6 +86,7 @@ public class DealTrainingModificationApiV1 {
                     .sumOfSellingQuantity(dealTrainingResult.getSumOfSellingQuantity())
                     .earningRate(dealTrainingResult.getEarningRate())
                     .earningAmount(dealTrainingResult.getEarningAmount())
+                    .deltaDailyDealHistories(deltaCountByJump != 0 ? JSONArray.fromObject(dailyDealHistories.subList(dailyDealHistories.size() - deltaCountByJump - 1 , dailyDealHistories.size())) : new JSONArray())
                     .isError(false)
                     .build()));
 

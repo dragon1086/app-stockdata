@@ -12,6 +12,8 @@ public interface StockDealRepository {
 
     String getEarliestDate(String companyName);
 
+    Integer countDelta(DailyDealRequestDTO dailyDealRequestDTO);
+
     List<DailyDeal> from3MonthsAgoToTodayDeals();
 
     List<DailyDeal> from6MonthsAgoTo3MonthsAgoDeals();

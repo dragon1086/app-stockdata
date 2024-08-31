@@ -40,6 +40,7 @@ public class DealTrainingResponseDTO {
     private String errorMessage;
     private String redirectUrl;
     private JSONArray dailyDealHistories;
+    private JSONArray deltaDailyDealHistories;
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -71,7 +72,8 @@ public class DealTrainingResponseDTO {
                                    boolean isError,
                                    String errorMessage,
                                    String redirectUrl,
-                                   JSONArray dailyDealHistories) {
+                                   JSONArray dailyDealHistories,
+                                   JSONArray deltaDailyDealHistories) {
         this.companyName = companyName;
         this.startDate = startDate.format(formatter);
         this.endDate = endDate.format(formatter);
@@ -100,5 +102,6 @@ public class DealTrainingResponseDTO {
         this.errorMessage = errorMessage;
         this.redirectUrl = redirectUrl;
         this.dailyDealHistories = dailyDealHistories;
+        this.deltaDailyDealHistories = deltaDailyDealHistories;
     }
 }

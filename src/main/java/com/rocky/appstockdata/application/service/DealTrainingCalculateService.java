@@ -223,14 +223,46 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
 
     @Override
     public DealTrainingResult modifyDailyDeal(DealTrainingSourceDTO dealTrainingSourceDTO) {
-        List<DailyDeal> finalDailyDealList = getDailyDealsWithOneDayAfter(dealTrainingSourceDTO);
+        List<DailyDeal> finalDailyDealList;
+        //jumpDate가 왔을 경우, 기존 dailDealList 뒤에 붙는 증량분
+        int deltaCountByJump = 0;
+        String existEndDate = dealTrainingSourceDTO.getEndDate();
+
+        if (dealTrainingSourceDTO.getJumpDate() == null) {
+            finalDailyDealList = this.getDailyDealsWithOneDayAfter(dealTrainingSourceDTO);
+        } else {
+            String lastModifiedDateString = dealTrainingSourceDTO.getStartDate();
+            if(!dealTrainingSourceDTO.getDealModifications().isEmpty()) {
+                lastModifiedDateString = dealTrainingSourceDTO.getDealModifications().get(dealTrainingSourceDTO.getDealModifications().size() - 1).getModifyDate();
+            }
+
+            LocalDate lastModifiedDate = DealTrainingUtil.transformToLocalDateIncludingDash(lastModifiedDateString);
+            LocalDate jumpDate = DealTrainingUtil.transformToLocalDateIncludingDash(dealTrainingSourceDTO.getJumpDate());
+
+            if(jumpDate.isBefore(lastModifiedDate)) {
+                //점프한 날짜가 마지막에 수정한 날짜보다 이전으로 간다면, 에러로 처리하지는 않고 그냥 다음날로 넘어가게끔 한다. (다음에 프론트 얼럿으로 바꿔야지)
+                finalDailyDealList = this.getDailyDealsWithOneDayAfter(dealTrainingSourceDTO);
+            } else {
+                //endDate를 jumpDate로 바꾸고, jumpDate의 하루 더 뒤로 진행한다. (클라이언트에서는 마지막날을 제외하기 때문)
+                dealTrainingSourceDTO.setEndDate(dealTrainingSourceDTO.getJumpDate());
+                finalDailyDealList = this.getDailyDealsWithOneDayAfter(dealTrainingSourceDTO);
+
+                //jump로 인해 증분된 데이터 개수
+                deltaCountByJump = stockDealRepository.countDelta(DailyDealRequestDTO.builder()
+                        .companyName(dealTrainingSourceDTO.getCompanyName())
+                        .startDate(existEndDate)
+                        .endDate(dealTrainingSourceDTO.getJumpDate())
+                        .build());
+            }
+        }
+
         //마지막 날짜를 빼야 함. 이 마지막날은 사용자가 매수/매도를 입력할 수 있게끔 따로 구성해야 함.
         DailyDeal nextTryDay = finalDailyDealList.remove(finalDailyDealList.size() - 1);
 
         DailyDealHistoryAggregation dailyDealHistoryAggregation = createModifiedDailyDealHistoryAggregation(dealTrainingSourceDTO, finalDailyDealList);
         addFinalDailyDealForNextTryWith(dailyDealHistoryAggregation, nextTryDay);
 
-        return getModifiedDealTrainingResult(dealTrainingSourceDTO, nextTryDay, dailyDealHistoryAggregation);
+        return getModifiedDealTrainingResult(dealTrainingSourceDTO, nextTryDay, dailyDealHistoryAggregation, deltaCountByJump);
     }
 
     private List<DailyDeal> getDailyDealsWithOneDayAfter(DealTrainingSourceDTO dealTrainingSourceDTO) {
@@ -416,7 +448,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
     }
 
 
-    private DealTrainingResult getModifiedDealTrainingResult(DealTrainingSourceDTO dealTrainingSourceDTO, DailyDeal nextTryDay, DailyDealHistoryAggregation dailyDealHistoryAggregation) {
+    private DealTrainingResult getModifiedDealTrainingResult(DealTrainingSourceDTO dealTrainingSourceDTO, DailyDeal nextTryDay, DailyDealHistoryAggregation dailyDealHistoryAggregation, int deltaCountByJump) {
         //현재 평가손익 기록
         double currentValuationPercent = (dailyDealHistoryAggregation.getSumOfPurchaseAmount() !=0) ?
                 Math.round((dailyDealHistoryAggregation.getFinalClosingPrice() - dailyDealHistoryAggregation.getMyAverageUnitPrice())/(double) dailyDealHistoryAggregation.getMyAverageUnitPrice()*100*100)/100.0 : 0.0d;
@@ -447,6 +479,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 .sumOfPurchaseQuantity(dailyDealHistoryAggregation.getSumOfPurchaseQuantity())
                 .sumOfSellingQuantity(dailyDealHistoryAggregation.getSumOfSellingQuantity())
                 .dealModifications(dealTrainingSourceDTO.getDealModifications())
+                .deltaCountByJump(deltaCountByJump)
                 .build();
     }
 }

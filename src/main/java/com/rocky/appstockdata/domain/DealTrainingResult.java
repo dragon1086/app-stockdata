@@ -29,6 +29,7 @@ public class DealTrainingResult {
     private long averageUnitPrice;
     private long currentClosingPrice;
     private String nextTryDate;
+    private int deltaCountByJump;
 
     @Builder
     public DealTrainingResult(Double earningRate,
@@ -49,7 +50,8 @@ public class DealTrainingResult {
                               double valuationPercent,
                               long averageUnitPrice,
                               long currentClosingPrice,
-                              String nextTryDate) {
+                              String nextTryDate,
+                              int deltaCountByJump) {
         this.earningRate = earningRate;
         this.earningAmount = earningAmount;
         this.totalAmount = totalAmount;
@@ -69,5 +71,6 @@ public class DealTrainingResult {
         this.averageUnitPrice = averageUnitPrice;
         this.currentClosingPrice = currentClosingPrice;
         this.nextTryDate = nextTryDate;
+        this.deltaCountByJump = deltaCountByJump;
     }
 }

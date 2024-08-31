@@ -20,6 +20,7 @@ public class DealTrainingSourceDTO {
     private String endDate;
     private Double valuationPercent;
     private String level;
+    private String jumpDate;
 
     @Builder
     public DealTrainingSourceDTO(String companyName,
@@ -30,7 +31,8 @@ public class DealTrainingSourceDTO {
                                  String startDate,
                                  String endDate,
                                  String valuationPercent,
-                                 String level) {
+                                 String level,
+                                 String jumpDate) {
         this.companyName = StringUtils.isEmpty(companyName) ? null : companyName;
         this.slotAmount = StringUtils.isEmpty(slotAmount) ? null : Long.parseLong(slotAmount);
         this.portion = StringUtils.isEmpty(portion) ? null : Double.parseDouble(portion);
@@ -40,6 +42,7 @@ public class DealTrainingSourceDTO {
         this.endDate = StringUtils.isEmpty(endDate) ? null : endDate;
         this.valuationPercent = StringUtils.isEmpty(valuationPercent) ? null : Double.parseDouble(valuationPercent);
         this.level = level;
+        this.jumpDate = StringUtils.isEmpty(jumpDate) ? null : jumpDate;
     }
 
     public DealTrainingSourceDTO createRandomCompanyName(String randomCompanyName) {

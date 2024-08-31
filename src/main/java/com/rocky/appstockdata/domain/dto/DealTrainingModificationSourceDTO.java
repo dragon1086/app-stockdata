@@ -20,6 +20,7 @@ public class DealTrainingModificationSourceDTO {
     private List<String> sellPrices;
     private List<String> buyPercents;
     private List<String> buyPrices;
+    private String jumpDate;
 
     @Builder
     public DealTrainingModificationSourceDTO(String companyName,
@@ -31,7 +32,8 @@ public class DealTrainingModificationSourceDTO {
                                              List<String> sellPercents,
                                              List<String> sellPrices,
                                              List<String> buyPercents,
-                                             List<String> buyPrices) {
+                                             List<String> buyPrices,
+                                             String jumpDate) {
         this.companyName = companyName;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -42,5 +44,6 @@ public class DealTrainingModificationSourceDTO {
         this.sellPrices = sellPrices;
         this.buyPercents = buyPercents;
         this.buyPrices = buyPrices;
+        this.jumpDate = jumpDate;
     }
 }

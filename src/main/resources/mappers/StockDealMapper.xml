@@ -33,6 +33,17 @@
           AND DEAL_DATE BETWEEN STR_TO_DATE(#{startDate}, '%Y-%m-%d') AND STR_TO_DATE(#{endDate}, '%Y-%m-%d')
     </select>
 
+    <select id="countDelta" parameterType="com.rocky.appstockdata.domain.dto.DailyDealRequestDTO" resultType="integer">
+        SELECT
+            count(*)
+        FROM
+            DEAL_HISTORY
+        WHERE 1=1
+          AND ITEM_NAME = #{companyName}
+          AND DEAL_DATE <![CDATA[>]]> STR_TO_DATE(#{startDate}, '%Y-%m-%d')
+          AND DEAL_DATE <![CDATA[<=]]> STR_TO_DATE(#{endDate}, '%Y-%m-%d')
+    </select>
+
     <select id="getEarliestDate" parameterType="string" resultType="string">
         SELECT
             DEAL_DATE as dealDate
