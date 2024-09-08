@@ -132,18 +132,36 @@
                 submitChart();
                 return false;
             });
+            $("#downloadHistoriesBtn").on("click",function(event) {
+                event.preventDefault(); //submit 메소드 두 번 실행 방지
+                downloadDealHistories();
+                return false;
+            });
             document.cookie = "SameSite=None; Secure";
 
             <c:forEach items="${dealModifications}" var="dealModification">
                 dealModifications.push(${dealModification});
             </c:forEach>
 
-
             additionalBuyingSellHistory();
             showDealStatus();
             drawDealStatus();
             drawCandleStickChart();
         });
+
+        // 다운로드 버튼 클릭 이벤트
+        function downloadDealHistories() {
+            console.log('Download dailyDealHistories');
+            try {
+                const csvContent = convertToCSV(dailyDealHistories);
+                const fileName = 'daily_deal_histories.csv';
+                downloadCSV(csvContent, fileName);
+            } catch (error) {
+                console.error('CSV 다운로드 중 오류 발생:', error);
+                alert('CSV 파일 생성 중 오류가 발생했습니다. 콘솔을 확인해주세요.');
+            }
+        };
+
 
         function submitChart(){
             var url = "/deal-calculate-modify";
@@ -209,7 +227,9 @@
                         dailyDealHistories.push(data.oneDayAgoDailyDealHistory);
                         dailyDealHistories.push(data.lastDailyDealHistory);
                     } else {
-                        dailyDealHistories.push(data.deltaDailyDealHistories);
+                        data.deltaDailyDealHistories.forEach(item => {
+                            dailyDealHistories.push(item);
+                        });
                     }
 
                     //update candleStick setting values
@@ -962,6 +982,49 @@
                 }
             });
         }
+
+        function convertToCSV(objArray) {
+            const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+            let str = '';
+
+            // 헤더 추가
+            const headers = Object.keys(array[0]);
+            str += headers.join(',') + '\r\n';
+
+            // 데이터 추가
+            for (let i = 0; i < array.length; i++) {
+                let line = '';
+                for (let index in headers) {
+                    if (line !== '') line += ',';
+                    let value = array[i][headers[index]];
+                    // 값에 쉼표가 포함되어 있다면 큰따옴표로 묶습니다
+                    line += value !== null && value !== undefined ?
+                        value.toString().indexOf(',') !== -1 ? `"${value}"` : value : '';
+                }
+                str += line + '\r\n';
+            }
+
+            return str;
+        }
+
+        function downloadCSV(data, filename) {
+            const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.style.display = "none";
+            link.href = url;
+            link.download = filename;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // URL 객체를 해제합니다.
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
     </script>
 </head>
 <body>
@@ -1107,6 +1170,8 @@
                 </form>
 
                 <hr style="height:3px;color:#dc874f">
+
+                <button id="downloadHistoriesBtn">매매내역 CSV 다운로드</button>
             </main>
         </div>
     </div>
