@@ -36,6 +36,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
     <style>
+        #loginButton {
+            border: none;
+            background: none;
+            padding: 0;
+            cursor: pointer;
+        }
         .bd-placeholder-img {
             font-size: 1.125rem;
             text-anchor: middle;
@@ -127,8 +133,25 @@
             });
         });
     </script>
+
 </head>
 <body>
+    <c:if test="${not empty errorMessage}">
+        <div style="color: red; background-color: #ffe6e6; padding: 10px; border: 1px solid #ff9999; margin-bottom: 15px;">
+            <c:out value="${errorMessage}" />
+        </div>
+    </c:if>
+
+    <% if (session.getAttribute("sessionUser") == null) { %>
+        <button id="loginButton" onclick="location.href='/login/google'">
+            <img src="resources/images/googleLogin.png" alt="Sign in with Google"/>
+        </button>
+    <% } else { %>
+        <button type="button" class="btn btn-secondary" id="logoutButton" onclick="location.href='/logout/google'" style="height:30px;width:60px;font-size:9px;">로그아웃</button>
+        <div id="userInfo">
+            <h5>환영합니다, ${sessionScope.sessionUser.email}님!</h5>
+        </div>
+    <% } %>
     <div class="px-4 py-5 my-5 text-center">
         <button type="button" class="btn btn-secondary" onclick="location.href='/buildup'" style="height:50px;width:330px;font-size:18px;">자동 시뮬레이션 하러 가기</button>
     </div>
@@ -212,7 +235,6 @@
         <!-- Copyright -->
     </footer>
     <!-- Footer -->
-
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
 </body>
 </html>

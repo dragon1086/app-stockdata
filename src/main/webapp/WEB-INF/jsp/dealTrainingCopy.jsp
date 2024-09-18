@@ -134,7 +134,16 @@
                 submitChart();
                 return false;
             });
+            $("#downloadHistoriesBtn").on("click",function(event) {
+                event.preventDefault(); //submit 메소드 두 번 실행 방지
+                downloadDealHistories();
+                return false;
+            });
             document.cookie = "SameSite=None; Secure";
+
+            <c:forEach items="${dealModifications}" var="dealModification">
+                dealModifications.push(${dealModification});
+            </c:forEach>
 
             additionalBuyingSellHistory();
             showDealStatus();
@@ -144,6 +153,20 @@
             sessionStorage.clear();
         });
 
+        // 다운로드 버튼 클릭 이벤트
+        function downloadDealHistories() {
+            console.log('Download dailyDealHistories');
+            try {
+                const csvContent = convertToCSV(dailyDealHistories);
+                const fileName = 'daily_deal_histories.csv';
+                downloadCSV(csvContent, fileName);
+            } catch (error) {
+                console.error('CSV 다운로드 중 오류 발생:', error);
+                alert('CSV 파일 생성 중 오류가 발생했습니다. 콘솔을 확인해주세요.');
+            }
+        };
+
+
         function submitChart(){
             var url = "/deal-calculate-modify";
             var modifyDate = $('input[name=modifyDate]').map(function(){return $(this).val();}).get();
@@ -151,12 +174,17 @@
             var sellPrice = $('input[name=sellPrice]').map(function(){return $(this).val();}).get();
             var buyPercent = $('input[name=buyPercent]').map(function(){return $(this).val();}).get();
             var buyPrice = $('input[name=buyPrice]').map(function(){return $(this).val();}).get();
+            var jumpDate = $('input[name=jumpDate]').map(function(){return $(this).val();}).get()[0];
 
             if(!validatePrices(sellPrice, buyPrice)){
                 return false;
             }
 
             if(!confirmPercents(sellPercent, buyPercent)){
+                return false;
+            }
+
+            if(!validateJumpDate(sellPercent, buyPercent, jumpDate)){
                 return false;
             }
 
@@ -171,7 +199,8 @@
                 endDate: endDate,
                 slotAmount: slotAmount,
                 portion: portion,
-                initialPortion: initialPortion
+                initialPortion: initialPortion,
+                jumpDate: jumpDate
             };
 
             $.ajax({
@@ -193,12 +222,19 @@
                     $('input[id=sellPercent]').val('0');
                     $('input[id=buyPercent]').val('0');
                     $(".currentClosingPrice").text(makeComma(currentClosingPrice));
+                    $('input[id=jumpDate]').val('');
 
                     dealModifications = data.dealModifications;
 
-                    dailyDealHistories.pop();
-                    dailyDealHistories.push(data.oneDayAgoDailyDealHistory);
-                    dailyDealHistories.push(data.lastDailyDealHistory);
+                    if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                        dailyDealHistories.pop();
+                        dailyDealHistories.push(data.oneDayAgoDailyDealHistory);
+                        dailyDealHistories.push(data.lastDailyDealHistory);
+                    } else {
+                        data.deltaDailyDealHistories.forEach(item => {
+                            dailyDealHistories.push(item);
+                        });
+                    }
 
                     //update candleStick setting values
                     itemName = data.itemName;
@@ -210,59 +246,171 @@
                     $('input[id=inputEndDate]').attr('value',endDate);
                     initialPortion= data.initialPortion;
 
-                    candleStickDataList.pop();
-                    candleStickDataList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.startPrice, data.oneDayAgoDailyDealHistory.highPrice, data.oneDayAgoDailyDealHistory.lowPrice, data.oneDayAgoDailyDealHistory.closingPrice]);
-                    candleStickDataList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.startPrice, data.lastDailyDealHistory.highPrice, data.lastDailyDealHistory.lowPrice, data.lastDailyDealHistory.closingPrice]);
+                    if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                        candleStickDataList.pop();
+                        candleStickDataList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.startPrice, data.oneDayAgoDailyDealHistory.highPrice, data.oneDayAgoDailyDealHistory.lowPrice, data.oneDayAgoDailyDealHistory.closingPrice]);
+                        candleStickDataList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.startPrice, data.lastDailyDealHistory.highPrice, data.lastDailyDealHistory.lowPrice, data.lastDailyDealHistory.closingPrice]);
+                    } else {
+                        data.deltaDailyDealHistories.forEach(item => {
+                            candleStickDataList.push([
+                                item.dealDateForTimestamp,
+                                item.startPrice,
+                                item.highPrice,
+                                item.lowPrice,
+                                item.closingPrice
+                            ]);
+                        });
+                    }
 
-                    volumeList.pop();
-                    volumeList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.tradeVolume]);
-                    volumeList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.tradeVolume]);
+                    if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                        volumeList.pop();
+                        volumeList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.tradeVolume]);
+                        volumeList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.tradeVolume]);
+                    } else {
+                        data.deltaDailyDealHistories.forEach(item => {
+                            volumeList.push([
+                                item.dealDateForTimestamp,
+                                item.tradeVolume
+                            ]);
+                        });
+                    }
 
-                    portionList.pop();
-                    portionList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, Number(data.oneDayAgoDailyDealHistory.portion.toFixed(0))]);
-                    portionList.push([data.lastDailyDealHistory.dealDateForTimestamp, Number(data.lastDailyDealHistory.portion.toFixed(0))]);
+                    if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                        portionList.pop();
+                        portionList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, Number(data.oneDayAgoDailyDealHistory.portion.toFixed(0))]);
+                        portionList.push([data.lastDailyDealHistory.dealDateForTimestamp, Number(data.lastDailyDealHistory.portion.toFixed(0))]);
+                    } else {
+                        data.deltaDailyDealHistories.forEach(item => {
+                            portionList.push([
+                                item.dealDateForTimestamp,
+                                Number(item.portion.toFixed(0))
+                            ]);
+                        });
+                    }
+
                     if( data.oneDayAgoDailyDealHistory.myAverageUnitPrice !== 0 ) {
-                        myAverageUnitPriceList.pop();
-                        myAverageUnitPriceList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.myAverageUnitPrice]);
-                        myAverageUnitPriceList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.myAverageUnitPrice]);
+                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                            myAverageUnitPriceList.pop();
+                            myAverageUnitPriceList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.myAverageUnitPrice]);
+                            myAverageUnitPriceList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.myAverageUnitPrice]);
+                        } else {
+                            data.deltaDailyDealHistories.forEach(item => {
+                                myAverageUnitPriceList.push([
+                                    item.dealDateForTimestamp,
+                                    item.myAverageUnitPrice
+                                ]);
+                            });
+                        }
                     }
                     if( data.oneDayAgoDailyDealHistory.additionalBuyingQuantity !== 0 ) {
-                        additionalBuyingPrice.pop();
-                        additionalBuyingPrice.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalBuyingAmount / data.oneDayAgoDailyDealHistory.additionalBuyingQuantity]);
-                        additionalBuyingPrice.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalBuyingAmount / data.lastDailyDealHistory.additionalBuyingQuantity]);
+                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                            additionalBuyingPrice.pop();
+                            additionalBuyingPrice.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalBuyingAmount / data.oneDayAgoDailyDealHistory.additionalBuyingQuantity]);
+                            additionalBuyingPrice.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalBuyingAmount / data.lastDailyDealHistory.additionalBuyingQuantity]);
+                        } else {
+                            data.deltaDailyDealHistories.forEach(item => {
+                                additionalBuyingPrice.push([
+                                    item.dealDateForTimestamp,
+                                    item.additionalBuyingAmount / item.additionalBuyingQuantity
+                                ]);
+                            });
+                        }
 
-                        additionalBuyingAmount.pop();
-                        additionalBuyingAmount.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalBuyingAmount]);
-                        additionalBuyingAmount.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalBuyingAmount]);
+                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                            additionalBuyingAmount.pop();
+                            additionalBuyingAmount.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalBuyingAmount]);
+                            additionalBuyingAmount.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalBuyingAmount]);
+                        } else {
+                            data.deltaDailyDealHistories.forEach(item => {
+                                additionalBuyingAmount.push([
+                                    item.dealDateForTimestamp,
+                                    item.additionalBuyingAmount
+                                ]);
+                            });
+                        }
                     }
                     if( data.oneDayAgoDailyDealHistory.additionalSellingQuantity !== 0 ) {
-                        additionalSellingPrice.pop();
-                        additionalSellingPrice.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalSellingAmount / data.oneDayAgoDailyDealHistory.additionalSellingQuantity]);
-                        additionalSellingPrice.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalSellingAmount / data.lastDailyDealHistory.additionalSellingQuantity]);
+                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                            additionalSellingPrice.pop();
+                            additionalSellingPrice.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalSellingAmount / data.oneDayAgoDailyDealHistory.additionalSellingQuantity]);
+                            additionalSellingPrice.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalSellingAmount / data.lastDailyDealHistory.additionalSellingQuantity]);
+                        } else {
+                            data.deltaDailyDealHistories.forEach(item => {
+                                additionalSellingPrice.push([
+                                    item.dealDateForTimestamp,
+                                    item.additionalSellingAmount / item.additionalSellingQuantity
+                                ]);
+                            });
+                        }
 
-                        additionalSellingAmount.pop();
-                        additionalSellingAmount.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalSellingAmount]);
-                        additionalSellingAmount.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalSellingAmount]);
+                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                            additionalSellingAmount.pop();
+                            additionalSellingAmount.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.additionalSellingAmount]);
+                            additionalSellingAmount.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.additionalSellingAmount]);
+                        } else {
+                            data.deltaDailyDealHistories.forEach(item => {
+                                additionalSellingAmount.push([
+                                    item.dealDateForTimestamp,
+                                    item.additionalSellingAmount
+                                ]);
+                            });
+                        }
                     }
                     if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.five ) {
-                        fiveMovingAverageList.pop();
-                        fiveMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.five]);
-                        fiveMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.five]);
+                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                            fiveMovingAverageList.pop();
+                            fiveMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.five]);
+                            fiveMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.five]);
+                        } else {
+                            data.deltaDailyDealHistories.forEach(item => {
+                                fiveMovingAverageList.push([
+                                    item.dealDateForTimestamp,
+                                    item.movingAverage.movingAverageMap.five
+                                ]);
+                            });
+                        }
                     }
                     if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.twenty ) {
-                        twentyMovingAverageList.pop();
-                        twentyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.twenty]);
-                        twentyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.twenty]);
+                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                            twentyMovingAverageList.pop();
+                            twentyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.twenty]);
+                            twentyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.twenty]);
+                        } else {
+                            data.deltaDailyDealHistories.forEach(item => {
+                                twentyMovingAverageList.push([
+                                    item.dealDateForTimestamp,
+                                    item.movingAverage.movingAverageMap.twenty
+                                ]);
+                            });
+                        }
                     }
                     if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.sixty ) {
-                        sixtyMovingAverageList.pop();
-                        sixtyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.sixty]);
-                        sixtyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.sixty]);
+                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                            sixtyMovingAverageList.pop();
+                            sixtyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.sixty]);
+                            sixtyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.sixty]);
+                        } else {
+                            data.deltaDailyDealHistories.forEach(item => {
+                                sixtyMovingAverageList.push([
+                                    item.dealDateForTimestamp,
+                                    item.movingAverage.movingAverageMap.sixty
+                                ]);
+                            });
+                        }
                     }
                     if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.oneHundredTwenty ) {
-                        oneTwentyMovingAverageList.pop();
-                        oneTwentyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.oneHundredTwenty]);
-                        oneTwentyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.oneHundredTwenty]);
+                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
+                            oneTwentyMovingAverageList.pop();
+                            oneTwentyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.oneHundredTwenty]);
+                            oneTwentyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.oneHundredTwenty]);
+                        } else {
+                            data.deltaDailyDealHistories.forEach(item => {
+                                oneTwentyMovingAverageList.push([
+                                    item.dealDateForTimestamp,
+                                    item.movingAverage.movingAverageMap.oneHundredTwenty
+                                ]);
+                            });
+                        }
                     }
 
                     earningRate = data.earningRate;
@@ -309,6 +457,10 @@
                     // alert(data.status);
                 }
             });
+        }
+
+        function isEmptyJsonArray(arr) {
+            return Array.isArray(arr) && arr.length === 0;
         }
 
         function copyChart(){
@@ -395,6 +547,30 @@
             return true;
         }
 
+        function validateJumpDate(sellPercent, buyPercent, jumpDate) {
+            if((sellPercent[0] > 0 || buyPercent[0] > 0) && jumpDate !== ""){
+                alert('날짜를 한번에 넘어갈 때에는 매수/매도를 할 수 없습니다.');
+                return false;
+            }
+            if(jumpDate !== "") {
+                console.log('nextTryDate' + nextTryDate);
+                if(compareDates(nextTryDate, jumpDate) >= 0) {
+                    alert('날짜를 한번에 넘어갈 때에는 미래로만 갈 수 있습니다');
+                    return false;
+                };
+            }
+            return true;
+        }
+
+        function compareDates(date1, date2) {
+            var [year1, month1, day1] = date1.split('-').map(Number);
+            var [year2, month2, day2] = date2.split('-').map(Number);
+
+            if (year1 !== year2) return year1 - year2;
+            if (month1 !== month2) return month1 - month2;
+            return day1 - day2;
+        }
+
         function makeComma(originalNumber){
             var parts = originalNumber.toString().split(".");
             return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -471,6 +647,10 @@
         }
 
         function drawCandleStickChart(){
+            <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
+            dailyDealHistories.push(${dailyDealHistory});
+            </c:forEach>
+
             if (isError === 'false'){
                 for(let idx=0; idx < dailyDealHistories.length; idx++) {
                     candleStickDataList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].startPrice, dailyDealHistories[idx].highPrice, dailyDealHistories[idx].lowPrice, dailyDealHistories[idx].closingPrice]);
@@ -818,14 +998,73 @@
                 }
             });
         }
+
+        function convertToCSV(objArray) {
+            const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+            let str = '';
+
+            // 헤더 추가
+            const headers = Object.keys(array[0]);
+            str += headers.join(',') + '\r\n';
+
+            // 데이터 추가
+            for (let i = 0; i < array.length; i++) {
+                let line = '';
+                for (let index in headers) {
+                    if (line !== '') line += ',';
+                    let value = array[i][headers[index]];
+                    // 값에 쉼표가 포함되어 있다면 큰따옴표로 묶습니다
+                    line += value !== null && value !== undefined ?
+                        value.toString().indexOf(',') !== -1 ? `"${value}"` : value : '';
+                }
+                str += line + '\r\n';
+            }
+
+            return str;
+        }
+
+        function downloadCSV(data, filename) {
+            const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.style.display = "none";
+            link.href = url;
+            link.download = filename;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // URL 객체를 해제합니다.
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
     </script>
 </head>
 <body>
 <div class="container">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-        <ul class="nav nav-pills">
-            <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">초기화면</a></li>
-        </ul>
+    <header class="row py-3 mb-4 border-bottom align-items-center">
+        <% if (session.getAttribute("sessionUser") != null) { %>
+        <div class="col-12 col-md-4 mb-2 mb-md-0">
+            <h5 class="m-0">환영합니다, ${sessionUser.email}님!</h5>
+        </div>
+        <div class="col-6 col-md-4 text-center">
+            <a href="/" class="btn btn-primary" aria-current="page">
+                <i class="fas fa-home"></i> 초기화면
+            </a>
+        </div>
+        <div class="col-6 col-md-4 text-end">
+            <button type="button" class="btn btn-outline-secondary" id="logoutButton" onclick="location.href='/logout/google'">
+                <i class="fas fa-sign-out-alt"></i> 로그아웃
+            </button>
+        </div>
+        <% } else { %>
+        <div class="col-12">
+            <p class="alert alert-warning">세션이 만료되었습니다. <a href="/" class="alert-link">초기 페이지로 이동</a></p>
+        </div>
+        <% } %>
     </header>
 </div>
 
@@ -859,6 +1098,10 @@
                                 <input id="buyPercent" type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
                                 <span class="input-group-text" id="basic-addon5">매수 가격</span>
                                 <input id="buyPrice" type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
+                            </div>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon6">한번에 이동할 날짜</span>
+                                <input id="jumpDate" type="date" class="form-control" name="jumpDate" aria-label="jumpDate" aria-describedby="basic-addon6">
                             </div>
                         </div>
                     </div>
@@ -926,24 +1169,26 @@
                     <hr style="height:3px;color:#dc874f">
                     <div class="px-4 py-5 my-5 text-left">
                         <h2><strong>최초 입력 요청값</strong></h2>
-                        <div class="input-group mb-3">
+                        <div class="px-4 py-5 my-5 text-left">
                             <div class="input-group mb-3">
-                                <span class="input-group-text" id="input-addon1">기업 이름</span>
-                                <input readonly="true" type="text" id="inputCompanyName" class="form-control" name="companyName" aria-label="companyName" aria-describedby="input-addon1" value="">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="input-addon2">시작 날짜</span>
-                                <input readonly="true" type="date" id="inputStartDate" class="form-control" name="startDate" aria-label="startDate" aria-describedby="input-addon2" value="">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="input-addon3">최근 날짜</span>
-                                <input readonly="true" type="date" id="inputEndDate" class="form-control" name="endDate" aria-label="endDate" aria-describedby="input-addon3" value="">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="input-addon4">설정 금액</span>
-                                <input readonly="true" type="text" id="inputSlotAmount" class="form-control" name="slotAmount" aria-label="slotAmount" aria-describedby="input-addon4" value="">
-                                <span class="input-group-text" id="input-addon5">시작 비중%</span>
-                                <input readonly="true" type="text" id="inputPortion" class="form-control" name="portion" aria-label="portion" aria-describedby="input-addon5" value="">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="input-addon1">기업 이름</span>
+                                    <input readonly="true" type="text" id="inputCompanyName" class="form-control" name="companyName" aria-label="companyName" aria-describedby="input-addon1" value="">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="input-addon2">시작 날짜</span>
+                                    <input readonly="true" type="date" id="inputStartDate" class="form-control" name="startDate" aria-label="startDate" aria-describedby="input-addon2" value="">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="input-addon3">최근 날짜</span>
+                                    <input readonly="true" type="date" id="inputEndDate" class="form-control" name="endDate" aria-label="endDate" aria-describedby="input-addon3" value="">
+                                </div>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="input-addon4">설정 금액</span>
+                                    <input readonly="true" type="text" id="inputSlotAmount" class="form-control" name="slotAmount" aria-label="slotAmount" aria-describedby="input-addon4" value="">
+                                    <span class="input-group-text" id="input-addon5">시작 비중%</span>
+                                    <input readonly="true" type="text" id="inputPortion" class="form-control" name="portion" aria-label="portion" aria-describedby="input-addon5" value="">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -957,6 +1202,8 @@
                 </form>
 
                 <hr style="height:3px;color:#dc874f">
+
+                <button id="downloadHistoriesBtn">매매내역 CSV 다운로드</button>
             </main>
         </div>
     </div>

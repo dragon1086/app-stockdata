@@ -68,3 +68,6 @@ Thumbs.db
 *.app
 *.exe
 *.war
+
+#env
+src/main/resources/properties/env-*

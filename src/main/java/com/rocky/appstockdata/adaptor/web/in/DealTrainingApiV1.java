@@ -1,11 +1,13 @@
 package com.rocky.appstockdata.adaptor.web.in;
 
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
+import com.rocky.appstockdata.application.port.in.SupabaseUseCase;
 import com.rocky.appstockdata.domain.DealModification;
 import com.rocky.appstockdata.domain.DealTrainingResult;
 import com.rocky.appstockdata.domain.dto.DealTrainingModificationSourceDTO;
 import com.rocky.appstockdata.domain.dto.DealTrainingResponseDTO;
 import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
+import com.rocky.appstockdata.domain.dto.UserDTO;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
 import com.rocky.appstockdata.exceptions.DealTrainingSourceException;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
@@ -19,6 +21,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,25 +30,55 @@ import java.util.List;
 @Slf4j
 public class DealTrainingApiV1 {
     private final DealTrainingUseCase dealTrainingUseCase;
+    private final SupabaseUseCase supabaseUseCase;
 
-    public DealTrainingApiV1(DealTrainingUseCase dealTrainingUseCase) {
+    public DealTrainingApiV1(DealTrainingUseCase dealTrainingUseCase,
+                             SupabaseUseCase supabaseUseCase) {
         this.dealTrainingUseCase = dealTrainingUseCase;
+        this.supabaseUseCase = supabaseUseCase;
     }
 
     @GetMapping("/")
-    public String dealTrainingMain(){
+    public String dealTrainingMain(ModelMap modelMap,
+                                   @RequestParam(required = false) String error){
+        if (error != null && !error.isEmpty()) {
+            // 에러 메시지 처리
+            String errorMessage;
+            switch (error) {
+                case "Verification failed":
+                    errorMessage = "인증에 실패했습니다. 다시 시도해 주세요.";
+                    break;
+                case "No session":
+                    errorMessage = "세션이 만료되었습니다. 다시 로그인해 주세요.";
+                    break;
+                default:
+                    errorMessage = "오류가 발생했습니다: " + error;
+            }
+            modelMap.put("isError", "true");
+            modelMap.put("errorMessage", errorMessage);
+        }
         return "dealTrainingIndex";
     }
 
     @PostMapping(path = "/deal-calculate", produces = MediaType.APPLICATION_JSON_VALUE)
-    public String dealCalculate(ModelMap modelMap,
+    public String dealCalculate(HttpSession session,
+                                ModelMap modelMap,
                                 @RequestParam(value = "companyName", required = false) String companyName,
                                 @RequestParam(value = "slotAmount", required = false) String slotAmount,
                                 @RequestParam(value = "portion", required = false) String portion,
                                 @RequestParam(value = "startDate", required = false) String startDate,
                                 @RequestParam(value = "valuationPercent", required = false) String valuationPercent,
                                 @RequestParam(value = "level", required = false) String level){
+        UserDTO user = (UserDTO) session.getAttribute("sessionUser");
+        if (user == null) {
+            return "redirect:/"; // 세션이 없으면 메인 페이지로 리다이렉트
+        }
+
         try{
+            //fixme : token이 만료되었다면?
+            UserDTO updatedUser = supabaseUseCase.verifyAndGetUser(user.getAccessToken());
+            session.setAttribute("sessionUser", updatedUser);
+
             DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
                     .companyName(companyName)
                     .slotAmount(slotAmount)
@@ -62,7 +95,7 @@ public class DealTrainingApiV1 {
         } catch (DealTrainingSourceException | NoResultDataException e) {
             return createModelMapWithDealTrainingSourceException(modelMap, e.getMessage());
         } catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             return createModelMapWithDealTrainingSourceException(modelMap, "서버 오류 발생");
         }
 

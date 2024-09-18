@@ -681,6 +681,29 @@
             document.addEventListener('DOMContentLoaded', drawChart());
         }
         function drawChart() {
+            // 토글 버튼 컨테이너 생성
+            const toggleButtonContainer = $('<div>', {
+                class: 'd-flex justify-content-end mb-3'
+            });
+
+            // 토글 버튼 생성
+            const toggleButton = $('<button>', {
+                id: 'candlestick-heikinashi-toggle',
+                class: 'btn btn-outline-primary btn-sm',
+                html: '<i class="fas fa-exchange-alt"></i> 캔들스틱/하이아킨시 전환'
+            });
+
+            // 버튼을 컨테이너에 추가
+            toggleButtonContainer.append(toggleButton);
+
+
+            // 'container' 요소 바로 앞에 버튼 추가
+            toggleButtonContainer.insertBefore('#container');
+
+            let isHeikinAshi = false;
+            const candleData = candleStickDataList;
+            const heikinAshiData = calculateHeikinAshi(candleStickDataList);
+
             const highchartsOptions = Highcharts.setOptions({
                     lang: {
                         loading: '로딩중입니다...',
@@ -828,7 +851,7 @@
                     id: 'candle',
                     name: itemName,
                     type: 'candlestick',
-                    data: candleStickDataList,
+                    data: candleData,
                     tooltip: {
                         valueDecimals: 0
                     },
@@ -981,6 +1004,32 @@
                     }]
                 }
             });
+
+            // 토글 버튼 클릭 이벤트 처리
+            $("#candlestick-heikinashi-toggle").on("click", function(event) {
+                event.preventDefault();
+
+                isHeikinAshi = !isHeikinAshi;
+                const series = chart.get('candle');
+
+                if (isHeikinAshi) {
+                    series.update({
+                        type: 'candlestick',
+                        data: heikinAshiData,
+                        name: itemName + ' (하이아킨시)'
+                    }, false);
+                } else {
+                    series.update({
+                        type: 'candlestick',
+                        data: candleData,
+                        name: itemName
+                    }, false);
+                }
+
+                chart.redraw();
+
+                return false;
+            });
         }
 
         function convertToCSV(objArray) {
@@ -1025,14 +1074,53 @@
                 URL.revokeObjectURL(url);
             }, 100);
         }
+
+        // 하이아킨시 데이터 계산 함수
+        function calculateHeikinAshi(data) {
+            let ha = [];
+            data.forEach((point, index) => {
+                let haPoint = [];
+                haPoint[0] = point[0]; // 시간은 그대로
+
+                if (index === 0) {
+                    haPoint[1] = point[1]; // 시가
+                    haPoint[2] = point[2]; // 고가
+                    haPoint[3] = point[3]; // 저가
+                    haPoint[4] = point[4]; // 종가
+                } else {
+                    haPoint[1] = (ha[index-1][1] + ha[index-1][4]) / 2; // 시가
+                    haPoint[4] = (point[1] + point[2] + point[3] + point[4]) / 4; // 종가
+                    haPoint[2] = Math.max(point[2], haPoint[1], haPoint[4]); // 고가
+                    haPoint[3] = Math.min(point[3], haPoint[1], haPoint[4]); // 저가
+                }
+                ha.push(haPoint);
+            });
+            return ha;
+        }
     </script>
 </head>
 <body>
 <div class="container">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-        <ul class="nav nav-pills">
-            <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">초기화면</a></li>
-        </ul>
+    <header class="row py-3 mb-4 border-bottom align-items-center">
+        <% if (session.getAttribute("sessionUser") != null) { %>
+        <div class="col-12 col-md-4 mb-2 mb-md-0">
+            <h5 class="m-0">환영합니다, ${sessionUser.email}님!</h5>
+        </div>
+        <div class="col-6 col-md-4 text-center">
+            <a href="/" class="btn btn-primary" aria-current="page">
+                <i class="fas fa-home"></i> 초기화면
+            </a>
+        </div>
+        <div class="col-6 col-md-4 text-end">
+            <button type="button" class="btn btn-outline-secondary" id="logoutButton" onclick="location.href='/logout/google'">
+                <i class="fas fa-sign-out-alt"></i> 로그아웃
+            </button>
+        </div>
+        <% } else { %>
+        <div class="col-12">
+            <p class="alert alert-warning">세션이 만료되었습니다. <a href="/" class="alert-link">초기 페이지로 이동</a></p>
+        </div>
+        <% } %>
     </header>
 </div>
 

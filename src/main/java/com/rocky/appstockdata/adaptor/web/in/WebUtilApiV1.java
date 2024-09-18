@@ -3,10 +3,8 @@ package com.rocky.appstockdata.adaptor.web.in;
 import com.rocky.appstockdata.application.service.SitemapService;
 import com.rocky.appstockdata.domain.utils.XmlUrlSet;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,7 +14,6 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

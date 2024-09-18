@@ -32,6 +32,10 @@ server:
     accept-count: 100 # 작업큐의 사이즈
     connection-timeout: 60000 # timeout 판단 기준 시간, 60초
 
+supabase:
+  url: ${SUPABASE_URL}
+  key: ${SUPABASE_KEY}
+  redirect-uri: ${SUPABASE_REDIRECT_URI}
 ---
 #spring:
 #  confg:
