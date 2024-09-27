@@ -1,12 +1,14 @@
 package com.rocky.appstockdata.adaptor.web.in;
 
 import com.rocky.appstockdata.application.port.in.DealTrainingUseCase;
+import com.rocky.appstockdata.application.port.in.SupabaseUseCase;
 import com.rocky.appstockdata.domain.DailyDealHistory;
 import com.rocky.appstockdata.domain.DealModification;
 import com.rocky.appstockdata.domain.DealTrainingResult;
 import com.rocky.appstockdata.domain.dto.DealTrainingModificationSourceDTO;
 import com.rocky.appstockdata.domain.dto.DealTrainingResponseDTO;
 import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
+import com.rocky.appstockdata.domain.dto.UserDTO;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,17 +29,23 @@ import java.util.List;
 @Slf4j
 public class DealTrainingModificationApiV1 {
     private final DealTrainingUseCase dealTrainingUseCase;
+    private final SupabaseUseCase supabaseUseCase;
 
-    public DealTrainingModificationApiV1(DealTrainingUseCase dealTrainingUseCase) {
+    public DealTrainingModificationApiV1(DealTrainingUseCase dealTrainingUseCase,
+                                         SupabaseUseCase supabaseUseCase) {
         this.dealTrainingUseCase = dealTrainingUseCase;
+        this.supabaseUseCase = supabaseUseCase;
     }
 
     @PostMapping("/deal-calculate-modify")
     @ResponseBody
     public void dealCalculateModify(HttpServletResponse response,
+                                    HttpSession session,
                                     @RequestBody DealTrainingModificationSourceDTO request) throws IOException {
 
         try{
+            UserDTO user = (UserDTO) session.getAttribute("sessionUser");
+
             DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
                     .companyName(request.getCompanyName())
                     .startDate(request.getStartDate())
@@ -51,11 +60,20 @@ public class DealTrainingModificationApiV1 {
                             request.getBuyPercents(),
                             request.getBuyPrices()))
                     .jumpDate(request.getJumpDate())
+                    .id(request.getHistoryId())
+                    .userId(user != null ? user.getId() : null)
+                    .id(request.getHistoryId())
                     .build();
 
             DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
 
             DealTrainingResult dealTrainingResult = dealTrainingUseCase.modifyDailyDeal(dealTrainingSourceDTO);
+
+            Long savedHistoryId = null;
+            if(user != null) {
+                savedHistoryId = supabaseUseCase.upsertDealTrainingSource(user, dealTrainingSourceDTO);
+            }
+
             List<DailyDealHistory> dailyDealHistories = dealTrainingResult.getDailyDealHistories();
             int deltaCountByJump = dealTrainingResult.getDeltaCountByJump();
 
@@ -63,6 +81,7 @@ public class DealTrainingModificationApiV1 {
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().print(JSONObject.fromObject(
                     DealTrainingResponseDTO.builder()
+                    .historyId(savedHistoryId)
                     .companyName(dealTrainingSourceDTO.getCompanyName())
                     .startDate(dealTrainingResult.getStartDate())
                     .endDate(dealTrainingResult.getEndDate())

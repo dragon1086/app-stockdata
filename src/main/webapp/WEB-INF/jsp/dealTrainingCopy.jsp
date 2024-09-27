@@ -32,6 +32,30 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
     <style>
+        .auth-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 0;
+            margin-bottom: 20px;  /* 아래 컨텐츠와의 간격 */
+        }
+        .auth-row {
+            display: flex;
+            align-items: center;
+        }
+        #loginButton {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+        #loginButton img {
+            height: 30px;
+            width: auto;
+        }
+        #logoutButton {
+            height: 30px;
+            font-size: 12px;
+        }
+
         .bd-placeholder-img {
             font-size: 1.125rem;
             text-anchor: middle;
@@ -73,10 +97,6 @@
         var additionalSellingPrice = copyData.additionalSellingPrice;
         var additionalBuyingAmount = copyData.additionalBuyingAmount;
         var additionalSellingAmount = copyData.additionalSellingAmount;
-        var fiveMovingAverageList = copyData.fiveMovingAverageList;
-        var twentyMovingAverageList = copyData.twentyMovingAverageList;
-        var sixtyMovingAverageList = copyData.sixtyMovingAverageList;
-        var oneTwentyMovingAverageList = copyData.oneTwentyMovingAverageList;
         var groupingUnits = copyData.groupingUnits;
         var earningRate = copyData.earningRate;
         var earningAmount = copyData.earningAmount;
@@ -92,10 +112,15 @@
         var totalAmount = copyData.totalAmount;
         var valuationPercent = copyData.valuationPercent;
         var averageUnitPrice = copyData.averageUnitPrice;
+        var historyId = null;
 
         //etc
         var isError = copyData.isError;
         var errorMessage = copyData.errorMessage;
+
+        //chart
+        let chartInstance;
+        let isHeikinAshi = false;
 
         $(function(){
             $('input[id=thisModifyDate]').attr('value',nextTryDate);
@@ -137,6 +162,34 @@
             $("#downloadHistoriesBtn").on("click",function(event) {
                 event.preventDefault(); //submit 메소드 두 번 실행 방지
                 downloadDealHistories();
+                return false;
+            });
+            // 토글 버튼 클릭 이벤트 처리
+            $(document).on("click", "#candlestick-heikinashi-toggle", function(event) {
+                event.preventDefault();
+
+                if (!chartInstance) {
+                    console.error('Chart instance not found');
+                    return false;
+                }
+
+                const candleSeries = chartInstance.get('candle');
+                if (!candleSeries) {
+                    console.error('Candle series not found');
+                    return false;
+                }
+
+                isHeikinAshi = !isHeikinAshi; //상태 토글
+
+                candleSeries.update({
+                    type: 'candlestick',
+                    data: isHeikinAshi ? calculateHeikinAshi(candleStickDataList) : candleStickDataList,
+                    name: itemName + (isHeikinAshi ? ' (하이킨아시)' : ''),
+                    isHeikinAshi: isHeikinAshi
+                }, false);
+
+                chartInstance.redraw();
+
                 return false;
             });
             document.cookie = "SameSite=None; Secure";
@@ -200,7 +253,8 @@
                 slotAmount: slotAmount,
                 portion: portion,
                 initialPortion: initialPortion,
-                jumpDate: jumpDate
+                jumpDate: jumpDate,
+                historyId: historyId
             };
 
             $.ajax({
@@ -217,6 +271,7 @@
 
                     //update result setting values
                     currentClosingPrice = data.currentClosingPrice;
+                    historyId = data.historyId;
                     $('input[id=sellPrice]').prop('value',currentClosingPrice);
                     $('input[id=buyPrice]').prop('value',currentClosingPrice);
                     $('input[id=sellPercent]').val('0');
@@ -356,62 +411,6 @@
                             });
                         }
                     }
-                    if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.five ) {
-                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
-                            fiveMovingAverageList.pop();
-                            fiveMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.five]);
-                            fiveMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.five]);
-                        } else {
-                            data.deltaDailyDealHistories.forEach(item => {
-                                fiveMovingAverageList.push([
-                                    item.dealDateForTimestamp,
-                                    item.movingAverage.movingAverageMap.five
-                                ]);
-                            });
-                        }
-                    }
-                    if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.twenty ) {
-                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
-                            twentyMovingAverageList.pop();
-                            twentyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.twenty]);
-                            twentyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.twenty]);
-                        } else {
-                            data.deltaDailyDealHistories.forEach(item => {
-                                twentyMovingAverageList.push([
-                                    item.dealDateForTimestamp,
-                                    item.movingAverage.movingAverageMap.twenty
-                                ]);
-                            });
-                        }
-                    }
-                    if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.sixty ) {
-                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
-                            sixtyMovingAverageList.pop();
-                            sixtyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.sixty]);
-                            sixtyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.sixty]);
-                        } else {
-                            data.deltaDailyDealHistories.forEach(item => {
-                                sixtyMovingAverageList.push([
-                                    item.dealDateForTimestamp,
-                                    item.movingAverage.movingAverageMap.sixty
-                                ]);
-                            });
-                        }
-                    }
-                    if( data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.oneHundredTwenty ) {
-                        if(isEmptyJsonArray(data.deltaDailyDealHistories)) {
-                            oneTwentyMovingAverageList.pop();
-                            oneTwentyMovingAverageList.push([data.oneDayAgoDailyDealHistory.dealDateForTimestamp, data.oneDayAgoDailyDealHistory.movingAverage.movingAverageMap.oneHundredTwenty]);
-                            oneTwentyMovingAverageList.push([data.lastDailyDealHistory.dealDateForTimestamp, data.lastDailyDealHistory.movingAverage.movingAverageMap.oneHundredTwenty]);
-                        } else {
-                            data.deltaDailyDealHistories.forEach(item => {
-                                oneTwentyMovingAverageList.push([
-                                    item.dealDateForTimestamp,
-                                    item.movingAverage.movingAverageMap.oneHundredTwenty
-                                ]);
-                            });
-                        }
-                    }
 
                     earningRate = data.earningRate;
                     $(".earningRate").text(makeCommaWithDecimal(earningRate));
@@ -483,10 +482,6 @@
                 additionalSellingPrice: [],
                 additionalBuyingAmount: [],
                 additionalSellingAmount: [],
-                fiveMovingAverageList: [],
-                twentyMovingAverageList: [],
-                sixtyMovingAverageList: [],
-                oneTwentyMovingAverageList: [],
                 groupingUnits: groupingUnits,
                 earningRate: earningRate,
                 earningAmount: earningAmount,
@@ -667,18 +662,6 @@
                         additionalSellingPrice.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalSellingAmount / dailyDealHistories[idx].additionalSellingQuantity]);
                         additionalSellingAmount.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].additionalSellingAmount]);
                     }
-                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.five ) {
-                        fiveMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.five]);
-                    }
-                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.twenty ) {
-                        twentyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.twenty]);
-                    }
-                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.sixty ) {
-                        sixtyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.sixty]);
-                    }
-                    if( dailyDealHistories[idx].movingAverage.movingAverageMap.oneHundredTwenty ) {
-                        oneTwentyMovingAverageList.push([dailyDealHistories[idx].dealDateForTimestamp, dailyDealHistories[idx].movingAverage.movingAverageMap.oneHundredTwenty]);
-                    }
 
                     //copy 한 뒤 첫 로딩에는 전날 매매이력이 있으면 현재일 허수 셋팅(이후 매매 하면 허수 데이터 pop한 뒤 신규데이터 push
                     if(idx === dailyDealHistories.length - 1) {
@@ -696,7 +679,42 @@
 
             document.addEventListener('DOMContentLoaded', drawChart());
         }
+
+        function createToggleButton() {
+            const toggleContainerId = 'toggle-button-container';
+            let toggleButtonContainer = $('#' + toggleContainerId);
+
+            if (toggleButtonContainer.length === 0) {
+                toggleButtonContainer = $('<div>', {
+                    id: toggleContainerId,
+                    class: 'd-flex justify-content-end mb-3'
+                });
+
+                const toggleButton = $('<button>', {
+                    id: 'candlestick-heikinashi-toggle',
+                    class: 'btn btn-outline-primary btn-sm',
+                    html: '<i class="fas fa-exchange-alt"></i> 캔들스틱/하이킨아시 전환'
+                });
+
+                toggleButtonContainer.append(toggleButton);
+                toggleButtonContainer.insertBefore('#container');
+            }
+        }
+
         function drawChart() {
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            createToggleButton();
+
+            // 이동평균 계산
+            const fiveMA = calculateMovingAverage(candleStickDataList, 5);
+            const twentyMA = calculateMovingAverage(candleStickDataList, 20);
+            const sixtyMA = calculateMovingAverage(candleStickDataList, 60);
+            const oneTwentyMA = calculateMovingAverage(candleStickDataList, 120);
+
+
             const highchartsOptions = Highcharts.setOptions({
                     lang: {
                         loading: '로딩중입니다...',
@@ -719,7 +737,7 @@
                     }
                 }
             );
-            const chart = Highcharts.stockChart('container', {
+            chartInstance = Highcharts.stockChart('container', {
                 title: {
                     text: '일봉차트와 평균단가 그래프(' + itemName + ')',
                     style:{
@@ -912,7 +930,7 @@
                 }, {
                     type: 'spline',
                     name: '5일 이동평균',
-                    data: fiveMovingAverageList,
+                    data: fiveMA,
                     dataGrouping: {
                         units: groupingUnits
                     },
@@ -922,7 +940,7 @@
                 }, {
                     type: 'spline',
                     name: '20일 이동평균',
-                    data: twentyMovingAverageList,
+                    data: twentyMA,
                     dataGrouping: {
                         units: groupingUnits
                     },
@@ -932,7 +950,7 @@
                 }, {
                     type: 'spline',
                     name: '60일 이동평균',
-                    data: sixtyMovingAverageList,
+                    data: sixtyMA,
                     dataGrouping: {
                         units: groupingUnits
                     },
@@ -942,7 +960,7 @@
                 }, {
                     type: 'spline',
                     name: '120일 이동평균',
-                    data: oneTwentyMovingAverageList,
+                    data: oneTwentyMA,
                     dataGrouping: {
                         units: groupingUnits
                     },
@@ -1041,31 +1059,69 @@
                 URL.revokeObjectURL(url);
             }, 100);
         }
+
+        // 하이킨아시 데이터 계산 함수
+        function calculateHeikinAshi(data) {
+            return data.reduce((acc, point, index) => {
+                const haPoint = [point[0]];  // 시간은 그대로
+                if (index === 0) {
+                    haPoint.push(point[1], point[2], point[3], point[4]);  // 시가, 고가, 저가, 종가
+                } else {
+                    const prevHa = acc[index - 1];
+                    const open = (prevHa[1] + prevHa[4]) / 2;
+                    const close = (point[1] + point[2] + point[3] + point[4]) / 4;
+                    haPoint.push(
+                        open,
+                        Math.max(point[2], open, close),
+                        Math.min(point[3], open, close),
+                        close
+                    );
+                }
+                acc.push(haPoint);
+                return acc;
+            }, []);
+        }
+
+        //이동평균선 계산함수
+        function calculateMovingAverage(data, period) {
+            return data.map((_, index, array) => {
+                if (index < period - 1) {
+                    return [array[index][0], null];
+                }
+                const slice = array.slice(index - period + 1, index + 1);
+                const sum = slice.reduce((acc, val) => acc + val[4], 0);
+                return [array[index][0], sum / period];
+            });
+        }
     </script>
 </head>
 <body>
-<div class="container">
-    <header class="row py-3 mb-4 border-bottom align-items-center">
+<div class="container-fluid auth-container">
+    <div class="row auth-row">
         <% if (session.getAttribute("sessionUser") != null) { %>
-        <div class="col-12 col-md-4 mb-2 mb-md-0">
-            <h5 class="m-0">환영합니다, ${sessionUser.email}님!</h5>
+        <div class="col-4 text-start">
+            <h5 class="m-0">환영합니다, ${sessionScope.sessionUser.email}님!</h5>
         </div>
-        <div class="col-6 col-md-4 text-center">
+        <% } else { %>
+        <div class="col-4"></div>
+        <% } %>
+        <div class="col-4 text-center">
             <a href="/" class="btn btn-primary" aria-current="page">
                 <i class="fas fa-home"></i> 초기화면
             </a>
         </div>
-        <div class="col-6 col-md-4 text-end">
+        <div class="col-4 text-end">
+            <% if (session.getAttribute("sessionUser") == null) { %>
+            <button id="loginButton" onclick="location.href='/login/google'">
+                <img src="resources/images/googleLogin.png" alt="Sign in with Google"/>
+            </button>
+            <% } else { %>
             <button type="button" class="btn btn-outline-secondary" id="logoutButton" onclick="location.href='/logout/google'">
                 <i class="fas fa-sign-out-alt"></i> 로그아웃
             </button>
+            <% } %>
         </div>
-        <% } else { %>
-        <div class="col-12">
-            <p class="alert alert-warning">세션이 만료되었습니다. <a href="/" class="alert-link">초기 페이지로 이동</a></p>
-        </div>
-        <% } %>
-    </header>
+    </div>
 </div>
 
 <div id="c1" class="container">

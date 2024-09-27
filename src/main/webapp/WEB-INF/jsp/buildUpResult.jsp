@@ -54,7 +54,20 @@
         $(function(){
             document.cookie = "SameSite=None; Secure";
         });
+
+        //이동평균선 계산함수
+        function calculateMovingAverage(data, period) {
+            return data.map((_, index, array) => {
+                if (index < period - 1) {
+                    return [array[index][0], null];
+                }
+                const slice = array.slice(index - period + 1, index + 1);
+                const sum = slice.reduce((acc, val) => acc + val[4], 0);
+                return [array[index][0], sum / period];
+            });
+        }
     </script>
+
 </head>
 <body>
 <div class="container">
@@ -104,10 +117,6 @@
                         var candleStickDataList = [];
                         var volumeList = [];
                         var myAverageUnitPriceList = [];
-                        var fiveMovingAverageList = [];
-                        var twentyMovingAverageList = [];
-                        var sixtyMovingAverageList = [];
-                        var oneTwentyMovingAverageList = [];
                         var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
 
                         <c:if test="${isError == 'false'}">
@@ -117,20 +126,14 @@
                                 <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
                                     myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
                                 </c:if>
-                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('5') != null}">
-                                    fiveMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('5')}]);
-                                </c:if>
-                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('20') != null}">
-                                    twentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('20')}]);
-                                </c:if>
-                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('60') != null}">
-                                    sixtyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('60')}]);
-                                </c:if>
-                                <c:if test="${dailyDealHistory.movingAverage.movingAverageMap.get('120') != null}">
-                                    oneTwentyMovingAverageList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.movingAverage.movingAverageMap.get('120')}]);
-                                </c:if>
                             </c:forEach>
                         </c:if>
+
+                        // 이동평균 계산
+                        const fiveMA = calculateMovingAverage(candleStickDataList, 5);
+                        const twentyMA = calculateMovingAverage(candleStickDataList, 20);
+                        const sixtyMA = calculateMovingAverage(candleStickDataList, 60);
+                        const oneTwentyMA = calculateMovingAverage(candleStickDataList, 120);
 
                         document.addEventListener('DOMContentLoaded', function () {
                             const highchartsOptions = Highcharts.setOptions({
@@ -296,7 +299,7 @@
                                 }, {
                                     type: 'spline',
                                     name: '5일 이동평균',
-                                    data: fiveMovingAverageList,
+                                    data: fiveMA,
                                     dataGrouping: {
                                         units: groupingUnits
                                     },
@@ -306,7 +309,7 @@
                                 }, {
                                     type: 'spline',
                                     name: '20일 이동평균',
-                                    data: twentyMovingAverageList,
+                                    data: twentyMA,
                                     dataGrouping: {
                                         units: groupingUnits
                                     },
@@ -316,7 +319,7 @@
                                 }, {
                                     type: 'spline',
                                     name: '60일 이동평균',
-                                    data: sixtyMovingAverageList,
+                                    data: sixtyMA,
                                     dataGrouping: {
                                         units: groupingUnits
                                     },
@@ -326,7 +329,7 @@
                                 }, {
                                     type: 'spline',
                                     name: '120일 이동평균',
-                                    data: oneTwentyMovingAverageList,
+                                    data: oneTwentyMA,
                                     dataGrouping: {
                                         units: groupingUnits
                                     },

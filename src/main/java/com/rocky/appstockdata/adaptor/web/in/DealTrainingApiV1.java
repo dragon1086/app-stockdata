@@ -70,14 +70,13 @@ public class DealTrainingApiV1 {
                                 @RequestParam(value = "valuationPercent", required = false) String valuationPercent,
                                 @RequestParam(value = "level", required = false) String level){
         UserDTO user = (UserDTO) session.getAttribute("sessionUser");
-        if (user == null) {
-            return "redirect:/"; // 세션이 없으면 메인 페이지로 리다이렉트
-        }
 
         try{
             //fixme : token이 만료되었다면?
-            UserDTO updatedUser = supabaseUseCase.verifyAndGetUser(user.getAccessToken());
-            session.setAttribute("sessionUser", updatedUser);
+            if(user != null) {
+                UserDTO updatedUser = supabaseUseCase.verifyAndGetUser(user.getAccessToken());
+                session.setAttribute("sessionUser", updatedUser);
+            }
 
             DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
                     .companyName(companyName)

@@ -21,6 +21,7 @@ public class DealTrainingModificationSourceDTO {
     private List<String> buyPercents;
     private List<String> buyPrices;
     private String jumpDate;
+    private Long historyId;
 
     @Builder
     public DealTrainingModificationSourceDTO(String companyName,
@@ -33,7 +34,8 @@ public class DealTrainingModificationSourceDTO {
                                              List<String> sellPrices,
                                              List<String> buyPercents,
                                              List<String> buyPrices,
-                                             String jumpDate) {
+                                             String jumpDate,
+                                             Long historyId) {
         this.companyName = companyName;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -45,5 +47,6 @@ public class DealTrainingModificationSourceDTO {
         this.buyPercents = buyPercents;
         this.buyPrices = buyPrices;
         this.jumpDate = jumpDate;
+        this.historyId = historyId;
     }
 }

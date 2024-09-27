@@ -41,6 +41,7 @@ public class DealTrainingResponseDTO {
     private String redirectUrl;
     private JSONArray dailyDealHistories;
     private JSONArray deltaDailyDealHistories;
+    private Long historyId;
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -73,35 +74,43 @@ public class DealTrainingResponseDTO {
                                    String errorMessage,
                                    String redirectUrl,
                                    JSONArray dailyDealHistories,
-                                   JSONArray deltaDailyDealHistories) {
-        this.companyName = companyName;
-        this.startDate = startDate.format(formatter);
-        this.endDate = endDate.format(formatter);
-        this.itemName = itemName;
-        this.lastDailyDealHistory = lastDailyDealHistory;
-        this.oneDayAgoDailyDealHistory = oneDayAgoDailyDealHistory;
-        this.portion = portion;
-        this.initialPortion = initialPortion;
-        this.slotAmount = slotAmount;
-        this.remainingPortion = remainingPortion;
-        this.remainingSlotAmount = remainingSlotAmount;
-        this.dealModifications = dealModifications;
-        this.totalAmount = totalAmount;
-        this.valuationPercent = valuationPercent;
-        this.averageUnitPrice = averageUnitPrice;
-        this.currentClosingPrice = currentClosingPrice;
-        this.nextTryDate = nextTryDate;
-        this.sumOfPurchaseAmount = sumOfPurchaseAmount;
-        this.sumOfSellingAmount = sumOfSellingAmount;
-        this.sumOfCommission = sumOfCommission;
-        this.sumOfPurchaseQuantity = sumOfPurchaseQuantity;
-        this.sumOfSellingQuantity = sumOfSellingQuantity;
-        this.earningRate = earningRate;
-        this.earningAmount = earningAmount;
-        this.isError = isError;
-        this.errorMessage = errorMessage;
-        this.redirectUrl = redirectUrl;
-        this.dailyDealHistories = dailyDealHistories;
-        this.deltaDailyDealHistories = deltaDailyDealHistories;
+                                   JSONArray deltaDailyDealHistories,
+                                   Long historyId) {
+        if(isError) {
+            this.isError = isError;
+            this.errorMessage = errorMessage;
+        } else {
+            this.companyName = companyName;
+            this.startDate = startDate.format(formatter);
+            this.endDate = endDate.format(formatter);
+            this.itemName = itemName;
+            this.lastDailyDealHistory = lastDailyDealHistory;
+            this.oneDayAgoDailyDealHistory = oneDayAgoDailyDealHistory;
+            this.portion = portion;
+            this.initialPortion = initialPortion;
+            this.slotAmount = slotAmount;
+            this.remainingPortion = remainingPortion;
+            this.remainingSlotAmount = remainingSlotAmount;
+            this.dealModifications = dealModifications;
+            this.totalAmount = totalAmount;
+            this.valuationPercent = valuationPercent;
+            this.averageUnitPrice = averageUnitPrice;
+            this.currentClosingPrice = currentClosingPrice;
+            this.nextTryDate = nextTryDate;
+            this.sumOfPurchaseAmount = sumOfPurchaseAmount;
+            this.sumOfSellingAmount = sumOfSellingAmount;
+            this.sumOfCommission = sumOfCommission;
+            this.sumOfPurchaseQuantity = sumOfPurchaseQuantity;
+            this.sumOfSellingQuantity = sumOfSellingQuantity;
+            this.earningRate = earningRate;
+            this.earningAmount = earningAmount;
+            this.isError = isError;
+            this.errorMessage = errorMessage;
+            this.redirectUrl = redirectUrl;
+            this.dailyDealHistories = dailyDealHistories;
+            this.deltaDailyDealHistories = deltaDailyDealHistories;
+            this.historyId = historyId;
+        }
+
     }
 }

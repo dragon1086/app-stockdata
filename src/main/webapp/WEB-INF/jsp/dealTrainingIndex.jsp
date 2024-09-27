@@ -36,23 +36,45 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
     <style>
+        .auth-container {
+            background-color: #f8f9fa;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+        .auth-row {
+            display: flex;
+            align-items: center;
+        }
         #loginButton {
-            border: none;
             background: none;
+            border: none;
             padding: 0;
             cursor: pointer;
         }
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
+        #loginButton img {
+            height: 30px;
+            width: auto;
         }
-
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
+        #logoutButton {
+            height: 30px;
+            width: 80px;
+            font-size: 12px;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        @media (max-width: 768px) {
+            .auth-row {
+                flex-direction: column;
+                align-items: center;
+            }
+            .auth-row > div {
+                margin-bottom: 10px;
             }
         }
 
@@ -142,18 +164,30 @@
         </div>
     </c:if>
 
-    <% if (session.getAttribute("sessionUser") == null) { %>
-        <button id="loginButton" onclick="location.href='/login/google'">
-            <img src="resources/images/googleLogin.png" alt="Sign in with Google"/>
-        </button>
-    <% } else { %>
-        <button type="button" class="btn btn-secondary" id="logoutButton" onclick="location.href='/logout/google'" style="height:30px;width:60px;font-size:9px;">로그아웃</button>
-        <div id="userInfo">
-            <h5>환영합니다, ${sessionScope.sessionUser.email}님!</h5>
+    <div class="container-fluid auth-container">
+        <div class="row auth-row">
+            <div class="col-4 text-start">
+                <% if (session.getAttribute("sessionUser") != null) { %>
+                <p class="m-0">환영합니다, ${sessionScope.sessionUser.email}님!</p>
+                <% } %>
+            </div>
+            <div class="col-4 text-center">
+                <button type="button" class="btn btn-secondary" onclick="location.href='/buildup'">
+                    자동 시뮬레이션 하러 가기
+                </button>
+            </div>
+            <div class="col-4 text-end">
+                <% if (session.getAttribute("sessionUser") == null) { %>
+                <button id="loginButton" onclick="location.href='/login/google'">
+                    <img src="resources/images/googleLogin.png" alt="Sign in with Google"/>
+                </button>
+                <% } else { %>
+                <button type="button" class="btn btn-secondary" id="logoutButton" onclick="location.href='/logout/google'">
+                    로그아웃
+                </button>
+                <% } %>
+            </div>
         </div>
-    <% } %>
-    <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-secondary" onclick="location.href='/buildup'" style="height:50px;width:330px;font-size:18px;">자동 시뮬레이션 하러 가기</button>
     </div>
     <form action="deal-calculate" method="post" name="calculateRequestFrom">
         <div class="px-4 py-5 my-5 text-center">
