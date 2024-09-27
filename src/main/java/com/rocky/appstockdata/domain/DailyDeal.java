@@ -23,7 +23,6 @@ public class DailyDeal {
     private String dealDate;
     private Long totalAmount;
     private String kospiKosdaq;
-    private MovingAverage movingAverage;
 
     @Builder
     public DailyDeal(String itemCode,
@@ -36,8 +35,7 @@ public class DailyDeal {
                      Long tradeMoney,
                      String dealDate,
                      Long totalAmount,
-                     String kospiKosdaq,
-                     MovingAverage movingAverage) {
+                     String kospiKosdaq) {
         this.itemCode = itemCode;
         this.itemName = itemName;
         this.closingPrice = closingPrice;
@@ -49,7 +47,6 @@ public class DailyDeal {
         this.dealDate = dealDate;
         this.totalAmount = totalAmount;
         this.kospiKosdaq = kospiKosdaq;
-        this.movingAverage = movingAverage;
     }
 
     public DailyDeal copy() {
@@ -65,13 +62,9 @@ public class DailyDeal {
                 .dealDate(this.dealDate)
                 .totalAmount(this.totalAmount)
                 .kospiKosdaq(this.kospiKosdaq)
-                .movingAverage(this.movingAverage == null ? new MovingAverage(new HashMap<>()) : this.movingAverage)
                 .build();
     }
 
-    public void addMovingAverage(String window, long movingAverage) {
-        this.movingAverage.addMovingAverage(window, movingAverage);
-    }
 
     public DailyDealDTOv2 toDailyDealDTOv2() {
         return DailyDealDTOv2.builder()

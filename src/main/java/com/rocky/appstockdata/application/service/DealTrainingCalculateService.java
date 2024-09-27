@@ -17,7 +17,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.rocky.appstockdata.domain.utils.BuildUpUtil.transformDate;
-import static com.rocky.appstockdata.domain.utils.MovingAverageUtil.addMovingAverage;
 
 @Service
 @Slf4j
@@ -67,12 +66,11 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
         String endDateString = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String startDateString = startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        List<DailyDeal> initializedDailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
+        return stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
                 .companyName(dealTrainingSourceDTO.getCompanyName())
                 .startDate(startDateString)
                 .endDate(endDateString)
                 .build());
-        return addMovingAverage(initializedDailyDealList);
     }
 
     private String validateAndGetEarliestDate(DealTrainingSourceDTO dealTrainingSourceDTO) {
@@ -110,7 +108,6 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                     .lowPrice(dailyDeal.getLowPrice())
                     .tradeVolume(dailyDeal.getTradeVolume())
                     .myAverageUnitPrice(myAverageUnitPrice)
-                    .movingAverage(dailyDeal.getMovingAverage())
                     .build());
 
             if(!dailyDeals.hasNext()){
@@ -153,7 +150,6 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                         .buyPercent((int)Math.round(dealTrainingSourceDTO.getPortion()))
                         .remainingAmount(remainingSlotAmount)
                         .portion(100.0 - remainingPortion)
-                        .movingAverage(dailyDeal.getMovingAverage())
                         .build());
             }
         }
@@ -186,7 +182,6 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 .tradeVolume(nextTryDay.getTradeVolume())
                 .myAverageUnitPrice(dailyDealHistoryAggregation.getMyAverageUnitPrice())
                 .portion(100.0 - dailyDealHistoryAggregation.getRemainingPortion())
-                .movingAverage(nextTryDay.getMovingAverage())
                 .build());
     }
 
@@ -293,7 +288,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
 
             endDate = endDate.plusDays(1);
         }
-        return addMovingAverage(finalDailyDealList);
+        return finalDailyDealList;
     }
 
     private DailyDealHistoryAggregation createModifiedDailyDealHistoryAggregation(DealTrainingSourceDTO dealTrainingSourceDTO, List<DailyDeal> dailyDealList) {
@@ -428,7 +423,6 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                     .commission(sumOfCommissionForToday)
                     .realizedEarningAmount(sumOfRealizedEarningAmountForToday)
                     .portion(100.0 - remainingPortion)
-                    .movingAverage(dailyDeal.getMovingAverage())
                     .build());
         }
 

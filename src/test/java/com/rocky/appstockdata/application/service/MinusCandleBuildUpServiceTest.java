@@ -59,7 +59,6 @@ class MinusCandleBuildUpServiceTest {
                                 .dealDate("20211101")
                                 .dealDateForTimestamp(transformDate("20211101"))
                                 .closingPurchaseQuantity(2)
-                                .movingAverage(MovingAverage.builder().movingAverageMap(new HashMap<>()).build())
                                 .remainingAmount(2700L)
                         .build(),
                         DailyDealHistory.builder()
@@ -85,7 +84,6 @@ class MinusCandleBuildUpServiceTest {
                                 .dealDateForTimestamp(transformDate("20211103"))
                                 .closingPurchaseQuantity(3)
                                 .remainingAmount(2290L)
-                                .movingAverage(MovingAverage.builder().movingAverageMap(new HashMap<>()).build())
                                 .build()))
                 .build();
 
@@ -140,7 +138,6 @@ class MinusCandleBuildUpServiceTest {
                                 .dealDateForTimestamp(transformDate("20211101"))
                                 .closingPurchaseQuantity(2)
                                 .remainingAmount(2700L)
-                                .movingAverage(MovingAverage.builder().movingAverageMap(new HashMap<>()).build())
                                 .build(),
                         DailyDealHistory.builder()
                                 .closingPrice(3695L)
@@ -173,7 +170,6 @@ class MinusCandleBuildUpServiceTest {
                                 .additionalSellingAmount(3600L)
                                 .commission(11L)
                                 .realizedEarningAmount(-26L)
-                                .movingAverage(MovingAverage.builder().movingAverageMap(new HashMap<>()).build())
                                 .build()))
                 .build();
 

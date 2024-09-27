@@ -18,7 +18,6 @@ import java.util.List;
 
 import static com.rocky.appstockdata.domain.utils.BuildUpUtil.transformDate;
 import static com.rocky.appstockdata.domain.utils.DealTrainingUtil.sortDesc;
-import static com.rocky.appstockdata.domain.utils.MovingAverageUtil.addMovingAverage;
 
 @Service
 @Slf4j
@@ -54,7 +53,7 @@ public class MinusCandleBuildUpService implements BuildUpService {
                     + "종목명은 영문표기를 한글로 변형 또는 반대로 해서 다시 입력해보시기 바랍니다.");
         }
 
-        return addMovingAverage(dailyDealList);
+        return dailyDealList;
     }
 
     private BuildUpHistoryAggregation accumulateBuildUpHistoryAggregation(BuildUpSourceDTO buildUpSourceDTO, List<DailyDeal> dailyDealList) {
@@ -135,7 +134,6 @@ public class MinusCandleBuildUpService implements BuildUpService {
                         .additionalSellingAmount(buildUpHistoryAggregation.getSumOfAdditionalSellingAmountForToday())
                         .commission(buildUpHistoryAggregation.getSumOfCommissionForToday())
                         .realizedEarningAmount(buildUpHistoryAggregation.getSumOfRealizedEarningAmountForToday())
-                        .movingAverage(dailyDeal.getMovingAverage())
                         .build());
             }
 
@@ -213,11 +211,10 @@ public class MinusCandleBuildUpService implements BuildUpService {
     }
 
     private List<DailyDeal> getExistingDailyDeals(BuildUpModificationSourceDTO buildUpModificationSourceDTO) {
-        List<DailyDeal> existingDailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
+        return stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
                 .companyName(buildUpModificationSourceDTO.getCompanyName())
                 .endDate(buildUpModificationSourceDTO.getEndDate())
                 .startDate(buildUpModificationSourceDTO.getStartDate())
                 .build());
-        return addMovingAverage(existingDailyDealList);
     }
 }

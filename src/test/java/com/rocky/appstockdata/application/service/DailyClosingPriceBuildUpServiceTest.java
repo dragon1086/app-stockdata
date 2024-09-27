@@ -63,7 +63,6 @@ class DailyClosingPriceBuildUpServiceTest {
                                 .dealDateForTimestamp(1634050800000L)
                                 .closingPurchaseQuantity(3)
                                 .remainingAmount(850L)
-                                .movingAverage(MovingAverage.builder().movingAverageMap(new HashMap<>()).build())
                         .build(),
                         DailyDealHistory.builder()
                                 .closingPrice(3965L)
@@ -76,7 +75,6 @@ class DailyClosingPriceBuildUpServiceTest {
                                 .dealDateForTimestamp(1634137200000L)
                                 .closingPurchaseQuantity(2)
                                 .remainingAmount(2920L)
-                                .movingAverage(MovingAverage.builder().movingAverageMap(new HashMap<>()).build())
                                 .build(),
                         DailyDealHistory.builder()
                                 .closingPrice(4700L)
@@ -89,7 +87,6 @@ class DailyClosingPriceBuildUpServiceTest {
                                 .dealDateForTimestamp(1634223600000L)
                                 .closingPurchaseQuantity(2)
                                 .remainingAmount(3520L)
-                                .movingAverage(MovingAverage.builder().movingAverageMap(new HashMap<>()).build())
                                 .build()))
                 .build();
 
@@ -164,7 +161,6 @@ class DailyClosingPriceBuildUpServiceTest {
                                 .dealDateForTimestamp(1634050800000L)
                                 .closingPurchaseQuantity(3)
                                 .remainingAmount(850L)
-                                .movingAverage(MovingAverage.builder().movingAverageMap(new HashMap<>()).build())
                                 .build(),
                         DailyDealHistory.builder()
                                 .closingPrice(3965L)
@@ -179,7 +175,6 @@ class DailyClosingPriceBuildUpServiceTest {
                                 .remainingAmount(2920L)
                                 .additionalBuyingQuantity(1)
                                 .additionalBuyingAmount(3015L)
-                                .movingAverage(MovingAverage.builder().movingAverageMap(new HashMap<>()).build())
                                 .build(),
                         DailyDealHistory.builder()
                                 .closingPrice(4700L)
@@ -198,7 +193,6 @@ class DailyClosingPriceBuildUpServiceTest {
                                 .additionalSellingAmount(4945L)
                                 .commission(15L)
                                 .realizedEarningAmount(1453L)
-                                .movingAverage(MovingAverage.builder().movingAverageMap(new HashMap<>()).build())
                                 .build()))
                 .build();
 

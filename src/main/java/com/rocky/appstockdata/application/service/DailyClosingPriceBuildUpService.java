@@ -18,7 +18,6 @@ import java.util.List;
 
 import static com.rocky.appstockdata.domain.utils.BuildUpUtil.transformDate;
 import static com.rocky.appstockdata.domain.utils.DealTrainingUtil.sortDesc;
-import static com.rocky.appstockdata.domain.utils.MovingAverageUtil.addMovingAverage;
 
 @Service
 @Slf4j
@@ -56,7 +55,7 @@ public class DailyClosingPriceBuildUpService implements BuildUpService {
                     + "종목명은 영문표기를 한글로 변형 또는 반대로 해서 다시 입력해보시기 바랍니다.");
         }
 
-        return addMovingAverage(dailyDealList);
+        return dailyDealList;
     }
 
     private BuildUpHistoryAggregation accumulateBuildUpHistoryAggregation(BuildUpSourceDTO buildUpSourceDTO, List<DailyDeal> dailyDealList) {
@@ -111,7 +110,6 @@ public class DailyClosingPriceBuildUpService implements BuildUpService {
                     .additionalSellingAmount(buildUpHistoryAggregation.getSumOfAdditionalSellingAmountForToday())
                     .commission(buildUpHistoryAggregation.getSumOfCommissionForToday())
                     .realizedEarningAmount(buildUpHistoryAggregation.getSumOfRealizedEarningAmountForToday())
-                    .movingAverage(dailyDeal.getMovingAverage())
                     .build());
         }
 
@@ -194,6 +192,6 @@ public class DailyClosingPriceBuildUpService implements BuildUpService {
                 .endDate(buildUpModificationSourceDTO.getEndDate())
                 .startDate(buildUpModificationSourceDTO.getStartDate())
                 .build());
-        return addMovingAverage(existingDailyDealList);
+        return existingDailyDealList;
     }
 }
