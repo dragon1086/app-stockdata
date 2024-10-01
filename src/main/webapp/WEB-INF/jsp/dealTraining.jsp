@@ -698,6 +698,20 @@
             const sixtyMA = calculateMovingAverage(candleStickDataList, 60);
             const oneTwentyMA = calculateMovingAverage(candleStickDataList, 120);
 
+            // 데이터 로딩 함수 재정의
+            Highcharts.ajax = function(attr) {
+                console.log('데이터 로딩 시도가 차단되었습니다.');
+                if (attr.error) attr.error();
+            };
+
+            // 날짜 형식 변환 함수
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.getFullYear() + '년 ' + (date.getMonth() + 1) + '월 ' + date.getDate() + '일';
+            }
+
+            const formattedStartDate = formatDate(startDate);
+            const formattedEndDate = formatDate(endDate);
 
             const highchartsOptions = Highcharts.setOptions({
                     lang: {
@@ -707,9 +721,9 @@
                         shortMonths: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
                         exportButtonTitle: "Export",
                         printButtonTitle: "프린트",
-                        rangeSelectorFrom: "From",
-                        rangeSelectorTo: "To",
-                        rangeSelectorZoom: "확대범위",
+                        rangeSelectorFrom: "시작",
+                        rangeSelectorTo: "끝",
+                        rangeSelectorZoom: "기간",
                         downloadPNG: 'PNG로 다운로드',
                         downloadJPEG: 'JPEG로 다운로드',
                         downloadPDF: 'PDF로 다운로드',
@@ -721,23 +735,33 @@
                     }
                 }
             );
+
             chartInstance = Highcharts.stockChart('container', {
                 title: {
-                    text: '일봉차트와 평균단가 그래프(' + itemName + ')',
-                    style:{
+                    text: '주식 차트(' + itemName + ')',
+                    style: {
                         color: '#00443a',
-                        fontSize: '24px',
+                        fontSize: '28px',
                         fontWeight: 'bold'
                     }
                 },
                 subtitle: {
-                    text: '<b>캔들이 좁게 보일 때 범례의 평균/매수/매도 단가를 클릭해서 없애면, 캔들차트가 더 잘 보입니다</b>',
-                    align: 'left'
+                    text: '시뮬레이션 기간: ' + formattedStartDate + ' - ' + formattedEndDate,
+                    align: 'left',
+                    style: {
+                        fontSize: '16px'
+                    }
                 },
                 chart: {
-                    zoomType: 'x'
+                    zoomType: 'x',
+                    events: {
+                        load: function() {
+                            this.showLoading = function() {};
+                            this.hideLoading = function() {};
+                        }
+                    }
                 },
-                time:{
+                time: {
                     useUTC: false,
                     timezone: 'Asia/Seoul',
                 },
@@ -747,17 +771,55 @@
                     backgroundColor: '#FCFFC5',
                     borderColor: 'black',
                     borderWidth: 2,
-                    shadow: true
+                    shadow: true,
+                    itemStyle: {
+                        fontSize: '14px'
+                    }
                 },
                 rangeSelector: {
-                    selected: 1,
+                    buttons: [{
+                        type: 'all',
+                        text: '일봉',
+                        events: {
+                            click: function() {
+                                updateDataGrouping('day', 365); // 1년치 데이터 표시
+                            }
+                        }
+                    }, {
+                        type: 'all',
+                        text: '주봉',
+                        events: {
+                            click: function() {
+                                updateDataGrouping('week', 52); // 1년치 데이터 표시 (52주)
+                            }
+                        }
+                    }, {
+                        type: 'all',
+                        text: '월봉',
+                        events: {
+                            click: function() {
+                                updateDataGrouping('month', 12); // 1년치 데이터 표시 (12개월)
+                            }
+                        }
+                    }],
+                    selected: 0,
+                    inputEnabled: false
+                },
+                navigator: {
+                    enabled: true
+                },
+                scrollbar: {
+                    enabled: true
                 },
                 yAxis: [{
                     labels: {
                         align: 'right',
                         x: -3,
                         style: {
-                            fontSize: '10px'
+                            fontSize: '14px'
+                        },
+                        formatter: function() {
+                            return Highcharts.numberFormat(this.value, 0, '', ',');
                         }
                     },
                     title: {
@@ -767,7 +829,10 @@
                         y: -10,
                         x: -20,
                         reserveSpace: false,
-                        text: '가격'
+                        text: '가격',
+                        style: {
+                            fontSize: '16px'
+                        }
                     },
                     height: '55%',
                     lineWidth: 2,
@@ -777,7 +842,10 @@
                 }, {
                     labels: {
                         align: 'right',
-                        x: -3
+                        x: -3,
+                        style: {
+                            fontSize: '14px'
+                        }
                     },
                     title: {
                         align: 'high',
@@ -786,7 +854,10 @@
                         y: -10,
                         x: -30,
                         reserveSpace: false,
-                        text: '거래량'
+                        text: '거래량',
+                        style: {
+                            fontSize: '16px'
+                        }
                     },
                     top: '60%',
                     height: '10%',
@@ -795,7 +866,10 @@
                 }, {
                     labels: {
                         align: 'right',
-                        x: -3
+                        x: -3,
+                        style: {
+                            fontSize: '14px'
+                        }
                     },
                     title: {
                         align: 'high',
@@ -804,7 +878,10 @@
                         y: -10,
                         x: -20,
                         reserveSpace: false,
-                        text: '비중'
+                        text: '비중',
+                        style: {
+                            fontSize: '16px'
+                        }
                     },
                     top: '75%',
                     height: '10%',
@@ -813,7 +890,10 @@
                 }, {
                     labels: {
                         align: 'right',
-                        x: -3
+                        x: -3,
+                        style: {
+                            fontSize: '14px'
+                        }
                     },
                     title: {
                         align: 'high',
@@ -823,7 +903,10 @@
                         y: -10,
                         x: -60,
                         reserveSpace: false,
-                        text: '매수/매도 금액'
+                        text: '매수/매도 금액',
+                        style: {
+                            fontSize: '16px'
+                        }
                     },
                     top: '90%',
                     height: '10%',
@@ -834,12 +917,53 @@
                     candlestick: {
                         color: 'blue',
                         upColor: 'red'
+                    },
+                    series: {
+                        dataGrouping: {
+                            enabled: true,
+                            forced: true,
+                            units: [['day', [1]]],
+                            groupPixelWidth: 2
+                        }
                     }
                 },
                 tooltip: {
                     split: true,
                     style: {
-                        fontSize: '10px'
+                        fontSize: '14px'
+                    },
+                    formatter: function() {
+                        const points = this.points;
+                        let tooltipText = '<span style="font-size: 14px">' + Highcharts.dateFormat('%Y년 %m월 %d일', this.x) + '</span><br/>';
+
+                        points.forEach(function(point) {
+                            if (point.series.name === itemName) {
+                                const open = Highcharts.numberFormat(point.point.open, 0, '', ',');
+                                const high = Highcharts.numberFormat(point.point.high, 0, '', ',');
+                                const low = Highcharts.numberFormat(point.point.low, 0, '', ',');
+                                const close = Highcharts.numberFormat(point.point.close, 0, '', ',');
+
+                                tooltipText += '<br/><span style="color: ' + point.color + '">●</span> ' + point.series.name + ':<br/>' +
+                                    '시가: ' + open + '<br/>' +
+                                    '고가: ' + high + '<br/>' +
+                                    '저가: ' + low + '<br/>' +
+                                    '종가: ' + close + '<br/>';
+
+                                // 변화율 계산 및 추가
+                                const prevClose = point.point.prev ? point.point.prev.close : point.point.open;
+                                const changeRate = ((point.point.close - prevClose) / prevClose * 100).toFixed(2);
+                                const changeRateColor = changeRate >= 0 ? 'red' : 'blue';
+                                tooltipText += '변화율: <span style="color: ' + changeRateColor + '">' + changeRate + '%</span><br/>';
+                            } else if (point.series.name.includes('이동평균')) {
+                                tooltipText += '<br/><span style="color: ' + point.color + '">●</span> ' + point.series.name + ': ' +
+                                    Highcharts.numberFormat(point.y, 0, '', ',') + '<br/>';
+                            } else {
+                                tooltipText += '<br/><span style="color: ' + point.color + '">●</span> ' + point.series.name + ': ' +
+                                    Highcharts.numberFormat(point.y, 2, '.', ',') + '<br/>';
+                            }
+                        });
+
+                        return tooltipText;
                     }
                 },
                 series: [{
@@ -847,11 +971,12 @@
                     name: itemName,
                     type: 'candlestick',
                     data: candleStickDataList,
-                    tooltip: {
-                        valueDecimals: 0
-                    },
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     }
                 }, {
                     type: 'column',
@@ -859,14 +984,22 @@
                     data: volumeList,
                     yAxis: 1,
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     }
                 }, {
                     type: 'spline',
                     name: '평균단가',
                     data: myAverageUnitPriceList,
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     },
                     color: '#b4aa36',
                     lineWidth: 4,
@@ -876,47 +1009,51 @@
                     name: '추가 매수단가',
                     data: additionalBuyingPrice,
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     },
                     color: '#afa400',
                     onSeries: 'candle',
-                    dataLabels: {
-                        enabled: true,
-                        borderRadius: 20,
-                        borderColor: 'red',
-                        y: -5,
-                        shape: 'callout',
-                        rotation: 20
-                    },
                     marker: {
-                        symbol: 'url(resources/images/redArrow.jpg)'
+                        symbol: 'triangle',
+                        fillColor: 'red',
+                        lineWidth: 2,
+                        lineColor: 'white',
+                        radius: 6
                     }
                 }, {
                     type: 'scatter',
                     name: '추가 매도단가',
                     data: additionalSellingPrice,
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     },
                     color: '#007eff',
                     onSeries: 'candle',
-                    dataLabels: {
-                        enabled: true,
-                        borderRadius: 20,
-                        borderColor: 'blue',
-                        y: 5,
-                        shape: null,
-                        rotation: 20
-                    },
                     marker: {
-                        symbol: 'url(resources/images/blueArrow.jpg)'
+                        symbol: 'triangle-down',
+                        fillColor: 'blue',
+                        lineWidth: 2,
+                        lineColor: 'white',
+                        radius: 6
                     }
                 }, {
                     type: 'spline',
                     name: '5일 이동평균',
                     data: fiveMA,
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     },
                     color: '#383832',
                     lineWidth: 1,
@@ -926,7 +1063,11 @@
                     name: '20일 이동평균',
                     data: twentyMA,
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     },
                     color: '#ff0000',
                     lineWidth: 1,
@@ -936,7 +1077,11 @@
                     name: '60일 이동평균',
                     data: sixtyMA,
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     },
                     color: '#514fff',
                     lineWidth: 1,
@@ -946,7 +1091,11 @@
                     name: '120일 이동평균',
                     data: oneTwentyMA,
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     },
                     color: '#ffae00',
                     lineWidth: 1,
@@ -957,10 +1106,23 @@
                     name: '비중',
                     data: portionList,
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     },
                     dataLabels: {
-                        enabled: true
+                        enabled: true,
+                        formatter: function() {
+                            return Highcharts.numberFormat(this.y, 1) + '%';
+                        },
+                        style: {
+                            fontSize: '12px',
+                            fontWeight: 'bold'
+                        },
+                        y: -10, // 라벨을 선 위에 표시
+                        step: 20 // 20개의 데이터 포인트마다 라벨 표시
                     },
                     yAxis: 2,
                     color: '#000000',
@@ -971,7 +1133,11 @@
                     name: '매수 금액',
                     data: additionalBuyingAmount,
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     },
                     yAxis: 3,
                     color: '#FF0000'
@@ -980,7 +1146,11 @@
                     name: '매도 금액',
                     data: additionalSellingAmount,
                     dataGrouping: {
-                        units: groupingUnits
+                        units: [
+                            ['day', [1]],
+                            ['week', [1]],
+                            ['month', [1]]
+                        ]
                     },
                     yAxis: 3,
                     color: '#0022ff',
@@ -999,6 +1169,9 @@
                     }]
                 }
             });
+
+            // 초기 데이터 그룹화 설정 (일봉으로 시작)
+            updateDataGrouping('day', 365);
         }
 
         function convertToCSV(objArray) {
@@ -1076,6 +1249,49 @@
                 const sum = slice.reduce((acc, val) => acc + val[4], 0);
                 return [array[index][0], sum / period];
             });
+        }
+
+        function updateDataGrouping(unit, range) {
+            if (chartInstance) {
+                const extremes = chartInstance.xAxis[0].getExtremes();
+                const dataMax = extremes.dataMax;
+                const dataMin = extremes.dataMin;
+
+                const ONE_DAY = 24 * 60 * 60 * 1000;
+                let requestedRange;
+
+                switch(unit) {
+                    case 'day':
+                        requestedRange = range * ONE_DAY;
+                        break;
+                    case 'week':
+                        requestedRange = range * 7 * ONE_DAY;
+                        break;
+                    case 'month':
+                        const now = new Date(dataMax);
+                        const past = new Date(now.getFullYear(), now.getMonth() - range, now.getDate());
+                        requestedRange = now.getTime() - past.getTime();
+                        break;
+                    default:
+                        requestedRange = range * ONE_DAY;
+                }
+
+                const newMin = Math.max(dataMax - requestedRange, dataMin);
+
+                chartInstance.series.forEach(function(series) {
+                    series.update({
+                        dataGrouping: {
+                            forced: true,
+                            units: [[unit, [1]]]
+                        }
+                    }, false);
+                });
+
+                // setExtremes를 사용하여 초기 뷰 설정
+                chartInstance.xAxis[0].setExtremes(newMin, dataMax);
+
+                chartInstance.redraw();
+            }
         }
     </script>
 </head>

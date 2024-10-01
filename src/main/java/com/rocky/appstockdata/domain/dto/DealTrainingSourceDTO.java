@@ -3,15 +3,14 @@ package com.rocky.appstockdata.domain.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rocky.appstockdata.domain.DealModification;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class DealTrainingSourceDTO {
     @JsonProperty("company_name")
     private String companyName;
@@ -31,7 +30,6 @@ public class DealTrainingSourceDTO {
     private String level;
     @JsonProperty("jump_date")
     private String jumpDate;
-    @JsonIgnore
     private Long id;
     @JsonProperty("user_id")
     private String userId;

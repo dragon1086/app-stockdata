@@ -55,10 +55,11 @@
             height: 30px;
             width: auto;
         }
-        #logoutButton {
+        #logoutButton, #simulationHistoryButton {
             height: 30px;
             width: 80px;
             font-size: 12px;
+            margin-bottom: 5px;
         }
         .btn-secondary {
             background-color: #6c757d;
@@ -118,6 +119,10 @@
             } else {
                 document.getElementById("valuationPercent").disabled = true;
             }
+        }
+
+        function openDealHistoryTab() {
+            window.open('/deal-calculate-histories', '_blank');
         }
 
         $(function() {    //화면 다 뜨면 시작
@@ -184,6 +189,10 @@
                 <% } else { %>
                 <button type="button" class="btn btn-secondary" id="logoutButton" onclick="location.href='/logout/google'">
                     로그아웃
+                </button>
+                <br>
+                <button type="button" class="btn btn-secondary" id="simulationHistoryButton" onclick="openDealHistoryTab()">
+                    시뮬레이션 이어하기
                 </button>
                 <% } %>
             </div>

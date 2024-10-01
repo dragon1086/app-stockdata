@@ -5,19 +5,16 @@ import com.rocky.appstockdata.application.port.in.SupabaseUseCase;
 import com.rocky.appstockdata.domain.DailyDealHistory;
 import com.rocky.appstockdata.domain.DealModification;
 import com.rocky.appstockdata.domain.DealTrainingResult;
-import com.rocky.appstockdata.domain.dto.DealTrainingModificationSourceDTO;
-import com.rocky.appstockdata.domain.dto.DealTrainingResponseDTO;
-import com.rocky.appstockdata.domain.dto.DealTrainingSourceDTO;
-import com.rocky.appstockdata.domain.dto.UserDTO;
+import com.rocky.appstockdata.domain.dto.*;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -60,7 +57,6 @@ public class DealTrainingModificationApiV1 {
                             request.getBuyPercents(),
                             request.getBuyPrices()))
                     .jumpDate(request.getJumpDate())
-                    .id(request.getHistoryId())
                     .userId(user != null ? user.getId() : null)
                     .id(request.getHistoryId())
                     .build();
@@ -210,5 +206,105 @@ public class DealTrainingModificationApiV1 {
                             .errorMessage("서버 오류 발생하였습니다.")
                             .build());
         }
+    }
+
+    @GetMapping("/deal-calculate-histories")
+    public String getDealTrainingHistories(HttpSession session, ModelMap modelMap){
+        try{
+            UserDTO user = (UserDTO) session.getAttribute("sessionUser");
+            if(user == null) {
+                log.error("로그인 된 유저 정보가 없습니다");
+                DealTrainingHistoryDTO result = DealTrainingHistoryDTO.builder()
+                        .isError(true)
+                        .errorMessage("로그인 된 유저 정보가 없습니다")
+                        .redirectUrl("/")
+                        .build();
+                modelMap.put("isError", false);
+                modelMap.put("errorMessage", "로그인 된 유저 정보가 없습니다");
+                modelMap.put("redirectUrl", "/");
+                return "dealTrainingHistory";
+            }
+
+            List<DealTrainingSourceDTO> dealTrainingSources = supabaseUseCase.getDealTrainingHistories(user.getId(), user.getAccessToken());
+            DealTrainingHistoryDTO result = DealTrainingHistoryDTO.builder()
+                    .isError(false)
+                    .dealTrainingSourceDTOs(dealTrainingSources)
+                    .build();
+
+            modelMap.put("dealTrainingHistories", result);
+            modelMap.put("isError", false);
+            modelMap.put("dealTrainingSourceDTOs", JSONArray.fromObject(dealTrainingSources));
+
+            return "dealTrainingHistory";
+        } catch (Exception e){
+            log.error("서버 오류 발생하였습니다. : {}", e.getMessage());
+            DealTrainingHistoryDTO result = DealTrainingHistoryDTO.builder()
+                    .isError(true)
+                    .errorMessage("서버 오류 발생하였습니다.")
+                    .redirectUrl("/")
+                    .build();
+            modelMap.put("isError", false);
+            modelMap.put("errorMessage", "서버 오류 발생하였습니다.");
+            modelMap.put("redirectUrl", "/");
+            return "dealTrainingHistory";
+        }
+    }
+
+    @PostMapping(path = "/previous-deal-calculate",  produces = MediaType.APPLICATION_JSON_VALUE)
+    public String loadPreviousDealTraining(HttpSession session,
+                                         ModelMap modelMap,
+                                         @ModelAttribute DealTrainingSourceDTO request) {
+
+        try{
+            UserDTO user = (UserDTO) session.getAttribute("sessionUser");
+            if(user == null) {
+                log.error("로그인 된 유저 정보가 없습니다");
+                modelMap.put("isError", "true");
+                modelMap.put("errorMessage", "로그인 된 유저 정보가 없습니다");
+                return "dealTraining";
+            }
+
+            DealTrainingSourceValidator.validate(request);
+
+            DealTrainingResult dealTrainingResult = dealTrainingUseCase.modifyDailyDeal(request);
+
+            setModelMap(modelMap, dealTrainingResult, request, request.getId());
+
+        } catch (Exception e){
+            log.error("서버 오류 발생하였습니다. : {}", e.getMessage());
+            modelMap.put("isError", "true");
+            modelMap.put("errorMessage", e.getMessage());
+            return "dealTraining";
+        }
+
+        return "dealTraining";
+    }
+
+    private void setModelMap(ModelMap modelMap, DealTrainingResult dealTrainingResult, DealTrainingSourceDTO dealTrainingSourceDTO, Long historyId) {
+        modelMap.put("companyName", dealTrainingSourceDTO.getCompanyName());
+        modelMap.put("startDate", dealTrainingResult.getStartDate());
+        modelMap.put("endDate", dealTrainingResult.getEndDate());
+        modelMap.put("itemName", dealTrainingResult.getItemName());
+        modelMap.put("dailyDealHistories", JSONArray.fromObject(dealTrainingResult.getDailyDealHistories()));
+        modelMap.put("initialPortion", dealTrainingSourceDTO.getPortion());
+        modelMap.put("slotAmount", dealTrainingSourceDTO.getSlotAmount());
+        modelMap.put("portion", 100.0 - dealTrainingResult.getRemainingPortion());
+        modelMap.put("remainingSlotAmount", dealTrainingResult.getRemainingSlotAmount());
+        modelMap.put("remainingPortion", dealTrainingResult.getRemainingPortion());
+        modelMap.put("dealModifications", JSONArray.fromObject(dealTrainingResult.getDealModifications()));
+        modelMap.put("totalAmount", dealTrainingResult.getTotalAmount());
+        modelMap.put("valuationPercent", dealTrainingResult.getValuationPercent());
+        modelMap.put("averageUnitPrice", dealTrainingResult.getAverageUnitPrice());
+        modelMap.put("currentClosingPrice", dealTrainingResult.getCurrentClosingPrice());
+        modelMap.put("nextTryDate", dealTrainingResult.getNextTryDate());
+        modelMap.put("sumOfPurchaseAmount", dealTrainingResult.getSumOfPurchaseAmount());
+        modelMap.put("sumOfSellingAmount", dealTrainingResult.getSumOfSellingAmount());
+        modelMap.put("sumOfCommission", dealTrainingResult.getSumOfCommission());
+        modelMap.put("sumOfPurchaseQuantity", dealTrainingResult.getSumOfPurchaseQuantity());
+        modelMap.put("sumOfSellingQuantity", dealTrainingResult.getSumOfSellingQuantity());
+        modelMap.put("earningRate", dealTrainingResult.getEarningRate());
+        modelMap.put("earningAmount", dealTrainingResult.getEarningAmount());
+        modelMap.put("isError", "false");
+        modelMap.put("historyId", historyId);
     }
 }

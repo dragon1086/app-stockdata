@@ -1,14 +1,12 @@
 package com.rocky.appstockdata.domain;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class DealModification {
     private String modifyDate;
     private int sellPercent;
