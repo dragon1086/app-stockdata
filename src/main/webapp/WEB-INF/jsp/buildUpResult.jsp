@@ -19,41 +19,476 @@
     <!-- End Google AdSense -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="빌드업 시뮬레이션기">
+    <meta name="description" content="자동 시뮬레이션">
     <meta name="author" content="펭수르">
     <meta name="generator" content="stock-buildup 0.0.1">
-    <title>빌드업 시뮬레이션기</title>
+    <title>자동 시뮬레이션</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js"></script>
 
-    <link rel="stylesheet" href="/resources/css/bootstrap.css">
-    <link rel="stylesheet" href="/resources/css/dashboard.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
     <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 56px;
         }
 
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
+        .navbar {
+            background-color: #3498db;
+            padding: 0.5rem 1rem;
         }
 
-        input[type='date'] { font-size: 13px; }
+        .navbar-brand {
+            color: #ffffff !important;
+            font-size: 1.75rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-nav .nav-link {
+            color: inherit;
+            padding: 0;
+            margin: 0;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .navbar-collapse {
+            justify-content: flex-end;
+        }
+
+        .btn-manual,
+        .btn-outline-light {
+            background-color: transparent !important;
+            color: #ffffff !important;
+            border: 1px solid #ffffff !important;
+            padding: 0.375rem 0.75rem !important;
+            transition: background-color 0.3s ease, color 0.3s ease !important;
+            font-size: 1rem !important;
+            margin-right: 1rem !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 38px !important;
+            line-height: 1.5 !important;
+            text-align: center !important;
+        }
+
+        .btn-home {
+            background-color: transparent !important;
+            color: #ffffff !important;
+            border: 1px solid #ffffff !important;
+            padding: 0.375rem 0.75rem !important;
+            transition: background-color 0.3s ease, color 0.3s ease !important;
+            font-size: 1rem !important;
+            margin-right: 1rem !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 38px !important;
+            line-height: 1.5 !important;
+            text-align: center !important;
+            width: 120px; /* 버튼의 폭을 고정 */
+        }
+
+        .btn-home:hover,
+        .btn-manual:hover,
+        .btn-outline-light:hover {
+            background-color: #ffffff !important;
+            color: #3498db !important;
+        }
+
+        .btn-home i,
+        .btn-manual i {
+            margin-right: 0.5rem;
+        }
+
+        .main-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            padding: 3rem;
+            margin-top: 3rem;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem 0;
+            margin-top: 4rem;
+        }
+
+        .tooltip-icon {
+            cursor: pointer;
+            color: #3498db;
+            margin-left: 0.5rem;
+        }
     </style>
-    <!-- Custom styles for this template -->
-    <link href="/resources/css/buildup.css" rel="stylesheet">
     <script>
+        //setting values
+        var myAverageUnitPriceList = [];
+        var volumeList = [];
+        var candleStickDataList = [];
+        var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
+        var startDate = "${startDate}";
+        var endDate = "${endDate}";
+        var itemName = "${itemName}";
+
+        <c:if test="${isError == 'false'}">
+        <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
+        candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
+        volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
+        <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
+        myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
+        </c:if>
+        </c:forEach>
+        </c:if>
+
+
         $(function(){
             document.cookie = "SameSite=None; Secure";
+            $(document).ready(function() {
+                drawCandleStickChart();
+                initTooltips();
+            });
         });
+
+        function drawCandleStickChart(){
+            const container = document.getElementById('container');
+            if (!container) {
+                console.error('차트를 그릴 컨테이너를 찾을 수 없습니다.');
+                return;
+            }
+
+
+            // 이동평균 계산
+            const fiveMA = calculateMovingAverage(candleStickDataList, 5);
+            const twentyMA = calculateMovingAverage(candleStickDataList, 20);
+            const sixtyMA = calculateMovingAverage(candleStickDataList, 60);
+            const oneTwentyMA = calculateMovingAverage(candleStickDataList, 120);
+
+            // 날짜 형식 변환 함수
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.getFullYear() + '년 ' + (date.getMonth() + 1) + '월 ' + date.getDate() + '일';
+            }
+
+            const formattedStartDate = formatDate(startDate);
+            const formattedEndDate = formatDate(endDate);
+
+            const highchartsOptions = Highcharts.setOptions({
+                    lang: {
+                        loading: '로딩중입니다...',
+                        months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                        weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+                        shortMonths: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+                        exportButtonTitle: "Export",
+                        printButtonTitle: "프린트",
+                        rangeSelectorFrom: "시작",
+                        rangeSelectorTo: "끝",
+                        rangeSelectorZoom: "기간",
+                        downloadPNG: 'PNG로 다운로드',
+                        downloadJPEG: 'JPEG로 다운로드',
+                        downloadPDF: 'PDF로 다운로드',
+                        downloadSVG: 'SVG로 다운로드',
+                        resetZoom: "Reset",
+                        resetZoomTitle: "Reset",
+                        thousandsSep: ",",
+                        decimalPoint: '.'
+                    }
+                }
+            );
+            const chart = Highcharts.stockChart('container', {
+                title: {
+                    text: '주식 차트(' + itemName + ')',
+                    style: {
+                        color: '#00443a',
+                        fontSize: '28px',
+                        fontWeight: 'bold'
+                    }
+                },
+                subtitle: {
+                    text: '시뮬레이션 기간: ' + formattedStartDate + ' - ' + formattedEndDate,
+                    align: 'left',
+                    style: {
+                        fontSize: '16px'
+                    }
+                },
+                chart: {
+                    zoomType: 'x',
+                    events: {
+                        click: function (event) {
+                            const clickedDate = new Date(event.xAxis[0].value);
+                            const formattedDate = clickedDate.toISOString().split('T')[0];
+
+                            const modificationForm = document.getElementById('modifyCalculation');
+                            const parentDiv = document.getElementById('parentDivForModifiyCalculation');
+
+                            if (modificationForm && parentDiv) {
+                                const newModificationForm = document.createElement('div');
+                                newModificationForm.className = "input-group mb-3";
+                                newModificationForm.innerHTML = `
+                                    <div class='input-group mb-3'>
+                                        <span class='input-group-text' id='basic-addon1'>수정 날짜</span>
+                                        <input type='date' class='form-control' name='modifyDate' value='${formattedDate}' aria-label='modifyDate' aria-describedby='basic-addon1'>
+                                    </div>
+                                    <div class='input-group mb-3'>
+                                        <span class='input-group-text' id='basic-addon2'>매도 비중%(수정시점비중)</span>
+                                        <input type='text' class='form-control' name='sellPercent' placeholder='% 제외하고 입력하세요(소수점 제외)' aria-label='sellPercent' aria-describedby='basic-addon2'>
+                                        <span class='input-group-text' id='basic-addon3'>매도 가격</span>
+                                        <input type='text' class='form-control' name='sellPrice' placeholder='매도하실 금액을 입력하세요(저가와 고가 사이)' aria-label='sellPrice' aria-describedby='basic-addon3'>
+                                    </div>
+                                    <div class='input-group mb-3'>
+                                        <span class='input-group-text' id='basic-addon4'>매수 비중%(수정시점비중)</span>
+                                        <input type='text' class='form-control' name='buyPercent' placeholder='% 제외하고 입력하세요(소수점 제외)' aria-label='buyPercent' aria-describedby='basic-addon4'>
+                                        <span class='input-group-text' id='basic-addon5'>매수 가격</span>
+                                        <input type='text' class='form-control' name='buyPrice' placeholder='매수하실 금액을 입력하세요(저가와 고가 사이)' aria-label='buyPrice' aria-describedby='basic-addon5'>
+                                    </div>
+                                `;
+
+                                parentDiv.appendChild(newModificationForm);
+                                initTooltips();
+                            }
+                        }
+                    }
+                },
+                time: {
+                    useUTC: false,
+                    timezone: 'Asia/Seoul',
+                },
+                legend: {
+                    enabled: true,
+                    align: 'center',
+                    backgroundColor: '#FCFFC5',
+                    borderColor: 'black',
+                    borderWidth: 2,
+                    shadow: true,
+                    itemStyle: {
+                        fontSize: '14px'
+                    }
+                },
+                rangeSelector: {
+                    selected: 1,
+                },
+                yAxis: [{
+                    labels: {
+                        align: 'right',
+                        x: -3,
+                        style: {
+                            fontSize: '14px'
+                        },
+                        formatter: function() {
+                            return Highcharts.numberFormat(this.value, 0, '', ',');
+                        }
+                    },
+                    title: {
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -10,
+                        x: -20,
+                        reserveSpace: false,
+                        text: '가격',
+                        style: {
+                            fontSize: '16px'
+                        }
+                    },
+                    height: '80%',
+                    lineWidth: 2,
+                    resize: {
+                        enabled: true
+                    }
+                }, {
+                    labels: {
+                        align: 'right',
+                        x: -3,
+                        style: {
+                            fontSize: '14px'
+                        }
+                    },
+                    title: {
+                        align: 'high',
+                        offset: 0,
+                        rotation: 0,
+                        y: -10,
+                        x: -30,
+                        reserveSpace: false,
+                        text: '거래량',
+                        style: {
+                            fontSize: '16px'
+                        }
+                    },
+                    top: '85%',
+                    height: '15%',
+                    offset: 0,
+                    lineWidth: 2
+                }],
+                plotOptions: {
+                    candlestick: {
+                        color: 'blue',
+                        upColor: 'red'
+                    }
+                },
+                tooltip: {
+                    split: true,
+                    style: {
+                        fontSize: '14px'
+                    },
+                    formatter: function() {
+                        const points = this.points;
+                        // UTC+9 (한국 시간)으로 조정
+                        const date = new Date(this.x + 9 * 3600 * 1000);
+                        let tooltipText = '<span style="font-size: 14px">' + Highcharts.dateFormat('%Y년 %m월 %d일', date) + '</span><br/>';
+
+
+                        points.forEach(function(point) {
+                            if (point.series.name === itemName) {
+                                const open = Highcharts.numberFormat(point.point.open, 0, '', ',');
+                                const high = Highcharts.numberFormat(point.point.high, 0, '', ',');
+                                const low = Highcharts.numberFormat(point.point.low, 0, '', ',');
+                                const close = Highcharts.numberFormat(point.point.close, 0, '', ',');
+
+                                tooltipText += '<br/><span style="color: ' + point.color + '">●</span> ' + point.series.name + ':<br/>' +
+                                    '시가: ' + open + '<br/>' +
+                                    '고가: ' + high + '<br/>' +
+                                    '저가: ' + low + '<br/>' +
+                                    '종가: ' + close + '<br/>';
+
+                                // 변화율 계산 및 추가
+                                const prevClose = point.point.prev ? point.point.prev.close : point.point.open;
+                                const changeRate = ((point.point.close - prevClose) / prevClose * 100).toFixed(2);
+                                const changeRateColor = changeRate >= 0 ? 'red' : 'blue';
+                                tooltipText += '변화율: <span style="color: ' + changeRateColor + '">' + changeRate + '%</span><br/>';
+                            } else if (point.series.name.includes('이동평균')) {
+                                tooltipText += '<br/><span style="color: ' + point.color + '">●</span> ' + point.series.name + ': ' +
+                                    Highcharts.numberFormat(point.y, 0, '', ',') + '<br/>';
+                            } else {
+                                tooltipText += '<br/><span style="color: ' + point.color + '">●</span> ' + point.series.name + ': ' +
+                                    Highcharts.numberFormat(point.y, 2, '.', ',') + '<br/>';
+                            }
+                        });
+
+                        return tooltipText;
+                    }
+                },
+                series: [{
+                    id: 'candle',
+                    name: itemName,
+                    type: 'candlestick',
+                    data: candleStickDataList,
+                    tooltip: {
+                        valueDecimals: 0
+                    },
+                    dataGrouping: {
+                        units: groupingUnits
+                    }
+                }, {
+                    type: 'column',
+                    name: '거래량',
+                    data: volumeList,
+                    yAxis: 1,
+                    dataGrouping: {
+                        units: groupingUnits
+                    }
+                }, {
+                    type: 'spline',
+                    name: '평균단가',
+                    data: myAverageUnitPriceList,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#b4aa36',
+                    lineWidth: 4,
+                    onSeries: 'candle'
+                }, {
+                    type: 'spline',
+                    name: '5일 이동평균',
+                    data: fiveMA,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#383832',
+                    lineWidth: 1,
+                    onSeries: 'candle'
+                }, {
+                    type: 'spline',
+                    name: '20일 이동평균',
+                    data: twentyMA,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#ff0000',
+                    lineWidth: 1,
+                    onSeries: 'candle'
+                }, {
+                    type: 'spline',
+                    name: '60일 이동평균',
+                    data: sixtyMA,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#514fff',
+                    lineWidth: 1,
+                    onSeries: 'candle'
+                }, {
+                    type: 'spline',
+                    name: '120일 이동평균',
+                    data: oneTwentyMA,
+                    dataGrouping: {
+                        units: groupingUnits
+                    },
+                    color: '#ffae00',
+                    lineWidth: 1,
+                    onSeries: 'candle'
+                }],
+                responsive: {
+                    rules: [{
+                        condition: {
+                            maxWidth: 800
+                        },
+                        chartOptions: {
+                            rangeSelector: {
+                                inputEnabled: false
+                            }
+                        }
+                    }]
+                }
+            });
+        }
+
+        function initTooltips() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        }
 
         //이동평균선 계산함수
         function calculateMovingAverage(data, period) {
@@ -70,484 +505,204 @@
 
 </head>
 <body>
-<div class="container">
-    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
-        <ul class="nav nav-pills">
-            <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">초기화면</a></li>
-        </ul>
-    </header>
-</div>
-
-<div class="container">
-    <div class="container-fluid">
-        <div class="row">
-            <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-                    <div>
-                        <c:choose>
-                            <c:when test="${isError == 'true'}">
-                                <h1>${errorMessage}</h1>
-                            </c:when>
-                            <c:otherwise>
-                                <h1><strong>시뮬레이션 결과</strong></h1>
-                                <p></p>
-                                <h2>수익률 : <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
-                                <h2>실현손익 : <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
-                                <h2>총 투입금액 : <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
-                                <h2>총 매도금액 : <fmt:formatNumber value="${sumOfSellingAmount}" pattern="#,###" />원</h2>
-                                <h2>총 매입수량 : <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
-                                <h2>총 매도수량 : <fmt:formatNumber value="${sumOfSellingQuantity}" pattern="#,###" />주</h2>
-                                <h2>총 매도수수료(0.3%) : <fmt:formatNumber value="${sumOfCommission}" pattern="#,###" />원</h2>
-                                <h2>현재 평가금액 : <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
-                                <h2>전일대비 증가 횟수 : <fmt:formatNumber value="${countOfDayOnDayClosingPriceIncrease}" pattern="#,###" />회</h2>
-                                <h2>전일대비 감소 횟수 : <fmt:formatNumber value="${countOfDayOnDayClosingPriceDecrease}" pattern="#,###" />회</h2>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </div>
-
-                <hr style="height:3px;color:#dc874f">
-                <canvas class="my-4 w-100" id="myChart" width="900" height="700"></canvas>
-
-                <hr style="height:3px;color:#dc874f">
-                <div id="container" style="height: 800px; min-width: 310px"></div>
-                <script>
-                    function drawCandleStickChart(){
-                        //setting values
-                        var candleStickDataList = [];
-                        var volumeList = [];
-                        var myAverageUnitPriceList = [];
-                        var groupingUnits = [['day', [1]], ['week', [1]], ['month', [1, 2, 3, 4, 6]]];
-
-                        <c:if test="${isError == 'false'}">
-                            <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
-                                candleStickDataList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.startPrice}, ${dailyDealHistory.highPrice}, ${dailyDealHistory.lowPrice}, ${dailyDealHistory.closingPrice}]);
-                                volumeList.push([${dailyDealHistory.dealDateForTimestamp}, ${dailyDealHistory.tradeVolume}]);
-                                <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
-                                    myAverageUnitPriceList.push([${dailyDealHistory.dealDateForTimestamp},${dailyDealHistory.myAverageUnitPrice}]);
-                                </c:if>
-                            </c:forEach>
-                        </c:if>
-
-                        // 이동평균 계산
-                        const fiveMA = calculateMovingAverage(candleStickDataList, 5);
-                        const twentyMA = calculateMovingAverage(candleStickDataList, 20);
-                        const sixtyMA = calculateMovingAverage(candleStickDataList, 60);
-                        const oneTwentyMA = calculateMovingAverage(candleStickDataList, 120);
-
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const highchartsOptions = Highcharts.setOptions({
-                                    lang: {
-                                        loading: '로딩중입니다...',
-                                        months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-                                        weekdays: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
-                                        shortMonths: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-                                        exportButtonTitle: "Export",
-                                        printButtonTitle: "프린트",
-                                        rangeSelectorFrom: "From",
-                                        rangeSelectorTo: "To",
-                                        rangeSelectorZoom: "확대범위",
-                                        downloadPNG: 'PNG로 다운로드',
-                                        downloadJPEG: 'JPEG로 다운로드',
-                                        downloadPDF: 'PDF로 다운로드',
-                                        downloadSVG: 'SVG로 다운로드',
-                                        resetZoom: "Reset",
-                                        resetZoomTitle: "Reset",
-                                        thousandsSep: ",",
-                                        decimalPoint: '.'
-                                    }
-                                }
-                            );
-                            const chart = Highcharts.stockChart('container', {
-                                title: {
-                                    text: '일봉차트와 평균단가 그래프(${itemName})',
-                                    style:{
-                                        color: '#00443a',
-                                        fontSize: '24px',
-                                        fontWeight: 'bold'
-                                    }
-                                },
-                                subtitle: {
-                                    text: '<b>범례의 평균단가를 클릭해서 없애면, 캔들차트가 더 잘 보입니다</b>',
-                                    align: 'left'
-                                },
-                                chart: {
-                                    zoomType: 'xy',
-                                    events: {
-                                        click: function (event) {
-                                            // Get the quiz form element
-                                            var modificationForm = document.getElementById('modifyCalculation');
-
-                                            if(modificationForm){
-                                                // First create a DIV element.
-                                                var newModificationForm = document.createElement('div');
-                                                newModificationForm.className = "input-group mb-3";
-
-                                                // Then add the content (a new input box) of the element.
-                                                newModificationForm.innerHTML =
-                                                    "<div class='input-group mb-3'><span class='input-group-text' id='basic-addon1'>수정 날짜</span>"
-                                                    + "<input type='date' class='form-control' name='modifyDate' placeholder='수정하실 날짜를 선택하세요' aria-label='modifyDate' aria-describedby='basic-addon1'></div>"
-                                                    + "<div class='input-group mb-3'><span class='input-group-text' id='basic-addon2'>매도 비중%(현시점 보유비중의 몇%)</span>"
-                                                    + "<input type='text' class='form-control' name='sellPercent' placeholder='% 제외하고 입력하세요(소수점 제외)' aria-label='sellPercent' aria-describedby='basic-addon2'>"
-                                                    + "<span class='input-group-text' id='basic-addon3'>매도 가격</span>"
-                                                    + "<input type='text' class='form-control' name='sellPrice' placeholder='매도하실 금액을 입력하세요(저가와 고가 사이)' aria-label='sellPrice' aria-describedby='basic-addon3'></div>"
-                                                    + "<div class='input-group mb-3'><span class='input-group-text' id='basic-addon4'>매수 비중%(현시점 보유비중의 몇%)</span>"
-                                                    + "<input type='text' class='form-control' name='buyPercent' placeholder='% 제외하고 입력하세요(소수점 제외)' aria-label='buyPercent' aria-describedby='basic-addon4'>"
-                                                    + "<span class='input-group-text' id='basic-addon5'>매수 가격</span>"
-                                                    + "<input type='text' class='form-control' name='buyPrice' placeholder='매수하실 금액을 입력하세요(저가와 고가 사이)' aria-label='buyPrice' aria-describedby='basic-addon5'></div>";
-
-                                                // Finally put it where it is supposed to appear.
-                                                document.getElementById("parentDivForModifiyCalculation").appendChild(newModificationForm);
-                                            }
-                                        }
-                                    }
-                                },
-                                time:{
-                                    useUTC: false,
-                                    timezone: 'Asia/Seoul',
-                                },
-                                legend: {
-                                    enabled: true,
-                                    align: 'center',
-                                    backgroundColor: '#FCFFC5',
-                                    borderColor: 'black',
-                                    borderWidth: 2,
-                                    shadow: true
-                                },
-                                rangeSelector: {
-                                    selected: 1,
-                                },
-                                yAxis: [{
-                                    labels: {
-                                        align: 'right',
-                                        x: -3
-                                    },
-                                    title: {
-                                        align: 'high',
-                                        offset: 0,
-                                        rotation: 0,
-                                        y: -10,
-                                        x: -20,
-                                        reserveSpace: false,
-                                        text: '가격'
-                                    },
-                                    height: '80%',
-                                    lineWidth: 2,
-                                    resize: {
-                                        enabled: true
-                                    }
-                                }, {
-                                    labels: {
-                                        align: 'right',
-                                        x: -3
-                                    },
-                                    title: {
-                                        align: 'high',
-                                        offset: 0,
-                                        rotation: 0,
-                                        y: -10,
-                                        x: -30,
-                                        reserveSpace: false,
-                                        text: '거래량'
-                                    },
-                                    top: '85%',
-                                    height: '15%',
-                                    offset: 0,
-                                    lineWidth: 2
-                                }],
-                                plotOptions: {
-                                    candlestick: {
-                                        color: 'blue',
-                                        upColor: 'red'
-                                    }
-                                },
-                                tooltip: {
-                                    split: true,
-                                    style: {
-                                        fontSize: '10px'
-                                    }
-                                },
-                                series: [{
-                                    id: 'candle',
-                                    name: '${itemName}',
-                                    type: 'candlestick',
-                                    data: candleStickDataList,
-                                    tooltip: {
-                                        valueDecimals: 0
-                                    },
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    }
-                                }, {
-                                    type: 'column',
-                                    name: '거래량',
-                                    data: volumeList,
-                                    yAxis: 1,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    }
-                                }, {
-                                    type: 'spline',
-                                    name: '평균단가',
-                                    data: myAverageUnitPriceList,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#b4aa36',
-                                    lineWidth: 4,
-                                    onSeries: 'candle'
-                                }, {
-                                    type: 'spline',
-                                    name: '5일 이동평균',
-                                    data: fiveMA,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#383832',
-                                    lineWidth: 1,
-                                    onSeries: 'candle'
-                                }, {
-                                    type: 'spline',
-                                    name: '20일 이동평균',
-                                    data: twentyMA,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#ff0000',
-                                    lineWidth: 1,
-                                    onSeries: 'candle'
-                                }, {
-                                    type: 'spline',
-                                    name: '60일 이동평균',
-                                    data: sixtyMA,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#514fff',
-                                    lineWidth: 1,
-                                    onSeries: 'candle'
-                                }, {
-                                    type: 'spline',
-                                    name: '120일 이동평균',
-                                    data: oneTwentyMA,
-                                    dataGrouping: {
-                                        units: groupingUnits
-                                    },
-                                    color: '#ffae00',
-                                    lineWidth: 1,
-                                    onSeries: 'candle'
-                                }],
-                                responsive: {
-                                    rules: [{
-                                        condition: {
-                                            maxWidth: 800
-                                        },
-                                        chartOptions: {
-                                            rangeSelector: {
-                                                inputEnabled: false
-                                            }
-                                        }
-                                    }]
-                                }
-                            });
-                        });
-                    }
-                    drawCandleStickChart();
-                </script>
-                <form id="modifyCalculation" action="buildup-calculate-modify" method="post" name="calculateRequestFrom">
-                    <div class="px-4 py-5 my-5 text-center" id="parentDivForModifiyCalculation">
-                        <div class="input-group mb-3" id= "modifyInputGroup">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon1">수정 날짜</span>
-                                <input type="date" class="form-control" name="modifyDate" placeholder="수정하실 날짜를 선택하세요" aria-label="modifyDate" aria-describedby="basic-addon1">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon2">매도 비중%(수정시점비중)</span>
-                                <input type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="sellPercent" aria-describedby="basic-addon2">
-                                <span class="input-group-text" id="basic-addon3">매도 가격</span>
-                                <input type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon4">매수 비중%(수정시점비중)</span>
-                                <input type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
-                                <span class="input-group-text" id="basic-addon5">매수 가격</span>
-                                <input type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
-                            </div>
-                        </div>
-                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                            <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">수정 전송</button>
-                        </div>
-
-                        <div class="row g-1 text-left" style="padding:20px">
-                            <h5>그래프의 배경을 클릭하시면, 수정할 수 있는 행이 추가됩니다. </h5>
-                            <p></p>
-                            <h5>1개 행에 매수/매도 다 입력해도 되고, 한쪽만 입력해도 됩니다.</h5>
-                            <h5>단, 매수/매도 비중을 입력했으면 매수/매도 단가도 필수입니다. 비중과 단가 중 하나라도 미입력 시 계산 무시합니다.</h5>
-                            <h5>같은날짜에 더 매수/매도 하고 싶으시면, 행을 더 추가하시면 됩니다.</h5>
-                            <h5>날짜가 없는 행은 계산에서 제외됩니다.</h5>
-                            <h5>매도 시 매도금액의 0.3%를 수수료차원에서 실현손익에서 뺍니다.</h5>
-                        </div>
-                    </div>
-
-                    <hr style="height:3px;color:#dc874f">
-                    <div class="px-4 my-5 text-left">
-                        <h2><strong>최초 입력 요청값</strong></h2>
-                        <div style="padding:10px">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text mb-3" id="basic-addon0">시뮬레이션 모드</span>
-                                <select id="inputSimulationMode" class="form-select form-select-lg mb-3" name="simulationMode" aria-label="simulationMode" aria-describedby="basic-addon0"
-                                 onfocus="this.initialSelect=this.selectedIndex;" onchange="this.selectedIndex=this.initialSelect;">
-                                    <option value="dailyClosingPrice" selected>매일종가매수</option>
-                                    <option value="minusCandle">음봉일 때만 매수</option>
-                                </select>
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="input-addon1">기업 이름</span>
-                                <input readonly="true" type="text" id="inputCompanyName" class="form-control" name="companyName" aria-label="companyName" aria-describedby="input-addon1" value="">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="input-addon2">시작 날짜</span>
-                                <input readonly="true" type="date" id="inputStartDate" class="form-control" name="startDate" aria-label="startDate" aria-describedby="input-addon2" value="">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="input-addon3">매도 날짜</span>
-                                <input readonly="true" type="date" id="inputEndDate" class="form-control" name="endDate" aria-label="endDate" aria-describedby="input-addon3" value="">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="input-addon4">빌드업 금액</span>
-                                <input readonly="true" type="text" id="inputBuildupAmount" class="form-control" name="buildupAmount" aria-label="buildupAmount" aria-describedby="input-addon4" value="">
-                            </div>
-
-                            <script>
-                                $('#inputSimulationMode').val("${simulationMode}");
-                                $('input[id=inputCompanyName]').attr('value',"${companyName}");
-                                $('input[id=inputStartDate]').attr('value',"${startDate}");
-                                $('input[id=inputEndDate]').attr('value',"${endDate}");
-                                $('input[id=inputBuildupAmount]').attr('value',"${buildupAmount}");
-                            </script>
-                        </div>
-                    </div>
-                </form>
-
-                <hr style="height:3px;color:#dc874f">
-                <div class="px-4 my-5 text-left">
-                    <h2><strong>매매 이력</strong></h2>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-sm">
-                            <thead>
-                            <tr>
-                                <th scope="col">거래일</th>
-                                <th scope="col">종가</th>
-                                <th scope="col">구매수량</th>
-                                <th scope="col">내 평단</th>
-                                <th scope="col">예수금</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <c:forEach items="${dailyDealHistoriesDesc}" var="dailyDealHistory">
-                                <tr>
-                                    <td>${dailyDealHistory.dealDate}</td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.closingPrice}" pattern="#,###" /></td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.closingPurchaseQuantity}" pattern="#,###" /></td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.myAverageUnitPrice}" pattern="#,###" /></td>
-                                    <td><fmt:formatNumber value="${dailyDealHistory.remainingAmount}" pattern="#,###" /></td>
-                                </tr>
-                            </c:forEach>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">자동 시뮬레이션</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="btn-home" href="/">
+                        <i class="fas fa-home"></i>
+                        <span>초기화면</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn-manual" href="/buildupManual">
+                        <i class="fas fa-book"></i>
+                        <span>매뉴얼</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <% if (session.getAttribute("sessionUser") == null) { %>
+                    <button class="btn btn-outline-light" onclick="location.href='/login/google'">Google로 로그인</button>
+                    <% } else { %>
+                    <button class="btn btn-outline-light me-2" onclick="location.href='/logout/google'">로그아웃</button>
+                    <% } %>
+                </li>
+            </ul>
         </div>
     </div>
+</nav>
+
+<!-- 메인 컨테이너 -->
+<div class="container main-container">
+    <h1 class="text-center mb-4">시뮬레이션 결과
+        <i class="fas fa-question-circle tooltip-icon"
+           data-bs-toggle="tooltip"
+           data-bs-placement="right"
+           title="자동 시뮬레이션 결과를 보여줍니다. 그래프와 상세 정보를 확인하세요."></i>
+    </h1>
+
+    <c:choose>
+    <c:when test="${isError == 'true'}">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">오류 발생</h4>
+        <p>${errorMessage}</p>
+    </div>
+    </c:when>
+    <c:otherwise>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>수익률: <fmt:formatNumber value="${earningRate}" pattern="#,###.00" />%</h2>
+            <h2>실현손익: <fmt:formatNumber value="${earningAmount}" pattern="#,###" />원</h2>
+            <h2>총 투입금액: <fmt:formatNumber value="${sumOfPurchaseAmount}" pattern="#,###" />원</h2>
+            <h2>총 매도금액: <fmt:formatNumber value="${sumOfSellingAmount}" pattern="#,###" />원</h2>
+        </div>
+        <div class="col-md-6">
+            <h2>총 매입수량: <fmt:formatNumber value="${sumOfPurchaseQuantity}" pattern="#,###" />주</h2>
+            <h2>총 매도수량: <fmt:formatNumber value="${sumOfSellingQuantity}" pattern="#,###" />주</h2>
+            <h2>총 매도수수료(0.3%): <fmt:formatNumber value="${sumOfCommission}" pattern="#,###" />원</h2>
+            <h2>현재 평가금액: <fmt:formatNumber value="${totalAmount}" pattern="#,###" />원</h2>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h2>전일대비 증가 횟수: <fmt:formatNumber value="${countOfDayOnDayClosingPriceIncrease}" pattern="#,###" />회</h2>
+        </div>
+        <div class="col-md-6">
+            <h2>전일대비 감소 횟수: <fmt:formatNumber value="${countOfDayOnDayClosingPriceDecrease}" pattern="#,###" />회</h2>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div id="container" style="height: 800px; min-width: 310px"></div>
+
+
+    <form id="modifyCalculation" action="buildup-calculate-modify" method="post" name="calculateRequestFrom">
+        <div class="px-4 py-5 my-5 text-center" id="parentDivForModifiyCalculation">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon-company-name">기업 이름</span>
+                <input type="text" class="form-control" id="companyName" name="companyName" value="${companyName}" readonly aria-label="companyName" aria-describedby="basic-addon-company-name">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon-simulation-mode">시뮬레이션 모드</span>
+                <select class="form-select" id="simulationMode" name="simulationMode" aria-label="simulationMode" aria-describedby="basic-addon-simulation-mode">
+                    <option value="dailyClosingPrice" ${simulationMode == 'dailyClosingPrice' ? 'selected' : ''}>매일종가매수</option>
+                    <option value="minusCandle" ${simulationMode == 'minusCandle' ? 'selected' : ''}>음봉일 때만 매수</option>
+                </select>
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon-start-date">시작 날짜</span>
+                <input type="date" class="form-control" id="startDate" name="startDate" value="${startDate}" readonly aria-label="startDate" aria-describedby="basic-addon-start-date">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon-end-date">종료 날짜</span>
+                <input type="date" class="form-control" id="endDate" name="endDate" value="${endDate}" readonly aria-label="endDate" aria-describedby="basic-addon-end-date">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon-buildup-amount">매일 매수 금액</span>
+                <input type="text" class="form-control" id="buildupAmount" name="buildupAmount" value="${buildupAmount}" readonly aria-label="buildupAmount" aria-describedby="basic-addon-buildup-amount">
+            </div>
+            <!-- 동적으로 생성되는 입력 필드들이 여기에 추가됩니다 -->
+        </div>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <button type="submit" class="btn btn-primary btn-lg px-4 gap-3">수정 전송</button>
+        </div>
+        <div class="row g-1 text-left" style="padding:20px">
+            <h5>
+                <i class="fas fa-info-circle tooltip-icon"
+                   data-bs-toggle="tooltip"
+                   data-bs-placement="right"
+                   title="그래프의 배경을 클릭하시면, 수정할 수 있는 행이 추가됩니다. 1개 행에 매수/매도 다 입력해도 되고, 한쪽만 입력해도 됩니다. 단, 매수/매도 비중을 입력했으면 매수/매도 단가도 필수입니다. 비중과 단가 중 하나라도 미입력 시 계산 무시합니다. 같은날짜에 더 매수/매도 하고 싶으시면, 행을 더 추가하시면 됩니다. 날짜가 없는 행은 계산에서 제외됩니다. 매도 시 매도금액의 0.3%를 수수료차원에서 실현손익에서 뺍니다."></i>
+                수정 안내
+            </h5>
+        </div>
+    </form>
+
+    <hr class="my-4">
+
+    <h2 class="mb-3">매매 이력</h2>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <tr>
+                <th scope="col">거래일</th>
+                <th scope="col">종가</th>
+                <th scope="col">구매수량</th>
+                <th scope="col">내 평단</th>
+                <th scope="col">예수금</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach items="${dailyDealHistoriesDesc}" var="dailyDealHistory">
+                <tr>
+                    <td>${dailyDealHistory.dealDate}</td>
+                    <td><fmt:formatNumber value="${dailyDealHistory.closingPrice}" pattern="#,###" /></td>
+                    <td><fmt:formatNumber value="${dailyDealHistory.closingPurchaseQuantity}" pattern="#,###" /></td>
+                    <td><fmt:formatNumber value="${dailyDealHistory.myAverageUnitPrice}" pattern="#,###" /></td>
+                    <td><fmt:formatNumber value="${dailyDealHistory.remainingAmount}" pattern="#,###" /></td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+    </div>
+
+    <hr class="my-4">
+
+    <h2 class="mb-3">최초 입력 요청값</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="inputSimulationMode" class="form-label">시뮬레이션 모드</label>
+                <select id="inputSimulationMode" class="form-select form-select-lg mb-3" name="simulationMode" aria-label="simulationMode" aria-describedby="basic-addon0"
+                        onfocus="this.initialSelect=this.selectedIndex;" onchange="this.selectedIndex=this.initialSelect;">
+                    <option value="dailyClosingPrice" selected>매일종가매수</option>
+                    <option value="minusCandle">음봉일 때만 매수</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="inputCompanyName" class="form-label">기업 이름</label>
+                <input type="text" class="form-control" id="inputCompanyName" value="${companyName}" readonly>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="inputStartDate" class="form-label">시작 날짜</label>
+                <input type="date" class="form-control" id="inputStartDate" value="${startDate}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="inputEndDate" class="form-label">매도 날짜</label>
+                <input type="date" class="form-control" id="inputEndDate" value="${endDate}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="inputBuildupAmount" class="form-label">매일 매수 금액</label>
+                <input type="text" class="form-control" id="inputBuildupAmount" value="${buildupAmount}" readonly>
+            </div>
+        </div>
+    </div>
+    </c:otherwise>
+    </c:choose>
 </div>
 
 <!-- Footer -->
-<footer class="text-center text-lg-start bg-light text-muted">
-    <!-- Copyright -->
-    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
-        개발자(펭수르) 개별 문의처 :
-        <a class="text-reset fw-bold">dragon1086@naver.com</a>
-        <p></p>
-        주식 데이터 구매 문의처 :
-        <a class="text-reset fw-bold" href="https://kmong.com/gig/245871">https://kmong.com/gig/245871</a>
+<footer class="text-center text-lg-start">
+    <div class="container">
+        <div class="text-center p-4">
+            개발자(펭수르) 개별 문의처: <a class="text-reset fw-bold" href="mailto:dragon1086@naver.com">dragon1086@naver.com</a>
+            <p class="mb-0">주식 데이터 구매 문의처: <a class="text-reset fw-bold" href="https://kmong.com/gig/245871" target="_blank">https://kmong.com/gig/245871</a></p>
+        </div>
     </div>
-    <!-- Copyright -->
 </footer>
-<!-- Footer -->
 
-<script type="text/javascript" src="/resources/js/bootstrap.js?ver=123"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
 <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
-<script>
-    //setting values
-    var dealDateList = new Array();
-    var closingPriceList = new Array();
-    var myAverageUnitPriceList = new Array();
-    var candleStickDataList = new Array();
-
-    <c:if test="${isError == 'false'}">
-        <c:forEach items="${dailyDealHistories}" var="dailyDealHistory">
-            <c:if test="${dailyDealHistory.myAverageUnitPrice != 0}">
-                dealDateList.push("${dailyDealHistory.dealDate}");
-                closingPriceList.push("${dailyDealHistory.closingPrice}");
-                myAverageUnitPriceList.push("${dailyDealHistory.myAverageUnitPrice}");
-
-                candleStickDataList.push(["${dailyDealHistory.dealDate}", "${dailyDealHistory.startPrice}", "${dailyDealHistory.highPrice}", "${dailyDealHistory.lowPrice}", "${dailyDealHistory.closingPrice}"]);
-            </c:if>
-        </c:forEach>
-    </c:if>
-
-    // Graphs
-    var ctx = document.getElementById('myChart')
-    // eslint-disable-next-line no-unused-vars
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: dealDateList,
-            datasets: [{
-                label: "종가",
-                data: closingPriceList,
-                lineTension: 0.1,
-                backgroundColor: 'transparent',
-                borderColor: '#007bff',
-                borderWidth: 2,
-                pointBackgroundColor: '#007bff',
-                fill: false,
-                pointRadius: 0.5
-            },{
-                label: "내 평단",
-                data: myAverageUnitPriceList,
-                lineTension: 0.1,
-                backgroundColor: 'transparent',
-                borderColor: '#b22222',
-                borderWidth: 1,
-                pointBackgroundColor: '#b22222',
-                fill: false,
-                pointRadius: 0.5
-            }]
-        },
-        options: {
-            title: {
-                display: true,
-                text: '종가와 평균단가 그래프(${itemName})',
-                fontSize: 24,
-                fontColor: '#00443a'
-            },
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: false
-                    }
-                }]
-            },
-            legend: {
-                display: true
-            }
-        }
-    })
-</script>
 
 </body>
 </html>

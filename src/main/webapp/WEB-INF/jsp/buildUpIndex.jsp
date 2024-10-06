@@ -24,52 +24,147 @@
     <title>자동 시뮬레이션기</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
-
-    <link rel="stylesheet" href="/resources/css/bootstrap.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 56px;
         }
 
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
+        .navbar {
+            background-color: #3498db;
+            padding: 0.5rem 1rem;
         }
 
-        input[type='date'] { font-size: 13px; }
+        .navbar-brand {
+            color: #ffffff !important;
+            font-size: 1.75rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-nav .nav-link {
+            color: inherit;
+            padding: 0;
+            margin: 0;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .navbar-collapse {
+            justify-content: flex-end;
+        }
+
+        .btn-manual,
+        .btn-outline-light {
+            background-color: transparent !important;
+            color: #ffffff !important;
+            border: 1px solid #ffffff !important;
+            padding: 0.375rem 0.75rem !important;
+            transition: background-color 0.3s ease, color 0.3s ease !important;
+            font-size: 1rem !important;
+            margin-right: 1rem !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 38px !important;
+            line-height: 1.5 !important;
+            text-align: center !important;
+        }
+
+        .btn-home:hover,
+        .btn-manual:hover,
+        .btn-outline-light:hover {
+            background-color: #ffffff !important;
+            color: #3498db !important;
+        }
+
+        .btn-home i,
+        .btn-manual i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-home {
+            background-color: transparent !important;
+            color: #ffffff !important;
+            border: 1px solid #ffffff !important;
+            padding: 0.375rem 0.75rem !important;
+            transition: background-color 0.3s ease, color 0.3s ease !important;
+            font-size: 1rem !important;
+            margin-right: 1rem !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 38px !important;
+            line-height: 1.5 !important;
+            text-align: center !important;
+            width: 120px; /* 버튼의 폭을 고정 */
+        }
+
+        .main-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            padding: 3rem;
+            margin-top: 3rem;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem 0;
+            margin-top: 4rem;
+        }
+
+        .tooltip-icon {
+            cursor: pointer;
+            color: #3498db;
+            margin-left: 0.5rem;
+        }
     </style>
-    <!-- Custom styles for this template -->
-    <link href="/resources/css/buildup.css" rel="stylesheet">
     <script>
-        $(function(){
-            document.cookie = "SameSite=None; Secure";
-        });
-
         function companyNameOnOff(){
             var companyNameCheckbox = document.getElementById("companyNameCheck");
+            document.getElementById("companyNameInput").disabled = !companyNameCheckbox.checked;
+        }
 
-
-            if (companyNameCheckbox.checked == true){
-                document.getElementById("companyNameInput").disabled = false;
-            } else {
-                document.getElementById("companyNameInput").disabled = true;
-            }
+        function initTooltips() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
         }
 
         $(function() {    //화면 다 뜨면 시작
+            document.cookie = "SameSite=None; Secure";
+
             $("#companyNameInput").autocomplete({
                 source : function( request, response ) {
                     $.ajax({
@@ -98,79 +193,143 @@
                 classes: {
                     "ui-autocomplete": "highlight"
                 },
-                delay: 1000,    //검색창에 글자 써지고 나서 autocomplete 창 뜰 때 까지 딜레이 시간(ms)
-                disabled: false, //자동완성 기능 스위치
-                position: { my : "left top", at: "left bottom" }
+                delay: 500,    //검색창에 글자 써지고 나서 autocomplete 창 뜰 때 까지 딜레이 시간(ms)
+                select: function(event, ui) {
+                    console.log("Selected: " + ui.item.value);
+                }
+            })
+
+            // Bootstrap이 로드된 후 tooltip 초기화
+            $(window).on('load', function() {
+                initTooltips();
             });
         });
     </script>
 </head>
 <body>
-    <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-secondary" onclick="location.href='/'" style="height:50px;width:370px;font-size:18px;">과거 일봉차트 매매 시뮬레이션 하러 가기</button>
-    </div>
-    <form action="buildup-calculate" method="post" name="calculateRequestFrom">
-        <div class="px-4 py-5 my-5 text-center">
-            <h1 class="display-3 fw-bold">자동 시뮬레이션</h1>
-            <div class="input-group mb-3" style="margin-top: 25px;">
-                <span class="input-group-text mb-3" id="basic-addon0">시뮬레이션 모드</span>
-                <select class="form-select form-select-lg mb-3" name="simulationMode" aria-label="simulationMode" aria-describedby="basic-addon0">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">자동 시뮬레이션</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="btn-home" href="/">
+                            <i class="fas fa-home"></i>
+                            <span>초기화면</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn-manual" href="/buildupManual">
+                            <i class="fas fa-book"></i>
+                            <span>매뉴얼</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <% if (session.getAttribute("sessionUser") == null) { %>
+                        <button class="btn btn-outline-light" onclick="location.href='/login/google'">Google로 로그인</button>
+                        <% } else { %>
+                        <button class="btn btn-outline-light me-2" onclick="location.href='/logout/google'">로그아웃</button>
+                        <% } %>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 메인 컨테이너 -->
+    <div class="container main-container">
+        <h1 class="text-center mb-4">자동 시뮬레이션
+            <i class="fas fa-question-circle tooltip-icon"
+               data-bs-toggle="tooltip"
+               data-bs-placement="right"
+               title="일정한 규칙을 정해서 매수/매도를 하면, 투입금액 대비 얼마나 수익날 지 시뮬레이션하는 프로그램입니다. 현재 '매일종가매수 및 마지막날 전량매도'와 '음봉일때만 매수 및 마지막날 전량매도' 두 가지 모드가 있습니다."></i>
+        </h1>
+
+        <form action="buildup-calculate" method="post" name="calculateRequestFrom">
+            <div class="mb-4">
+                <label for="simulationMode" class="form-label d-flex align-items-center">
+                    시뮬레이션 모드
+                    <i class="fas fa-question-circle tooltip-icon"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="right"
+                       title="시뮬레이션 규칙을 선택합니다. '매일종가매수'는 매일 종가에 매수하고, '음봉일 때만 매수'는 주가가 하락한 날에만 매수합니다."></i>
+                </label>
+                <select class="form-select" id="simulationMode" name="simulationMode">
                     <option value="dailyClosingPrice" selected>매일종가매수</option>
                     <option value="minusCandle">음봉일 때만 매수</option>
                 </select>
             </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">기업 이름(기본 랜덤)</span>
-                <input type="text" id="companyNameInput" class="form-control"  name="companyName" placeholder="기업명을 입력하세요" aria-label="companyName" aria-describedby="basic-addon1" disabled>
-                <input type="checkbox" id="companyNameCheck" name="companyNameCheck" onclick="companyNameOnOff()">
-                <label for="companyNameCheck" style="margin: auto">기업이름(기본 랜덤)</label>
-            </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon2">시작 날짜</span>
-                <input type="date" class="form-control"  name="startDate" placeholder="startDate" aria-label="startDate" aria-describedby="basic-addon2">
-            </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon3">매도 날짜</span>
-                <input type="date" class="form-control"  name="endDate" placeholder="endDate" aria-label="endDate" aria-describedby="basic-addon3">
-            </div>
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon4">매일 매수 할 금액</span>
-                <input type="text" class="form-control"  name="buildupAmount" placeholder="하루에 적립할 금액을 입력하세요" aria-label="buildupAmount" aria-describedby="basic-addon4">
+
+            <div class="mb-4">
+                <label for="companyNameInput" class="form-label d-flex align-items-center">
+                    기업 이름
+                    <i class="fas fa-question-circle tooltip-icon"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="right"
+                       title="시뮬레이션할 기업을 선택합니다. 기본적으로 랜덤으로 선택되며, 체크박스를 선택하면 직접 입력할 수 있습니다."></i>
+                </label>
+                <div class="input-group">
+                    <input type="text" id="companyNameInput" class="form-control" name="companyName" placeholder="기업 이름" disabled>
+                    <div class="input-group-text">
+                        <input class="form-check-input mt-0" type="checkbox" id="companyNameCheck" onclick="companyNameOnOff()">
+                    </div>
+                </div>
             </div>
 
-            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <button type="submit" class="btn btn-primary btn-lg px-4 gap-3" onclick="return">시뮬레이션 시작</button>
+            <div class="mb-4">
+                <label for="startDate" class="form-label d-flex align-items-center">
+                    시작 날짜
+                    <i class="fas fa-question-circle tooltip-icon"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="right"
+                       title="시뮬레이션 시작 날짜를 선택합니다."></i>
+                </label>
+                <input type="date" class="form-control" id="startDate" name="startDate">
             </div>
-        </div>
-    </form>
-    <div class="display-3" style="margin-left:20px">
-        <h1 class="lead mb-4 fw-bold" style="font-size:20px;">기능 개요</h1>
-        <p class="lead mb-4 "style="font-size:17px;">일정한 규칙을 정해서 매수/매도를 하면, 투입금액 대비 얼마나 수익날 지 시뮬레이션하는 프로그램입니다.</p>
-        <p class="lead mb-4" style="font-size:17px;">(자세한 메뉴얼이 필요하시면 아래 메뉴얼 버튼을 클릭해주세요!)</p>
-        <p class="lead mb-4 "style="font-size:17px;">시뮬레이션 모드는 현재 2가지가 있습니다.</p>
-        <p class="lead mb-4 "style="font-size:17px;">1. 매일종가매수 및 마지막날 전량매도</p>
-        <p class="lead mb-4 "style="font-size:17px;">2. 음봉일때만 매수 및 마지막날 전량매도</p>
-        <p></p>
 
-    </div>
-    <div class="px-4 py-5 my-5 text-center">
-        <button type="button" class="btn btn-info" onclick="location.href='/buildupManual'" style="height:30px;width:280px;font-size:14px;">자동 시뮬레이션 메뉴얼</button>
+            <div class="mb-4">
+                <label for="endDate" class="form-label d-flex align-items-center">
+                    매도 날짜
+                    <i class="fas fa-question-circle tooltip-icon"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="right"
+                       title="시뮬레이션 종료 및 전량 매도 날짜를 선택합니다."></i>
+                </label>
+                <input type="date" class="form-control" id="endDate" name="endDate">
+            </div>
+
+            <div class="mb-4">
+                <label for="buildupAmount" class="form-label d-flex align-items-center">
+                    매일 매수 할 금액
+                    <i class="fas fa-question-circle tooltip-icon"
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="right"
+                       title="매일(또는 음봉일) 매수할 금액을 입력합니다."></i>
+                </label>
+                <input type="text" class="form-control" id="buildupAmount" name="buildupAmount" placeholder="하루에 적립할 금액을 입력하세요">
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">시뮬레이션 시작</button>
+            </div>
+        </form>
     </div>
 
     <!-- Footer -->
-    <footer class="text-center text-lg-start bg-light text-muted">
-        <!-- Copyright -->
-        <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
-            개발자(펭수르) 개별 문의처 :
-            <a class="text-reset fw-bold">dragon1086@naver.com</a>
-            <p></p>
-            주식 데이터 구매 문의처 :
-            <a class="text-reset fw-bold" href="https://kmong.com/gig/245871">https://kmong.com/gig/245871</a>
+    <footer class="text-center text-lg-start">
+        <div class="container">
+            <div class="text-center p-4">
+                개발자(펭수르) 개별 문의처: <a class="text-reset fw-bold" href="mailto:dragon1086@naver.com">dragon1086@naver.com</a>
+                <p class="mb-0">주식 데이터 구매 문의처: <a class="text-reset fw-bold" href="https://kmong.com/gig/245871" target="_blank">https://kmong.com/gig/245871</a></p>
+            </div>
         </div>
-        <!-- Copyright -->
     </footer>
     <!-- Footer -->
 
-    <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

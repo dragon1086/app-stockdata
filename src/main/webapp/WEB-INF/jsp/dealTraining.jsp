@@ -26,52 +26,176 @@
     <title>주식 일봉매매 시뮬레이션</title>
     <!--  부트스트랩 js 사용 -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha384-zNy6FEbO50N+Cg5wap8IKA4M/ZnLJgzc6w2NqACZaK0u0FXfOWRRJOnQtpZun8ha" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="/resources/css/bootstrap.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
-        .auth-container {
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 10px 0;
-            margin-bottom: 20px;  /* 아래 컨텐츠와의 간격 */
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f8f9fa;
+            padding-top: 56px;
         }
-        .auth-row {
+
+        .navbar {
+            background-color: #3498db;
+            padding: 0.5rem 1rem;
+        }
+
+        .navbar-brand {
+            color: #ffffff !important;
+            font-size: 1.75rem;
+            font-weight: bold;
             display: flex;
             align-items: center;
         }
-        #loginButton {
-            background: none;
-            border: none;
+
+        .navbar-nav .nav-link {
+            color: inherit;
             padding: 0;
+            margin: 0;
+        }
+
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .navbar-collapse {
+            justify-content: flex-end;
+        }
+
+        .btn-auto-sim,
+        .btn-outline-light {
+            background-color: transparent !important;
+            color: #ffffff !important;
+            border: 1px solid #ffffff !important;
+            padding: 0.375rem 0.75rem !important;
+            transition: background-color 0.3s ease, color 0.3s ease !important;
+            font-size: 1rem !important;
+            margin-right: 1rem !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 38px !important;
+            line-height: 1.5 !important;
+            text-align: center !important;
+        }
+
+        .btn-home:hover,
+        .btn-auto-sim:hover,
+        .btn-outline-light:hover {
+            background-color: #ffffff !important;
+            color: #3498db !important;
+        }
+
+        .btn-home {
+            background-color: transparent !important;
+            color: #ffffff !important;
+            border: 1px solid #ffffff !important;
+            padding: 0.375rem 0.75rem !important;
+            transition: background-color 0.3s ease, color 0.3s ease !important;
+            font-size: 1rem !important;
+            margin-right: 1rem !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 38px !important;
+            line-height: 1.5 !important;
+            text-align: center !important;
+            width: 120px; /* 버튼의 폭을 고정 */
+        }
+
+        .btn-home i {
+            margin-right: 0.5rem;
+        }
+
+        .btn-home span {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .btn-info {
+            background-color: #2ecc71;
+            border-color: #2ecc71;
+            color: #ffffff;
+        }
+
+        .btn-info:hover {
+            background-color: #27ae60;
+        }
+
+        .main-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            padding: 3rem;
+            margin-top: 3rem;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        footer {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem 0;
+            margin-top: 4rem;
+        }
+
+        .tooltip-icon {
             cursor: pointer;
-        }
-        #loginButton img {
-            height: 30px;
-            width: auto;
-        }
-        #logoutButton {
-            height: 30px;
-            font-size: 12px;
+            color: #3498db;
+            margin-left: 0.5rem;
         }
 
-        .bd-placeholder-img {
-            font-size: 1.125rem;
-            text-anchor: middle;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
+        .navbar-nav,
+        .navbar-nav .nav-item,
+        .d-flex {
+            display: flex !important;
+            align-items: center !important;
         }
 
-        @media (min-width: 768px) {
-            .bd-placeholder-img-lg {
-                font-size: 3.5rem;
-            }
+        .btn-download {
+            background-color: #3498db;
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+            margin-top: 1rem;
         }
 
-        input[type='date'] { font-size: 13px; }
+        .btn-download:hover {
+            background-color: #2980b9;
+        }
+
+        .download-section {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
     </style>
+
     <!-- Custom styles for this template -->
     <link href="/resources/css/buildup.css" rel="stylesheet">
     <script>
@@ -778,35 +902,55 @@
                 },
                 rangeSelector: {
                     buttons: [{
-                        type: 'all',
+                        type: 'year',
+                        count: 1,
                         text: '일봉',
-                        events: {
-                            click: function() {
-                                updateDataGrouping('day', 365); // 1년치 데이터 표시
-                            }
+                        dataGrouping: {
+                            forced: true,
+                            units: [['day', [1]]]
                         }
                     }, {
-                        type: 'all',
+                        type: 'year',
+                        count: 1,
                         text: '주봉',
-                        events: {
-                            click: function() {
-                                updateDataGrouping('week', 52); // 1년치 데이터 표시 (52주)
-                            }
+                        dataGrouping: {
+                            forced: true,
+                            units: [['week', [1]]]
+                        }
+                    }, {
+                        type: 'year',
+                        count: 1,
+                        text: '월봉',
+                        dataGrouping: {
+                            forced: true,
+                            units: [['month', [1]]]
                         }
                     }, {
                         type: 'all',
-                        text: '월봉',
-                        events: {
-                            click: function() {
-                                updateDataGrouping('month', 12); // 1년치 데이터 표시 (12개월)
-                            }
+                        text: '전체',
+                        dataGrouping: {
+                            forced: true,
+                            units: [['month', [1]]]
                         }
                     }],
                     selected: 0,
                     inputEnabled: false
                 },
                 navigator: {
-                    enabled: true
+                    enabled: true,
+                    height: 50,
+                    series: {
+                        type: 'line',
+                        color: Highcharts.getOptions().colors[0]
+                    },
+                    xAxis: {
+                        events: {
+                            afterSetExtremes: function(e) {
+                                // Navigator의 범위가 변경될 때 버튼 상태 업데이트
+                                updateButtonState(e.min, e.max);
+                            }
+                        }
+                    }
                 },
                 scrollbar: {
                     enabled: true
@@ -934,7 +1078,9 @@
                     },
                     formatter: function() {
                         const points = this.points;
-                        let tooltipText = '<span style="font-size: 14px">' + Highcharts.dateFormat('%Y년 %m월 %d일', this.x) + '</span><br/>';
+                        // UTC+9 (한국 시간)으로 조정
+                        const date = new Date(this.x + 9 * 3600 * 1000);
+                        let tooltipText = '<span style="font-size: 14px">' + Highcharts.dateFormat('%Y년 %m월 %d일', date) + '</span><br/>';
 
                         points.forEach(function(point) {
                             if (point.series.name === itemName) {
@@ -1171,7 +1317,17 @@
             });
 
             // 초기 데이터 그룹화 설정 (일봉으로 시작)
-            updateDataGrouping('day', 365);
+            updateDataGrouping('day');
+
+            // 초기 상태를 일봉, 1년으로 설정
+            const extremes = chartInstance.xAxis[0].getExtremes();
+            const dataMax = extremes.dataMax;
+            const dataMin = extremes.dataMin;
+            const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
+            const newMin = Math.max(dataMax - ONE_YEAR, dataMin);
+
+            chartInstance.xAxis[0].setExtremes(newMin, dataMax);
+            updateButtonState(newMin, dataMax);
         }
 
         function convertToCSV(objArray) {
@@ -1251,32 +1407,14 @@
             });
         }
 
-        function updateDataGrouping(unit, range) {
+        function updateDataGrouping(unit) {
             if (chartInstance) {
                 const extremes = chartInstance.xAxis[0].getExtremes();
                 const dataMax = extremes.dataMax;
                 const dataMin = extremes.dataMin;
 
-                const ONE_DAY = 24 * 60 * 60 * 1000;
-                let requestedRange;
-
-                switch(unit) {
-                    case 'day':
-                        requestedRange = range * ONE_DAY;
-                        break;
-                    case 'week':
-                        requestedRange = range * 7 * ONE_DAY;
-                        break;
-                    case 'month':
-                        const now = new Date(dataMax);
-                        const past = new Date(now.getFullYear(), now.getMonth() - range, now.getDate());
-                        requestedRange = now.getTime() - past.getTime();
-                        break;
-                    default:
-                        requestedRange = range * ONE_DAY;
-                }
-
-                const newMin = Math.max(dataMax - requestedRange, dataMin);
+                const ONE_YEAR = 365 * 24 * 60 * 60 * 1000; // 1년을 밀리초로 표현
+                const newMin = Math.max(dataMax - ONE_YEAR, dataMin);
 
                 chartInstance.series.forEach(function(series) {
                     series.update({
@@ -1287,198 +1425,223 @@
                     }, false);
                 });
 
-                // setExtremes를 사용하여 초기 뷰 설정
+                // Navigator와 메인 차트의 범위를 1년으로 설정
                 chartInstance.xAxis[0].setExtremes(newMin, dataMax);
 
                 chartInstance.redraw();
             }
         }
+
+        // 버튼 상태 업데이트 함수
+        function updateButtonState(min, max) {
+            const buttons = chartInstance.rangeSelector.buttons;
+            const range = max - min;
+            const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
+
+            buttons.forEach((button, index) => {
+                if (index < 3 && Math.abs(range - ONE_YEAR) < 24 * 60 * 60 * 1000) {
+                    // 1년 범위일 때 해당 버튼 활성화
+                    button.setState(2);
+                } else if (index === 3 && range === chartInstance.xAxis[0].max - chartInstance.xAxis[0].min) {
+                    // 전체 범위일 때 '전체' 버튼 활성화
+                    button.setState(2);
+                } else {
+                    button.setState(0);
+                }
+            });
+        }
     </script>
 </head>
 <body>
-<div class="container-fluid auth-container">
-    <div class="row auth-row">
-        <% if (session.getAttribute("sessionUser") != null) { %>
-        <div class="col-4 text-start">
-            <h5 class="m-0">환영합니다, ${sessionScope.sessionUser.email}님!</h5>
-        </div>
-        <% } else { %>
-        <div class="col-4"></div>
-        <% } %>
-        <div class="col-4 text-center">
-            <a href="/" class="btn btn-primary" aria-current="page">
-                <i class="fas fa-home"></i> 초기화면
-            </a>
-        </div>
-        <div class="col-4 text-end">
-            <% if (session.getAttribute("sessionUser") == null) { %>
-            <button id="loginButton" onclick="location.href='/login/google'">
-                <img src="resources/images/googleLogin.png" alt="Sign in with Google"/>
-            </button>
-            <% } else { %>
-            <button type="button" class="btn btn-outline-secondary" id="logoutButton" onclick="location.href='/logout/google'">
-                <i class="fas fa-sign-out-alt"></i> 로그아웃
-            </button>
-            <% } %>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">주식 매매 시뮬레이션</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="btn-home" href="/">
+                        <i class="fas fa-home"></i>
+                        <span>초기화면</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn-auto-sim" href="/buildup">자동 시뮬레이션으로 이동</a>
+                </li>
+                <li class="nav-item">
+                    <% if (session.getAttribute("sessionUser") == null) { %>
+                    <button class="btn btn-outline-light" onclick="location.href='/login/google'">Google로 로그인</button>
+                    <% } else { %>
+                    <button class="btn btn-outline-light me-2" onclick="location.href='/logout/google'">로그아웃</button>
+                    <button class="btn btn-info" onclick="openDealHistoryTab()">시뮬레이션 이어하기</button>
+                    <% } %>
+                </li>
+            </ul>
         </div>
     </div>
-</div>
+</nav>
 
-<div id="c1" class="container">
-    <div class="container-fluid">
-        <div class="row">
-            <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4">
-                <form id="modifyCalculation" name="calculateRequestFrom">
-                    <div class="px-4 py-5 my-5 text-left" id="parentDivForModifiyCalculation">
-                        <h2><strong>매매 시뮬레이션</strong></h2>
-                        <p></p>
-                        <h4>아래 그래프를 보시고, 매수/매도/PASS를 선택하세요. </h4>
-                        <h4>매수/매도 하고 싶으시면 단가와 비중 입력 후 "다음", 그냥 넘기고 싶으시면 "다음"버튼 눌러주세요. </h4>
-                        <h4>1개 행에 매수/매도 다 입력해도 되고, 한쪽만 입력해도 됩니다.</h4>
-                        <h4>단, 매수/매도 비중을 입력했으면 매수/매도 단가도 필수입니다. 비중과 단가 중 하나라도 미입력 시 계산 무시합니다.</h4>
-                        <h4>매도 시 매도금액의 0.3%를 수수료차원에서 실현손익에서 뺍니다.</h4>
-                        <div></div>
-                        <div class="input-group mb-3" id= "modifyInputGroup">
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon1">현재 날짜</span>
-                                <input readonly="true" id="thisModifyDate" type="date" class="form-control" name="modifyDate" aria-label="modifyDate" aria-describedby="basic-addon1">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon2">매도 비중%</span>
-                                <input id="sellPercent" type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="sellPercent" aria-describedby="basic-addon2">
-                                <span class="input-group-text" id="basic-addon3">매도 가격</span>
-                                <input id="sellPrice" type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon4">매수 비중%</span>
-                                <input id="buyPercent" type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
-                                <span class="input-group-text" id="basic-addon5">매수 가격</span>
-                                <input id="buyPrice" type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
-                            </div>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon6">한번에 이동할 날짜</span>
-                                <input id="jumpDate" type="date" class="form-control" name="jumpDate" aria-label="jumpDate" aria-describedby="basic-addon6">
-                            </div>
-                        </div>
-                    </div>
+<!-- 메인 컨테이너 -->
+<div class="container main-container">
+    <form id="modifyCalculation" name="calculateRequestFrom">
+        <h2 class="mb-4"><strong>매매 시뮬레이션</strong>
+            <i class="fas fa-question-circle tooltip-icon"
+               data-bs-toggle="tooltip"
+               data-bs-placement="right"
+               title="그래프를 보고 매수/매도/다음을 선택하세요. 매수/매도 시 단가와 비중을 입력하세요. 매도 시 0.3% 수수료가 적용됩니다."></i>
+        </h2>
 
-                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                        <button type="button" id="submitButton" class="btn btn-primary btn-lg px-4 gap-3">다음</button>
-                    </div>
-
-                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-end">
-                        <button type="button" id="copyButton" class="btn btn-dark btn-lg px-4 gap-3">시뮬레이션 복제</button>
-                    </div>
-
-                    <hr style="height:3px;color:#dc874f">
-
-                    <div id="container" style="height: 1000px; min-width: 310px"></div>
-
-                    <hr style="height:3px;color:#dc874f">
-
-                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-                        <div>
-                                <div id="dealError" disabled="false">
-                                    <h1><span class="errorMessage"></span></h1>
-                                </div>
-                                <div id="dealStatus" disabled="true">
-                                    <h1><strong>매매 현황</strong></h1>
-                                    <p></p>
-                                    <div id="dealStatusWithEmptyEarningRate" disabled="false">
-                                        <h2>실현수익률 : 0%</h2>
-                                        <h2>실현손익 : 0원</h2>
-                                        <h2>슬랏 할당금액 : <span class="slotAmount"></span>원</h2>
-                                        <h2>현재 비중 : <span class="portion"></span>%</h2>
-                                        <h2>슬랏 예수금 : <span class="remainingSlotAmount"></span>원</h2>
-                                        <h2>슬랏 예수금 비중 : <span class="remainingPortion"></span>%</h2>
-                                        <h2>총 매입금액 : <span class="sumOfPurchaseAmount"></span>원</h2>
-                                        <h2>총 매도금액 : 0원</h2>
-                                        <h2>총 매입수량 : <span class="sumOfPurchaseQuantity"></span>주</h2>
-                                        <h2>총 매도수량 : 0주</h2>
-                                        <h2>총 매도수수료(0.3%) : 0원</h2>
-                                        <h2>현재 평가금액 : <span class="totalAmount"></span>원</h2>
-                                        <h2>현재 평가손익 : <span class="valuationPercent"></span>%</h2>
-                                        <h2>현재 평균단가 : <span class="averageUnitPrice"></span>원</h2>
-                                        <h2>현재 종가 : <span class="currentClosingPrice"></span>원</h2>
-                                    </div>
-                                    <div id="dealStatusWithEarningRate" disabled="true">
-                                            <h2>실현수익률 : <span class="earningRate"></span>%</h2>
-                                            <h2>실현손익 : <span class="earningAmount"></span>원</h2>
-                                            <h2>슬랏 할당금액 : <span class="slotAmount"></span>원</h2>
-                                            <h2>현재 비중 : <span class="portion"></span>%</h2>
-                                            <h2>슬랏 예수금 : <span class="remainingSlotAmount"></span>원</h2>
-                                            <h2>슬랏 예수금 비중 : <span class="remainingPortion"></span>%</h2>
-                                            <h2>총 매입금액 : <span class="sumOfPurchaseAmount"></span>원</h2>
-                                            <h2>총 매도금액 : <span class="sumOfSellingAmount"></span>원</h2>
-                                            <h2>총 매입수량 : <span class="sumOfPurchaseQuantity"></span>주</h2>
-                                            <h2>총 매도수량 : <span class="sumOfSellingQuantity"></span>주</h2>
-                                            <h2>총 매도수수료(0.3%) : <span class="sumOfCommission"></span>원</h2>
-                                            <h2>현재 평가금액 : <span class="totalAmount"></span>원</h2>
-                                            <h2>현재 평가손익 : <span class="valuationPercent"></span>%</h2>
-                                            <h2>현재 평균단가 : <span class="averageUnitPrice"></span>원</h2>
-                                            <h2>현재 종가 : <span class="currentClosingPrice" ></span>원</h2>
-                                    </div>
-                                </div>
-                        </div>
-                    </div>
-
-                    <hr style="height:3px;color:#dc874f">
-                    <div class="px-4 py-5 my-5 text-left">
-                        <h2><strong>최초 입력 요청값</strong></h2>
-                        <div class="px-4 py-5 my-5 text-left">
-                            <div class="input-group mb-3">
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="input-addon1">기업 이름</span>
-                                    <input readonly="true" type="text" id="inputCompanyName" class="form-control" name="companyName" aria-label="companyName" aria-describedby="input-addon1" value="">
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="input-addon2">시작 날짜</span>
-                                    <input readonly="true" type="date" id="inputStartDate" class="form-control" name="startDate" aria-label="startDate" aria-describedby="input-addon2" value="">
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="input-addon3">최근 날짜</span>
-                                    <input readonly="true" type="date" id="inputEndDate" class="form-control" name="endDate" aria-label="endDate" aria-describedby="input-addon3" value="">
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="input-addon4">설정 금액</span>
-                                    <input readonly="true" type="text" id="inputSlotAmount" class="form-control" name="slotAmount" aria-label="slotAmount" aria-describedby="input-addon4" value="">
-                                    <span class="input-group-text" id="input-addon5">시작 비중%</span>
-                                    <input readonly="true" type="text" id="inputPortion" class="form-control" name="portion" aria-label="portion" aria-describedby="input-addon5" value="">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr style="height:3px;color:#dc874f">
-                    <div class="px-4 py-5 my-5 text-left">
-                        <h2><strong>추가 매수/매도 이력</strong></h2>
-                        <div class="px-4 py-5 my-5 text-left" id="additionalBuyingSellHistory">
-                        </div>
-                    </div>
-                </form>
-
-                <hr style="height:3px;color:#dc874f">
-
-                <button id="downloadHistoriesBtn">매매내역 CSV 다운로드</button>
-            </main>
+        <div></div>
+        <div class="mb-4" id= "modifyInputGroup">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">현재 날짜</span>
+                <input readonly="true" id="thisModifyDate" type="date" class="form-control" name="modifyDate" aria-label="modifyDate" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon2">매도 비중%</span>
+                <input id="sellPercent" type="text" class="form-control" name="sellPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="sellPercent" aria-describedby="basic-addon2">
+                <span class="input-group-text" id="basic-addon3">매도 가격</span>
+                <input id="sellPrice" type="text" class="form-control" name="sellPrice" placeholder="매도하실 금액을 입력하세요(저가와 고가 사이)" aria-label="sellPrice" aria-describedby="basic-addon3">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon4">매수 비중%</span>
+                <input id="buyPercent" type="text" class="form-control" name="buyPercent" placeholder="% 제외하고 입력하세요(소수점 제외)" aria-label="buyPercent" aria-describedby="basic-addon4">
+                <span class="input-group-text" id="basic-addon5">매수 가격</span>
+                <input id="buyPrice" type="text" class="form-control" name="buyPrice" placeholder="매수하실 금액을 입력하세요(저가와 고가 사이)" aria-label="buyPrice" aria-describedby="basic-addon5">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon6">한번에 이동할 날짜</span>
+                <input id="jumpDate" type="date" class="form-control" name="jumpDate" aria-label="jumpDate" aria-describedby="basic-addon6">
+            </div>
         </div>
+
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-4">
+            <button type="button" id="submitButton" class="btn btn-primary btn-lg px-4 gap-3">다음</button>
+        </div>
+
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-end mb-4">
+            <button type="button" id="copyButton" class="btn btn-dark btn-lg px-4 gap-3">시뮬레이션 복제</button>
+        </div>
+
+        <hr class="my-4" style="border-color: #3498db;">
+
+        <div id="container" style="height: 1000px; min-width: 310px" class="mb-4"></div>
+
+        <hr class="my-4" style="border-color: #3498db;">
+
+        <div class="mb-4">
+            <div id="dealError" class="alert alert-danger" style="display: none;">
+                <h4 class="alert-heading">오류 발생</h4>
+                <p class="errorMessage mb-0"></p>
+            </div>
+            <div id="dealStatus" class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0"><strong>매매 현황</strong></h2>
+                </div>
+                <div class="card-body">
+                    <div id="dealStatusWithEmptyEarningRate" style="display: none;">
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                            <div class="col"><div class="status-item"><span class="status-label">실현수익률:</span> <span class="status-value">0%</span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">실현손익:</span> <span class="status-value">0원</span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">슬랏 할당금액:</span> <span class="status-value slotAmount"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">현재 비중:</span> <span class="status-value portion"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">슬랏 예수금:</span> <span class="status-value remainingSlotAmount"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">슬랏 예수금 비중:</span> <span class="status-value remainingPortion"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">총 매입금액:</span> <span class="status-value sumOfPurchaseAmount"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">총 매도금액:</span> <span class="status-value">0원</span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">총 매입수량:</span> <span class="status-value sumOfPurchaseQuantity"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">총 매도수량:</span> <span class="status-value">0주</span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">총 매도수수료(0.3%):</span> <span class="status-value">0원</span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">현재 평가금액:</span> <span class="status-value totalAmount"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">현재 평가손익:</span> <span class="status-value valuationPercent"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">현재 평균단가:</span> <span class="status-value averageUnitPrice"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">현재 종가:</span> <span class="status-value currentClosingPrice"></span></div></div>
+                        </div>
+                    </div>
+                    <div id="dealStatusWithEarningRate" style="display: none;">
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                            <div class="col"><div class="status-item"><span class="status-label">실현수익률:</span> <span class="status-value earningRate"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">실현손익:</span> <span class="status-value earningAmount"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">슬랏 할당금액:</span> <span class="status-value slotAmount"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">현재 비중:</span> <span class="status-value portion"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">슬랏 예수금:</span> <span class="status-value remainingSlotAmount"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">슬랏 예수금 비중:</span> <span class="status-value remainingPortion"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">총 매입금액:</span> <span class="status-value sumOfPurchaseAmount"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">총 매도금액:</span> <span class="status-value sumOfSellingAmount"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">총 매입수량:</span> <span class="status-value sumOfPurchaseQuantity"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">총 매도수량:</span> <span class="status-value sumOfSellingQuantity"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">총 매도수수료(0.3%):</span> <span class="status-value sumOfCommission"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">현재 평가금액:</span> <span class="status-value totalAmount"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">현재 평가손익:</span> <span class="status-value valuationPercent"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">현재 평균단가:</span> <span class="status-value averageUnitPrice"></span></div></div>
+                            <div class="col"><div class="status-item"><span class="status-label">현재 종가:</span> <span class="status-value currentClosingPrice"></span></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-4" style="border-color: #3498db;">
+
+
+        <div class="mb-4">
+            <h2 class="mb-3"><strong>최초 입력 요청값</strong></h2>
+            <div class="px-4 py-5 my-5 text-left">
+                <div class="input-group mb-3">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="input-addon1">기업 이름</span>
+                        <input readonly="true" type="text" id="inputCompanyName" class="form-control" name="companyName" aria-label="companyName" aria-describedby="input-addon1" value="">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="input-addon2">시작 날짜</span>
+                        <input readonly="true" type="date" id="inputStartDate" class="form-control" name="startDate" aria-label="startDate" aria-describedby="input-addon2" value="">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="input-addon3">최근 날짜</span>
+                        <input readonly="true" type="date" id="inputEndDate" class="form-control" name="endDate" aria-label="endDate" aria-describedby="input-addon3" value="">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="input-addon4">설정 금액</span>
+                        <input readonly="true" type="text" id="inputSlotAmount" class="form-control" name="slotAmount" aria-label="slotAmount" aria-describedby="input-addon4" value="">
+                        <span class="input-group-text" id="input-addon5">시작 비중%</span>
+                        <input readonly="true" type="text" id="inputPortion" class="form-control" name="portion" aria-label="portion" aria-describedby="input-addon5" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-4" style="border-color: #3498db;">
+        <div class="mb-4">
+            <h2 class="mb-3"><strong>추가 매수/매도 이력</strong></h2>
+            <div id="additionalBuyingSellHistory">
+            </div>
+        </div>
+    </form>
+
+    <hr class="my-4" style="border-color: #3498db;">
+
+    <div class="download-section">
+        <h4>매매 내역 다운로드</h4>
+        <button id="downloadHistoriesBtn" class="btn-download">
+            <i class="fas fa-download"></i> CSV 다운로드
+        </button>
     </div>
 </div>
 <!-- Footer -->
-<footer class="text-center text-lg-start bg-light text-muted">
-    <!-- Copyright -->
-    <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
-        개발자(펭수르) 개별 문의처 :
-        <a class="text-reset fw-bold">dragon1086@naver.com</a>
-        <p></p>
-        주식 데이터 구매 문의처 :
-        <a class="text-reset fw-bold" href="https://kmong.com/gig/245871">https://kmong.com/gig/245871</a>
+<footer class="text-center text-lg-start">
+    <div class="container">
+        <div class="text-center p-4">
+            개발자(펭수르) 개별 문의처: <a class="text-reset fw-bold" href="mailto:dragon1086@naver.com">dragon1086@naver.com</a>
+            <p class="mb-0">주식 데이터 구매 문의처: <a class="text-reset fw-bold" href="https://kmong.com/gig/245871" target="_blank">https://kmong.com/gig/245871</a></p>
+        </div>
     </div>
-    <!-- Copyright -->
 </footer>
 <!-- Footer -->
 
-<script type="text/javascript" src="/resources/js/bootstrap.js?ver=123"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://code.highcharts.com/stock/highstock.js"></script>
 <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
