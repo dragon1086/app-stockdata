@@ -47,6 +47,52 @@
         }
         p { font-size: 15px; }
         img { max-width: 100%; display: block; margin: 0px 0px 500px 0px; }
+        footer {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: #5dade2;
+            text-decoration: underline;
+        }
+        .aqr-qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .qr-code-wrapper {
+            text-align: center;
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+        }
+        .qr-code-wrapper img {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .qr-code-wrapper p {
+            color: #000000;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .contact-info {
+            margin-top: 20px;
+        }
+        .contact-info a {
+            color: #5dade2;
+        }
+        .contact-info a:hover {
+            color: #3498db;
+        }
     </style>
     <!-- Custom styles for this template -->
     <link href="/resources/css/buildup.css" rel="stylesheet">
@@ -124,19 +170,42 @@
     </div>
 
     <!-- Footer -->
-    <footer class="text-center text-lg-start bg-light text-muted">
-        <!-- Copyright -->
-        <div class="text-center p-4" style="background-color: rgba(0, 0, 0, 0.05);">
-            개발자(펭수르) 개별 문의처 :
-            <a class="text-reset fw-bold">dragon1086@naver.com</a>
-            <p></p>
-            주식 데이터 구매 문의처 :
-            <a class="text-reset fw-bold" href="https://kmong.com/gig/245871">https://kmong.com/gig/245871</a>
+    <footer class="text-center text-lg-start bg-black text-white">
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="aqr-qr-container mb-4">
+                        <div id="aqr-widget-area" class="mb-3"></div>
+                        <div class="qr-code-wrapper">
+                            <img src="resources/images/aqrCode.png" alt="개발자 기부 QR 코드" class="img-fluid" style="max-width: 150px;">
+                            <p class="mt-2 mb-0">기부 QR 코드</p>
+                        </div>
+                    </div>
+                    <div class="contact-info">
+                        <p class="mb-2">개발자(펭수르) 개별 문의처: <a class="text-reset fw-bold" href="mailto:dragon1086@naver.com">dragon1086@naver.com</a></p>
+                        <p class="mb-0">주식 데이터 구매 문의처: <a class="text-reset fw-bold" href="https://kmong.com/gig/245871" target="_blank">https://kmong.com/gig/245871</a></p>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- Copyright -->
     </footer>
+
     <!-- Footer -->
 
     <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
+    <script src="https://aq.gy/c/widget.js"></script>
+    <script>
+        new AQRWidget().renderAQRWidget(
+            {
+                token : "3iMB^", // uniq token
+                layer_id : "aqr-widget-area", // target layer id
+                profile : false, // Show or Not profile image and account name
+                libbutton : true, // Show or Not SNS Link Buttons
+                bgcolor : "#000000", // hex only
+                textcolor : "#ffffff", // hex only
+                button_text : "서버 운영비 기부하기"
+            }
+        );
+    </script>
 </body>
 </html>
