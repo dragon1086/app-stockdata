@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: stock-simulation
   confg:
     activate:
       on-profile: local
@@ -8,10 +10,10 @@ spring:
       suffix: .jsp
     static-path-pattern: /resources/**
   datasource:
-    username: root
-    password: gmrfyd12
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/stock_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    url: jdbc:mysql://${DB_HOST}:3306/stock_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
     hikari:
       pool-name: stockHikariPool
       maximum-pool-size: 30
@@ -37,33 +39,68 @@ supabase:
   key: ${SUPABASE_KEY}
   redirect-uri: ${SUPABASE_REDIRECT_URI}
 ---
-#spring:
-#  confg:
-#    activate:
-#      on-profile: real
-#  mvc:
-#    view:
-#      prefix: /WEB-INF/jsp/
-#      suffix: .jsp
-#    static-path-pattern: /resources/**
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://3.37.21.245:3306/stock_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
-#    username: root
-#    password: Qlalfqjsgh1!
-#    hikari:
-#      pool-name: stockHikariPool
-#      maximum-pool-size: 30
-#      connection-timeout: 10000
-#
-#server:
-#  port: 8081
-#  servlet:
-#    context-path: /
-#  tomcat:
-#    threads:
-#      max: 100 # 생성할 수 있는 thread의 총 개수
-#      min-spare: 50 # 항상 활성화 되어있는(idle) thread의 개수
-#    max-connections: 8192 # 수립가능한 connection의 총 개수
-#    accept-count: 100 # 작업큐의 사이즈
-#    connection-timeout: 60000 # timeout 판단 기준 시간, 60초
+spring:
+  config:
+    activate:
+      on-profile: real
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+    static-path-pattern: /resources/**
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST}:3306/stock_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      pool-name: stockHikariPool
+      maximum-pool-size: 30
+      connection-timeout: 10000
+
+server:
+  port: 8081
+  servlet:
+    context-path: /
+  tomcat:
+    threads:
+      max: 100 # 생성할 수 있는 thread의 총 개수
+      min-spare: 50 # 항상 활성화 되어있는(idle) thread의 개수
+    max-connections: 8192 # 수립가능한 connection의 총 개수
+    accept-count: 100 # 작업큐의 사이즈
+    connection-timeout: 60000 # timeout 판단 기준 시간, 60초
+
+supabase:
+  url: ${SUPABASE_URL}
+  key: ${SUPABASE_KEY}
+  redirect-uri: ${SUPABASE_REDIRECT_URI}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      slo:
+        http.server.requests: 50ms, 100ms, 200ms, 300ms
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
