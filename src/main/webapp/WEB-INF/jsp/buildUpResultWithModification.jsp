@@ -15,8 +15,8 @@
     })(window,document,'script','dataLayer','GTM-T8G7WJD');</script>
     <!-- End Google Tag Manager -->
     <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3126725853648403"
-            crossorigin="anonymous"></script>
+<%--    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3126725853648403"--%>
+<%--            crossorigin="anonymous"></script>--%>
     <!-- End Google AdSense -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
