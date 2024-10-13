@@ -352,7 +352,18 @@
                     isHeikinAshi: isHeikinAshi
                 }, false);
 
-                chartInstance.redraw();
+                // 초기 데이터 그룹화 설정 (일봉으로 시작)
+                updateDataGrouping('day');
+
+                // 초기 상태를 일봉, 1년으로 설정
+                const extremes = chartInstance.xAxis[0].getExtremes();
+                const dataMax = extremes.dataMax;
+                const dataMin = extremes.dataMin;
+                const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
+                const newMin = Math.max(dataMax - ONE_YEAR, dataMin);
+
+                chartInstance.xAxis[0].setExtremes(newMin, dataMax);
+                updateButtonState(newMin, dataMax);
 
                 return false;
             });
