@@ -104,3 +104,5 @@ logging:
     root: INFO
     org.springframework.web: INFO
     org.springframework.security: INFO
+    org.mybatis: DEBUG
+    org.springframework.jdbc: DEBUG
