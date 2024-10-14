@@ -54,6 +54,18 @@
         LIMIT 1
     </select>
 
+    <select id="getNextDate" parameterType="string" resultType="string">
+        SELECT
+            MIN(DEAL_DATE) as dealDate
+        FROM
+            DEAL_HISTORY
+        WHERE 1=1
+          AND ITEM_NAME = #{companyName}
+          AND DEAL_DATE <![CDATA[>]]> DATE_FORMAT(STR_TO_DATE(#{date}, '%Y-%m-%d'), '%Y%m%d')
+        ORDER BY DEAL_DATE ASC
+        LIMIT 1
+    </select>
+
     <select id="getCompanyNames" parameterType="string" resultType="string">
         SELECT
             ITEM_NAME

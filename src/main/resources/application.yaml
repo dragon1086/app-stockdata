@@ -38,6 +38,27 @@ supabase:
   url: ${SUPABASE_URL}
   key: ${SUPABASE_KEY}
   redirect-uri: ${SUPABASE_REDIRECT_URI}
+
+mybatis:
+  configuration:
+    cache-enabled: true
+    lazy-loading-enabled: true
+    aggressive-lazy-loading: false
+    default-statement-timeout: 30
+    default-fetch-size: 100
+    map-underscore-to-camel-case: true
+    call-setters-on-nulls: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.mybatis: DEBUG
+    org.springframework.jdbc: INFO
+    com.rocky.appstockdata.application.port.out: TRACE
+
 ---
 spring:
   config:

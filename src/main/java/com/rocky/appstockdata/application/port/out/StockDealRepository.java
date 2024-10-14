@@ -6,11 +6,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+
 @Repository
 public interface StockDealRepository {
     List<DailyDeal> getDailyDeal(DailyDealRequestDTO dailyDealRequestDTO);
 
     String getEarliestDate(String companyName);
+
+    String getNextDate(String companyName, String date);
 
     Integer countDelta(DailyDealRequestDTO dailyDealRequestDTO);
 

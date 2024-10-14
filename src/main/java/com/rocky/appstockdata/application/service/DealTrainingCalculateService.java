@@ -264,34 +264,16 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
     }
 
     private List<DailyDeal> getDailyDealsWithOneDayAfter(DealTrainingSourceDTO dealTrainingSourceDTO) {
-        List<DailyDeal> finalDailyDealList;
         //하루 뒤로 시도
-        LocalDate endDate = DealTrainingUtil.transformToLocalDateIncludingDash(dealTrainingSourceDTO.getEndDate()).plusDays(1);
+        LocalDate endDate = DealTrainingUtil.transformToLocalDate(stockDealRepository.getNextDate(dealTrainingSourceDTO.getCompanyName(), dealTrainingSourceDTO.getEndDate()));
 
-        //최종 endDate를 선정해야 함.(다음 날짜가 휴일일 경우, 다음주로 건너뛰기 위함. startDate는 고정)
-        while(true){
-            String endDateString = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
+                .companyName(dealTrainingSourceDTO.getCompanyName())
+                .startDate(dealTrainingSourceDTO.getStartDate())
+                .endDate(endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+                .build());
 
-            List<DailyDeal> lastDailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
-                    .companyName(dealTrainingSourceDTO.getCompanyName())
-                    .startDate(dealTrainingSourceDTO.getStartDate())
-                    .endDate(dealTrainingSourceDTO.getEndDate())
-                    .build());
-
-            List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
-                    .companyName(dealTrainingSourceDTO.getCompanyName())
-                    .startDate(dealTrainingSourceDTO.getStartDate())
-                    .endDate(endDateString)
-                    .build());
-
-            if(lastDailyDealList.size() != dailyDealList.size()){
-                finalDailyDealList = dailyDealList;
-                break;
-            }
-
-            endDate = endDate.plusDays(1);
-        }
-        return finalDailyDealList;
+        return dailyDealList;
     }
 
     private DailyDealHistoryAggregation createModifiedDailyDealHistoryAggregation(DealTrainingSourceDTO dealTrainingSourceDTO, List<DailyDeal> dailyDealList) {
