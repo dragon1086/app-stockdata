@@ -12,6 +12,7 @@ import com.rocky.appstockdata.domain.dto.DailyDealRequestDTO;
 import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +34,7 @@ public class MinusCandleBuildUpService implements BuildUpService {
         return BuildUpType.MINUS_CANDLE;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BuildUp calculateBuildUp(BuildUpSourceDTO buildUpSourceDTO) {
         List<DailyDeal> dailyDealList = getDailyDeals(buildUpSourceDTO);
@@ -183,6 +185,7 @@ public class MinusCandleBuildUpService implements BuildUpService {
         return differenceOfClosingPrice;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public BuildUp calculateBuildUpModification(BuildUpModificationSourceDTO buildUpModificationSourceDTO) {
         BuildUpHistoryAggregation buildUpHistoryAggregation = BuildUpHistoryAggregation.createBuildUpHistoryAggregation();

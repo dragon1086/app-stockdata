@@ -11,6 +11,7 @@ import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +31,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
         this.companyNameSearchUseCase = companyNameSearchUseCase;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public DealTrainingResult initializeDailyDeal(DealTrainingSourceDTO dealTrainingSourceDTO) {
         DealTrainingSourceDTO requestData = dealTrainingSourceDTO;
@@ -216,6 +218,7 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public DealTrainingResult modifyDailyDeal(DealTrainingSourceDTO dealTrainingSourceDTO) {
         List<DailyDeal> finalDailyDealList;
