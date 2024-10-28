@@ -265,7 +265,11 @@ public class DealTrainingCalculateService implements DealTrainingUseCase {
 
     private List<DailyDeal> getDailyDealsWithOneDayAfter(DealTrainingSourceDTO dealTrainingSourceDTO) {
         //하루 뒤로 시도
-        LocalDate endDate = DealTrainingUtil.transformToLocalDate(stockDealRepository.getNextDate(dealTrainingSourceDTO.getCompanyName(), dealTrainingSourceDTO.getEndDate()));
+        String nextDate = stockDealRepository.getNextDate(dealTrainingSourceDTO.getCompanyName(), dealTrainingSourceDTO.getEndDate());
+        if (StringUtils.isEmpty(nextDate)) {
+            throw new NoResultDataException("다음에 진행할 데이터가 없습니다");
+        }
+        LocalDate endDate = DealTrainingUtil.transformToLocalDate(nextDate);
 
         List<DailyDeal> dailyDealList = stockDealRepository.getDailyDeal(DailyDealRequestDTO.builder()
                 .companyName(dealTrainingSourceDTO.getCompanyName())

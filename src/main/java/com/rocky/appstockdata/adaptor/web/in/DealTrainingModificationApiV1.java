@@ -7,6 +7,7 @@ import com.rocky.appstockdata.domain.DealModification;
 import com.rocky.appstockdata.domain.DealTrainingResult;
 import com.rocky.appstockdata.domain.dto.*;
 import com.rocky.appstockdata.domain.validator.DealTrainingSourceValidator;
+import com.rocky.appstockdata.exceptions.NoResultDataException;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -39,6 +40,9 @@ public class DealTrainingModificationApiV1 {
     public void dealCalculateModify(HttpServletResponse response,
                                     HttpSession session,
                                     @RequestBody DealTrainingModificationSourceDTO request) throws IOException {
+
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
 
         try{
             UserDTO user = (UserDTO) session.getAttribute("sessionUser");
@@ -73,8 +77,6 @@ public class DealTrainingModificationApiV1 {
             List<DailyDealHistory> dailyDealHistories = dealTrainingResult.getDailyDealHistories();
             int deltaCountByJump = dealTrainingResult.getDeltaCountByJump();
 
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json;charset=UTF-8");
             response.getWriter().print(JSONObject.fromObject(
                     DealTrainingResponseDTO.builder()
                     .historyId(savedHistoryId)
@@ -106,18 +108,24 @@ public class DealTrainingModificationApiV1 {
                     .build()));
 
         } catch (NumberFormatException e){
-            response.getWriter().print(
+            response.getWriter().print(JSONObject.fromObject(
                     DealTrainingResponseDTO.builder()
                     .isError(true)
                     .errorMessage("올바른 데이터 입력 형식이 아닙니다. 뒤로 돌아가서 정확한 형식으로 넣어주세요.")
-                    .build());
+                    .build()));
+        } catch (NoResultDataException e){
+            response.getWriter().print(JSONObject.fromObject(
+                    DealTrainingResponseDTO.builder()
+                            .isError(true)
+                            .errorMessage("다음에 진행할 일봉차트가 없습니다.")
+                            .build()));
         } catch (Exception e){
             log.error("서버 오류 발생하였습니다. : {}", e.getMessage());
-            response.getWriter().print(
+            response.getWriter().print(JSONObject.fromObject(
                     DealTrainingResponseDTO.builder()
                     .isError(true)
                     .errorMessage("서버 오류 발생하였습니다.")
-                    .build());
+                    .build()));
         }
     }
 
@@ -143,6 +151,9 @@ public class DealTrainingModificationApiV1 {
     @ResponseBody
     public void dealCalculateCopy(HttpServletResponse response,
                                     @RequestBody DealTrainingModificationSourceDTO request) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/json;charset=UTF-8");
+
         try{
             DealTrainingSourceDTO dealTrainingSourceDTO = DealTrainingSourceDTO.builder()
                     .companyName(request.getCompanyName())
@@ -161,8 +172,7 @@ public class DealTrainingModificationApiV1 {
             DealTrainingSourceValidator.validate(dealTrainingSourceDTO);
 
             DealTrainingResult dealTrainingResult = dealTrainingUseCase.modifyDailyDeal(dealTrainingSourceDTO);
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType("application/json;charset=UTF-8");
+
             response.getWriter().print(JSONObject.fromObject(
                     DealTrainingResponseDTO.builder()
                             .redirectUrl("/deal-training-copy")
@@ -193,18 +203,24 @@ public class DealTrainingModificationApiV1 {
                             .isError(false)
                             .build()));
         } catch (NumberFormatException e){
-            response.getWriter().print(
+            response.getWriter().print(JSONObject.fromObject(
                     DealTrainingResponseDTO.builder()
                             .isError(true)
                             .errorMessage("올바른 데이터 입력 형식이 아닙니다. 뒤로 돌아가서 정확한 형식으로 넣어주세요.")
-                            .build());
+                            .build()));
+        } catch (NoResultDataException e){
+            response.getWriter().print(JSONObject.fromObject(
+                    DealTrainingResponseDTO.builder()
+                            .isError(true)
+                            .errorMessage("다음에 진행할 일봉차트가 없습니다.")
+                            .build()));
         } catch (Exception e){
             log.error("서버 오류 발생하였습니다. : {}", e.getMessage());
-            response.getWriter().print(
+            response.getWriter().print(JSONObject.fromObject(
                     DealTrainingResponseDTO.builder()
                             .isError(true)
                             .errorMessage("서버 오류 발생하였습니다.")
-                            .build());
+                            .build()));
         }
     }
 

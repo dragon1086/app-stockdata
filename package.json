@@ -1,0 +1,10 @@
+{
+  "name": "app-stockdata",
+  "version": "1.0.0",
+  "scripts": {
+    "uglify": "node uglify.js"
+  },
+  "devDependencies": {
+    "uglify-js": "^3.14.2"
+  }
+}
