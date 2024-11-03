@@ -246,22 +246,16 @@
             color: #0000ff;  /* 파란색 */
         }
 
-        @media screen and (max-width: 768px) {
-            .main-container {
-                padding: 1rem;
-                margin-top: 1rem;
-            }
-
-            #container {
-                height: 80vh !important; /* 뷰포트 높이의 80%로 설정 */
-                min-height: 500px;
-                width: 100% !important;
-            }
-        }
-
         @media screen and (orientation: landscape) {
+            .main-container {
+                padding: 0.5rem;
+                margin-top: 0.5rem;
+            }
+
             #container {
-                height: 120vh !important; /* 가로 모드에서는 더 크게 */
+                height: 85vh !important; /* 가로 모드에서 뷰포트 높이의 85% */
+                min-height: 300px; /* 최소 높이 설정 */
+                width: 100% !important;
             }
         }
     </style>

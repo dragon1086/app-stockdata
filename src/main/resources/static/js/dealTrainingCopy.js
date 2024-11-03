@@ -105,7 +105,7 @@ $(function(){
         }
 
         candleSeries.update({
-            tname: itemName + (isHeikinAshi ? ' (하이킨아시)' : ''),
+            name: itemName + (isHeikinAshi ? ' (하이킨아시)' : ''),
             data: isHeikinAshi ? calculateHeikinAshi(candleStickDataList) : candleStickDataList
         }, true); // true를 넣어 즉시 리드로우
 
@@ -113,24 +113,47 @@ $(function(){
     });
     document.cookie = "SameSite=None; Secure";
 
-    // 화면 회전시 차트 리사이즈 처리
-    window.addEventListener('orientationchange', function() {
-        setTimeout(function() {
-            if (chartInstance) {
-                chartInstance.reflow();
-            }
-        }, 100);
-    });
-
-    // 창 크기 변경시 차트 리사이즈 처리 (디바운싱 적용)
+    // 창 크기 변경과 화면 회전 처리를 위한 변수
     let resizeTimer;
+    let lastOrientation = window.orientation;
+
+    // 화면 회전과 리사이즈 통합 처리
     window.addEventListener('resize', function() {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function() {
             if (chartInstance) {
+                const isOrientationChanged = lastOrientation !== window.orientation;
+                lastOrientation = window.orientation;
+
+                // 기본적인 리플로우
                 chartInstance.reflow();
+
+                // 화면 회전이 발생한 경우 추가 처리
+                if (isOrientationChanged) {
+                    const isLandscape = window.orientation === 90 || window.orientation === -90;
+
+                    // 차트 설정 업데이트
+                    chartInstance.update({
+                        chart: {
+                            spacing: isLandscape ? [5, 5, 10, 5] : [10, 10, 15, 10],
+                            height: isLandscape ? '85vh' : '80vh'
+                        }
+                    }, false);
+
+                    // y축 비율 재조정
+                    chartInstance.yAxis[0].update({
+                        height: isLandscape ? '70%' : '65%'
+                    }, false);
+
+                    chartInstance.redraw();
+                }
             }
         }, 250);
+    });
+
+    // orientationchange 이벤트도 resize 이벤트를 발생시키도록 처리
+    window.addEventListener('orientationchange', function() {
+        window.dispatchEvent(new Event('resize'));
     });
 
     setDealModifications();
@@ -933,49 +956,90 @@ function drawChart() {
             }
         },
         tooltip: {
-            split: true,
-            followTouchMove: true,  // 터치 모션 따라다니기
-            style: {
-                fontSize: '12px'
-            },
+            split: false,  // 모바일에서는 분할 툴팁 사용하지 않음
+            followTouchMove: true,
+            hideDelay: 50,
+            distance: 50,
             formatter: function() {
-                const points = this.points;
+                // 모바일 여부 확인
+                const isMobile = window.innerWidth <= 500;
+
                 // UTC+9 (한국 시간)으로 조정
                 const date = new Date(this.x + 9 * 3600 * 1000);
-                let tooltipText = '<span style="font-size: 14px">' + Highcharts.dateFormat('%Y년 %m월 %d일', date) + '</span><br/>';
+                let tooltipText = '<b>' + Highcharts.dateFormat('%Y년 %m월 %d일', date) + '</b><br/>';
 
-                points.forEach(function(point) {
-                    if (point.series.name === itemName) {
-                        const open = Highcharts.numberFormat(point.point.open, 0, '', ',');
-                        const high = Highcharts.numberFormat(point.point.high, 0, '', ',');
-                        const low = Highcharts.numberFormat(point.point.low, 0, '', ',');
-                        const close = Highcharts.numberFormat(point.point.close, 0, '', ',');
+                if (isMobile) {
+                    // 모바일용 간소화된 툴팁
+                    if (this.points || this.point) {
+                        const points = this.points || [this.point];
+                        points.forEach(function(point) {
+                            const series = point.series;
+                            if (series.name === itemName) {
+                                const close = Highcharts.numberFormat(point.close || point.y, 0, '', ',');
+                                let changeRate = 0;
+                                if (point.close) {
+                                    const prevClose = point.prev ? point.prev.close : point.open;
+                                    changeRate = ((point.close - prevClose) / prevClose * 100).toFixed(2);
+                                }
+                                const color = changeRate >= 0 ? 'red' : 'blue';
 
-                        tooltipText += '<br/><span style="color: ' + point.color + '">●</span> ' + point.series.name + ':<br/>' +
-                            '시가: ' + open + '<br/>' +
-                            '고가: ' + high + '<br/>' +
-                            '저가: ' + low + '<br/>' +
-                            '종가: ' + close + '<br/>';
-
-                        // 변화율 계산 및 추가
-                        const prevClose = point.point.prev ? point.point.prev.close : point.point.open;
-                        const changeRate = ((point.point.close - prevClose) / prevClose * 100).toFixed(2);
-                        const changeRateColor = changeRate >= 0 ? 'red' : 'blue';
-                        tooltipText += '변화율: <span style="color: ' + changeRateColor + '">' + changeRate + '%</span><br/>';
-                    } else if (point.series.name.includes('이동평균')) {
-                        tooltipText += '<br/><span style="color: ' + point.color + '">●</span> ' + point.series.name + ': ' +
-                            Highcharts.numberFormat(point.y, 0, '', ',') + '<br/>';
-                    } else if (point.series.name === '거래량' || point.series.name === '비중') {
-                        tooltipText += '<br/><span style="color: ' + point.color + '">●</span> ' + point.series.name + ': ' +
-                            Highcharts.numberFormat(point.y, 0, '', ',') + (point.series.name === '비중' ? '%' : '') + '<br/>';
-                    } else {
-                        tooltipText += '<br/><span style="color: ' + point.color + '">●</span> ' + point.series.name + ': ' +
-                            Highcharts.numberFormat(point.y, 2, '.', ',') + '<br/>';
+                                tooltipText += '<span style="color: ' + series.color + '">●</span> 종가: ' + close + '<br/>';
+                                if (point.close) {
+                                    tooltipText += '<span style="color: ' + color + '">등락률: ' + changeRate + '%</span><br/>';
+                                }
+                            } else if (series.name === '거래량') {
+                                tooltipText += '<span style="color: ' + series.color + '">●</span> ' +
+                                    series.name + ': ' + Highcharts.numberFormat(point.y, 0, '', ',') + '<br/>';
+                            } else if (series.name === '비중') {
+                                tooltipText += '<span style="color: ' + series.color + '">●</span> ' +
+                                    series.name + ': ' + Highcharts.numberFormat(point.y, 0, '', ',') + '%<br/>';
+                            }
+                        });
                     }
-                });
+                } else {
+                    // 데스크톱용 기존 툴팁
+                    if (this.points || this.point) {
+                        const points = this.points || [this.point];
+                        points.forEach(function(point) {
+                            const series = point.series;
+                            if (series.name === itemName) {
+                                const open = Highcharts.numberFormat(point.open || point.y, 0, '', ',');
+                                const high = Highcharts.numberFormat(point.high || point.y, 0, '', ',');
+                                const low = Highcharts.numberFormat(point.low || point.y, 0, '', ',');
+                                const close = Highcharts.numberFormat(point.close || point.y, 0, '', ',');
+
+                                tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ':<br/>' +
+                                    '시가: ' + open + '<br/>' +
+                                    '고가: ' + high + '<br/>' +
+                                    '저가: ' + low + '<br/>' +
+                                    '종가: ' + close + '<br/>';
+
+                                if (point.close) {
+                                    const prevClose = point.prev ? point.prev.close : point.open;
+                                    const changeRate = ((point.close - prevClose) / prevClose * 100).toFixed(2);
+                                    const changeRateColor = changeRate >= 0 ? 'red' : 'blue';
+                                    tooltipText += '변화율: <span style="color: ' + changeRateColor + '">' + changeRate + '%</span><br/>';
+                                }
+                            } else if (series.name.includes('이동평균')) {
+                                tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ': ' +
+                                    Highcharts.numberFormat(point.y, 0, '', ',') + '<br/>';
+                            } else if (series.name === '거래량' || series.name === '비중') {
+                                tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ': ' +
+                                    Highcharts.numberFormat(point.y, 0, '', ',') + (series.name === '비중' ? '%' : '') + '<br/>';
+                            } else {
+                                tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ': ' +
+                                    Highcharts.numberFormat(point.y, 2, '.', ',') + '<br/>';
+                            }
+                        });
+                    }
+                }
 
                 return tooltipText;
-            }
+            },
+            style: {
+                fontSize: window.innerWidth <= 500 ? '10px' : '14px'
+            },
+            padding: 5
         },
         series: [{
             id: 'candle',
@@ -1198,24 +1262,28 @@ function drawChart() {
                         height: 30  // navigator 높이 줄이기
                     },
                     yAxis: [{
-                        height: '60%'  // 메인 차트 영역 비율 조정
+                        height: '65%'  // 메인 차트 영역 비율 조정
                     }, {
-                        top: '65%',
-                        height: '10%'
+                        top: '70%',
+                        height: '8%'
                     }, {
-                        top: '77%',
-                        height: '10%'
+                        top: '80%',
+                        height: '8%'
                     }, {
-                        top: '89%',
-                        height: '10%'
+                        top: '90%',
+                        height: '8%'
                     }],
                     legend: {
+                        enabled: true,
+                        layout: 'horizontal',
                         align: 'center',
                         verticalAlign: 'bottom',
-                        layout: 'horizontal',
                         itemStyle: {
-                            fontSize: '10px'  // 범례 폰트 크기 줄이기
-                        }
+                            fontSize: '8px'
+                        },
+                        itemDistance: 10,
+                        x: 0,
+                        y: 0
                     }
                 }
             }, {
@@ -1389,7 +1457,9 @@ function updateDataGrouping(unit) {
 
 // 버튼 상태 업데이트 함수
 function updateButtonState(min, max) {
-    if (!chartInstance) return;
+    if (!chartInstance || !chartInstance.rangeSelector || !chartInstance.rangeSelector.buttons) {
+        return;
+    }
 
     const buttons = chartInstance.rangeSelector.buttons;
     const range = max - min;
@@ -1399,6 +1469,8 @@ function updateButtonState(min, max) {
 
     // 범위에 따라 버튼 상태만 업데이트
     buttons.forEach((button, index) => {
+        if (!button || typeof button.setState !== 'function') return;
+
         if (index === 0 && range <= THREE_MONTHS) {
             button.setState(2);
         } else if (index === 1 && range > THREE_MONTHS && range <= SIX_MONTHS) {
