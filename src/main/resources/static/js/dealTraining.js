@@ -53,37 +53,42 @@ $(function(){
             return false;
         }
 
+        isHeikinAshi = !isHeikinAshi; //상태 토글
+
         const candleSeries = chartInstance.get('candle');
         if (!candleSeries) {
             console.error('Candle series not found');
             return false;
         }
 
-        isHeikinAshi = !isHeikinAshi; //상태 토글
-
         candleSeries.update({
-            type: 'candlestick',
-            data: isHeikinAshi ? calculateHeikinAshi(candleStickDataList) : candleStickDataList,
-            name: itemName + (isHeikinAshi ? ' (하이킨아시)' : ''),
-            isHeikinAshi: isHeikinAshi
-        }, false);
-
-        // 초기 데이터 그룹화 설정 (일봉으로 시작)
-        updateDataGrouping('day');
-
-        // 초기 상태를 일봉, 1년으로 설정
-        const extremes = chartInstance.xAxis[0].getExtremes();
-        const dataMax = extremes.dataMax;
-        const dataMin = extremes.dataMin;
-        const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
-        const newMin = Math.max(dataMax - ONE_YEAR, dataMin);
-
-        chartInstance.xAxis[0].setExtremes(newMin, dataMax);
-        updateButtonState(newMin, dataMax);
+            tname: itemName + (isHeikinAshi ? ' (하이킨아시)' : ''),
+            data: isHeikinAshi ? calculateHeikinAshi(candleStickDataList) : candleStickDataList
+        }, true); // true를 넣어 즉시 리드로우
 
         return false;
     });
     document.cookie = "SameSite=None; Secure";
+
+    // 화면 회전시 차트 리사이즈 처리
+    window.addEventListener('orientationchange', function() {
+        setTimeout(function() {
+            if (chartInstance) {
+                chartInstance.reflow();
+            }
+        }, 100);
+    });
+
+    // 창 크기 변경시 차트 리사이즈 처리 (디바운싱 적용)
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (chartInstance) {
+                chartInstance.reflow();
+            }
+        }, 250);
+    });
 
     setDealModifications();
     additionalBuyingSellHistory();
@@ -331,10 +336,25 @@ function submitChart(){
             averageUnitPrice = data.averageUnitPrice;
             $(".averageUnitPrice").text(makeComma(averageUnitPrice));
 
+            // 차트 다시 그리기 전에 현재 하이킨아시 상태 저장
+            const currentHeikinAshiState = isHeikinAshi;
+
             //re-draw elements
             additionalBuyingSellHistory();
             showDealStatus();
             drawChart();
+
+            // 이전 하이킨아시 상태가 true였다면 다시 하이킨아시로 변경
+            if (currentHeikinAshiState) {
+                const candleSeries = chartInstance.get('candle');
+                if (candleSeries) {
+                    candleSeries.update({
+                        name: itemName + ' (하이킨아시)',
+                        data: calculateHeikinAshi(candleStickDataList)
+                    }, true);
+                }
+            }
+
             addUnitsToValues();
         },
         error: function(request, status, error) {
@@ -578,6 +598,12 @@ function drawChart() {
     const sixtyMA = calculateMovingAverage(candleStickDataList, 60);
     const oneTwentyMA = calculateMovingAverage(candleStickDataList, 120);
 
+    // 현재 선택된 그룹화 단위를 추적하기 위한 전역 변수
+    if (typeof window.currentGroupingUnit === 'undefined') {
+        window.currentGroupingUnit = 'day'; // 초기값은 일봉
+    }
+
+
     // 데이터 로딩 함수 재정의
     Highcharts.ajax = function(attr) {
         console.log('데이터 로딩 시도가 차단되었습니다.');
@@ -621,7 +647,7 @@ function drawChart() {
             text: '주식 차트(' + itemName + ')',
             style: {
                 color: '#00443a',
-                fontSize: '28px',
+                fontSize: window.innerWidth < 500 ? '18px' : '28px',
                 fontWeight: 'bold'
             }
         },
@@ -629,7 +655,7 @@ function drawChart() {
             text: '시뮬레이션 기간: ' + formattedStartDate + ' - ' + formattedEndDate,
             align: 'left',
             style: {
-                fontSize: '16px'
+                fontSize: window.innerWidth < 500 ? '12px' : '16px'
             }
         },
         chart: {
@@ -639,7 +665,10 @@ function drawChart() {
                     this.showLoading = function() {};
                     this.hideLoading = function() {};
                 }
-            }
+            },
+            animation: false,  // 모바일에서 성능 향상을 위해 애니메이션 비활성화
+            spacing: [10, 10, 15, 10], // 차트 여백 조정 [top, right, bottom, left]
+            height: null  // 자동 높이 조정 활성화
         },
         time: {
             useUTC: false,
@@ -658,28 +687,34 @@ function drawChart() {
         },
         rangeSelector: {
             buttons: [{
-                type: 'year',
-                count: 1,
+                type: 'month',
+                count: 3,
                 text: '일봉',
-                dataGrouping: {
-                    forced: true,
-                    units: [['day', [1]]]
+                events: {
+                    click: function() {
+                        window.currentGroupingUnit = 'day';
+                        updateDataGrouping('day');
+                    }
                 }
             }, {
-                type: 'year',
-                count: 1,
+                type: 'month',
+                count: 6,
                 text: '주봉',
-                dataGrouping: {
-                    forced: true,
-                    units: [['week', [1]]]
+                events: {
+                    click: function() {
+                        window.currentGroupingUnit = 'week';
+                        updateDataGrouping('week');
+                    }
                 }
             }, {
                 type: 'year',
                 count: 1,
                 text: '월봉',
-                dataGrouping: {
-                    forced: true,
-                    units: [['month', [1]]]
+                events: {
+                    click: function() {
+                        window.currentGroupingUnit = 'month';
+                        updateDataGrouping('month');
+                    }
                 }
             }, {
                 type: 'all',
@@ -689,7 +724,7 @@ function drawChart() {
                     units: [['month', [1]]]
                 }
             }],
-            selected: 0,
+            selected: 0, // 기본적으로 일봉(3개월) 선택
             inputEnabled: false
         },
         navigator: {
@@ -697,12 +732,16 @@ function drawChart() {
             height: 50,
             series: {
                 type: 'line',
-                color: Highcharts.getOptions().colors[0]
+                color: Highcharts.getOptions().colors[0],
+                dataGrouping: {
+                    forced: true,
+                    units: [[window.currentGroupingUnit, [1]]]
+                }
             },
             xAxis: {
                 events: {
                     afterSetExtremes: function(e) {
-                        // Navigator의 범위가 변경될 때 버튼 상태 업데이트
+                        // Navigator의 범위가 변경될 때 버튼 상태만 업데이트
                         updateButtonState(e.min, e.max);
                     }
                 }
@@ -827,16 +866,20 @@ function drawChart() {
             series: {
                 dataGrouping: {
                     enabled: true,
-                    forced: true,
-                    units: [['day', [1]]],
-                    groupPixelWidth: 2
+                    forced: false, // 강제 그룹화 비활성화
+                    units: [
+                        ['day', [1]],
+                        ['week', [1]],
+                        ['month', [1]]
+                    ]
                 }
             }
         },
         tooltip: {
             split: true,
+            followTouchMove: true,  // 터치 모션 따라다니기
             style: {
-                fontSize: '14px'
+                fontSize: '12px'
             },
             formatter: function() {
                 const points = this.points;
@@ -879,10 +922,11 @@ function drawChart() {
         },
         series: [{
             id: 'candle',
-            name: itemName,
+            name: itemName + (isHeikinAshi ? ' (하이킨아시)' : ''),
             type: 'candlestick',
-            data: candleStickDataList,
+            data: isHeikinAshi ? calculateHeikinAshi(candleStickDataList) : candleStickDataList,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -895,6 +939,7 @@ function drawChart() {
             data: volumeList,
             yAxis: 1,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -906,6 +951,7 @@ function drawChart() {
             name: '평균단가',
             data: myAverageUnitPriceList,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -920,6 +966,7 @@ function drawChart() {
             name: '추가 매수단가',
             data: additionalBuyingPrice,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -940,6 +987,7 @@ function drawChart() {
             name: '추가 매도단가',
             data: additionalSellingPrice,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -960,6 +1008,7 @@ function drawChart() {
             name: '5일 이동평균',
             data: fiveMA,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -974,6 +1023,7 @@ function drawChart() {
             name: '20일 이동평균',
             data: twentyMA,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -988,6 +1038,7 @@ function drawChart() {
             name: '60일 이동평균',
             data: sixtyMA,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -1002,6 +1053,7 @@ function drawChart() {
             name: '120일 이동평균',
             data: oneTwentyMA,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -1017,6 +1069,7 @@ function drawChart() {
             name: '비중',
             data: portionList,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -1044,6 +1097,7 @@ function drawChart() {
             name: '매수 금액',
             data: additionalBuyingAmount,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -1057,6 +1111,7 @@ function drawChart() {
             name: '매도 금액',
             data: additionalSellingAmount,
             dataGrouping: {
+                forced: false,
                 units: [
                     ['day', [1]],
                     ['week', [1]],
@@ -1070,29 +1125,107 @@ function drawChart() {
         responsive: {
             rules: [{
                 condition: {
-                    maxWidth: 800
+                    maxWidth: 500 // 모바일 화면 기준
                 },
                 chartOptions: {
                     rangeSelector: {
-                        inputEnabled: false
+                        inputEnabled: false,
+                        buttonPosition: {
+                            align: 'center'  // 버튼을 중앙 정렬
+                        }
+                    },
+                    scrollbar: {
+                        height: 4  // 스크롤바 높이 줄이기
+                    },
+                    navigator: {
+                        height: 30  // navigator 높이 줄이기
+                    },
+                    yAxis: [{
+                        height: '60%'  // 메인 차트 영역 비율 조정
+                    }, {
+                        top: '65%',
+                        height: '10%'
+                    }, {
+                        top: '77%',
+                        height: '10%'
+                    }, {
+                        top: '89%',
+                        height: '10%'
+                    }],
+                    legend: {
+                        align: 'center',
+                        verticalAlign: 'bottom',
+                        layout: 'horizontal',
+                        itemStyle: {
+                            fontSize: '10px'  // 범례 폰트 크기 줄이기
+                        }
+                    }
+                }
+            }, {
+                condition: {
+                    minWidth: 501  // 태블릿/데스크톱 화면
+                },
+                chartOptions: {
+                    legend: {
+                        align: 'center',
+                        verticalAlign: 'bottom',
+                        layout: 'horizontal',
+                        itemStyle: {
+                            fontSize: '14px'
+                        }
                     }
                 }
             }]
-        }
+        },
     });
 
-    // 초기 데이터 그룹화 설정 (일봉으로 시작)
-    updateDataGrouping('day');
-
-    // 초기 상태를 일봉, 1년으로 설정
+    // 3개월 범위로 초기 설정
     const extremes = chartInstance.xAxis[0].getExtremes();
     const dataMax = extremes.dataMax;
-    const dataMin = extremes.dataMin;
-    const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
-    const newMin = Math.max(dataMax - ONE_YEAR, dataMin);
+    const THREE_MONTHS = 90 * 24 * 60 * 60 * 1000;
+    const newMin = Math.max(dataMax - THREE_MONTHS, extremes.dataMin);
 
     chartInstance.xAxis[0].setExtremes(newMin, dataMax);
     updateButtonState(newMin, dataMax);
+}
+
+// 현재의 그룹화 설정을 유지하는 함수
+function maintainCurrentGrouping() {
+    if (!chartInstance) return;
+
+    const unit = window.currentGroupingUnit || 'day';
+
+    chartInstance.series.forEach(function(series) {
+        if (series.options.dataGrouping) {
+            const update = {
+                dataGrouping: {
+                    forced: true,
+                    enabled: true,
+                    units: [[unit, [1]]]
+                }
+            };
+
+            // Navigator 시리즈는 건너뛰기
+            if (series.options.showInNavigator) return;
+
+            series.update(update, false);
+        }
+    });
+
+    // Navigator 시리즈 업데이트
+    if (chartInstance.navigator && chartInstance.navigator.series) {
+        chartInstance.navigator.series.forEach(function(series) {
+            series.update({
+                dataGrouping: {
+                    forced: true,
+                    enabled: true,
+                    units: [[unit, [1]]]
+                }
+            }, false);
+        });
+    }
+
+    chartInstance.redraw();
 }
 
 function convertToCSV(objArray) {
@@ -1173,42 +1306,49 @@ function calculateMovingAverage(data, period) {
 }
 
 function updateDataGrouping(unit) {
-    if (chartInstance) {
-        const extremes = chartInstance.xAxis[0].getExtremes();
-        const dataMax = extremes.dataMax;
-        const dataMin = extremes.dataMin;
+    if (!chartInstance) return;
 
-        const ONE_YEAR = 365 * 24 * 60 * 60 * 1000; // 1년을 밀리초로 표현
-        const newMin = Math.max(dataMax - ONE_YEAR, dataMin);
+    window.currentGroupingUnit = unit;
+    const extremes = chartInstance.xAxis[0].getExtremes();
+    const dataMax = extremes.dataMax;
+    const dataMin = extremes.dataMin;
 
-        chartInstance.series.forEach(function(series) {
-            series.update({
-                dataGrouping: {
-                    forced: true,
-                    units: [[unit, [1]]]
-                }
-            }, false);
-        });
-
-        // Navigator와 메인 차트의 범위를 1년으로 설정
-        chartInstance.xAxis[0].setExtremes(newMin, dataMax);
-
-        chartInstance.redraw();
+    // 각 버튼에 따른 범위 설정
+    let newMin = dataMin;
+    if (unit === 'day') {
+        const THREE_MONTHS = 90 * 24 * 60 * 60 * 1000;
+        newMin = Math.max(dataMax - THREE_MONTHS, dataMin);
+    } else if (unit === 'week') {
+        const SIX_MONTHS = 180 * 24 * 60 * 60 * 1000;
+        newMin = Math.max(dataMax - SIX_MONTHS, dataMin);
+    } else if (unit === 'month') {
+        const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
+        newMin = Math.max(dataMax - ONE_YEAR, dataMin);
     }
+
+    maintainCurrentGrouping();
+    chartInstance.xAxis[0].setExtremes(newMin, dataMax);
 }
 
 // 버튼 상태 업데이트 함수
 function updateButtonState(min, max) {
+    if (!chartInstance) return;
+
     const buttons = chartInstance.rangeSelector.buttons;
     const range = max - min;
+    const THREE_MONTHS = 90 * 24 * 60 * 60 * 1000;
+    const SIX_MONTHS = 180 * 24 * 60 * 60 * 1000;
     const ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
 
+    // 범위에 따라 버튼 상태만 업데이트
     buttons.forEach((button, index) => {
-        if (index < 3 && Math.abs(range - ONE_YEAR) < 24 * 60 * 60 * 1000) {
-            // 1년 범위일 때 해당 버튼 활성화
+        if (index === 0 && range <= THREE_MONTHS) {
             button.setState(2);
-        } else if (index === 3 && range === chartInstance.xAxis[0].max - chartInstance.xAxis[0].min) {
-            // 전체 범위일 때 '전체' 버튼 활성화
+        } else if (index === 1 && range > THREE_MONTHS && range <= SIX_MONTHS) {
+            button.setState(2);
+        } else if (index === 2 && range > SIX_MONTHS && range <= ONE_YEAR) {
+            button.setState(2);
+        } else if (index === 3 && range > ONE_YEAR) {
             button.setState(2);
         } else {
             button.setState(0);

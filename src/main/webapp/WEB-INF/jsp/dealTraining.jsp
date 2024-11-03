@@ -245,6 +245,25 @@
         .status-value.loss {
             color: #0000ff;  /* 파란색 */
         }
+
+        @media screen and (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+                margin-top: 1rem;
+            }
+
+            #container {
+                height: 80vh !important; /* 뷰포트 높이의 80%로 설정 */
+                min-height: 500px;
+                width: 100% !important;
+            }
+        }
+
+        @media screen and (orientation: landscape) {
+            #container {
+                height: 120vh !important; /* 가로 모드에서는 더 크게 */
+            }
+        }
     </style>
 
     <!-- Custom styles for this template -->
