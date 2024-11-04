@@ -13,6 +13,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +39,17 @@ public class WebUtilApiV1 {
         List<String> urls = new ArrayList<>();
 
         for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
-            urls.addAll((entry.getKey().getPatternsCondition().getPatterns()));
+            RequestMappingInfo mappingInfo = entry.getKey();
+
+            // Spring 5.3+ 방식
+            if (mappingInfo.getPathPatternsCondition() != null) {
+                mappingInfo.getPathPatternsCondition().getPatterns()
+                        .forEach(pattern -> urls.add(pattern.getPatternString()));
+            }
+            // 이전 버전 호환성을 위한 처리
+            else if (mappingInfo.getPatternsCondition() != null) {
+                urls.addAll(mappingInfo.getPatternsCondition().getPatterns());
+            }
         }
 
         return sitemapService.createSitemap(urls);
