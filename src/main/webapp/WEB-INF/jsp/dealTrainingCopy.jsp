@@ -247,15 +247,44 @@
         }
 
         @media screen and (orientation: landscape) {
+            body {
+                padding-top: 56px;
+                overflow-y: auto; /* 스크롤 허용 */
+            }
+
             .main-container {
                 padding: 0.5rem;
                 margin-top: 0.5rem;
+                margin-bottom: 2rem; /* footer와의 간격 확보 */
+                min-height: calc(100vh - 60px); /* navbar 높이(56px)를 제외한 높이 */
+                width: 100%;
             }
 
             #container {
-                height: 85vh !important; /* 가로 모드에서 뷰포트 높이의 85% */
-                min-height: 300px; /* 최소 높이 설정 */
+                height: calc(100vh - 120px) !important; /* navbar와 여백을 고려한 높이 */
+                min-height: 300px;
                 width: 100% !important;
+                margin-bottom: 1rem; /* 하단 여백 추가 */
+            }
+
+            footer {
+                position: relative; /* absolute/fixed 대신 relative 사용 */
+                width: 100%;
+                bottom: 0;
+                margin-top: auto;
+            }
+        }
+
+        /* 모바일 세로 화면에서의 스타일 추가 */
+        @media screen and (orientation: portrait) {
+            .main-container {
+                margin-bottom: 2rem;
+                padding: 1rem;
+            }
+
+            #container {
+                height: 80vh !important;
+                margin-bottom: 1rem;
             }
         }
     </style>

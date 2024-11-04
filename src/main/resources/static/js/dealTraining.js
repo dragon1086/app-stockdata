@@ -92,14 +92,23 @@ $(function(){
                     // 차트 설정 업데이트
                     chartInstance.update({
                         chart: {
-                            spacing: isLandscape ? [5, 5, 10, 5] : [10, 10, 15, 10],
-                            height: isLandscape ? '85vh' : '80vh'
-                        }
-                    }, false);
-
-                    // y축 비율 재조정
-                    chartInstance.yAxis[0].update({
-                        height: isLandscape ? '70%' : '65%'
+                            height: isLandscape ? '100vh' : '80vh',  // 가로 모드일 때 전체 높이 사용
+                            marginLeft: isLandscape ? 10 : 5,
+                            marginRight: isLandscape ? 10 : 5
+                        },
+                        yAxis: [{
+                            height: isLandscape ? '70%' : '60%',
+                            top: '0%'
+                        }, {
+                            height: isLandscape ? '10%' : '12%',
+                            top: isLandscape ? '72%' : '62%'
+                        }, {
+                            height: isLandscape ? '8%' : '12%',
+                            top: isLandscape ? '84%' : '76%'
+                        }, {
+                            height: isLandscape ? '8%' : '12%',
+                            top: isLandscape ? '92%' : '88%'
+                        }]
                     }, false);
 
                     chartInstance.redraw();
@@ -918,18 +927,25 @@ function drawChart() {
                         points.forEach(function(point) {
                             const series = point.series;
                             if (series.name === itemName) {
+                                const point = point.point || point;  // point 객체 정확히 참조
+                                const open = Highcharts.numberFormat(point.open, 0, '', ',');
+                                const high = Highcharts.numberFormat(point.high, 0, '', ',');
+                                const low = Highcharts.numberFormat(point.low, 0, '', ',');
                                 const close = Highcharts.numberFormat(point.close || point.y, 0, '', ',');
                                 let changeRate = 0;
+
                                 if (point.close) {
                                     const prevClose = point.prev ? point.prev.close : point.open;
                                     changeRate = ((point.close - prevClose) / prevClose * 100).toFixed(2);
                                 }
                                 const color = changeRate >= 0 ? 'red' : 'blue';
 
-                                tooltipText += '<span style="color: ' + series.color + '">●</span> 종가: ' + close + '<br/>';
-                                if (point.close) {
-                                    tooltipText += '<span style="color: ' + color + '">등락률: ' + changeRate + '%</span><br/>';
-                                }
+                                tooltipText += '<span style="color: ' + series.color + '">●</span> ' + series.name + ':<br/>' +
+                                    '시가: ' + open + '<br/>' +
+                                    '고가: ' + high + '<br/>' +
+                                    '저가: ' + low + '<br/>' +
+                                    '종가: ' + close + '<br/>' +
+                                    '<span style="color: ' + color + '">등락률: ' + changeRate + '%</span><br/>';
                             } else if (series.name === '거래량') {
                                 tooltipText += '<span style="color: ' + series.color + '">●</span> ' +
                                     series.name + ': ' + Highcharts.numberFormat(point.y, 0, '', ',') + '<br/>';
@@ -1192,6 +1208,11 @@ function drawChart() {
                     maxWidth: 500 // 모바일 화면 기준
                 },
                 chartOptions: {
+                    chart: {
+                        height: 'auto',  // 자동 높이 조정
+                        marginLeft: 5,
+                        marginRight: 5
+                    },
                     rangeSelector: {
                         inputEnabled: false,
                         buttonPosition: {
@@ -1199,22 +1220,23 @@ function drawChart() {
                         }
                     },
                     scrollbar: {
-                        height: 4  // 스크롤바 높이 줄이기
+                        height: 4
                     },
                     navigator: {
-                        height: 30  // navigator 높이 줄이기
+                        height: 30
                     },
                     yAxis: [{
-                        height: '65%'  // 메인 차트 영역 비율 조정
+                        height: '60%',  // 메인 차트 영역 비율 증가
+                        top: '0%'
                     }, {
-                        top: '70%',
-                        height: '8%'
+                        height: '12%',
+                        top: '62%'
                     }, {
-                        top: '80%',
-                        height: '8%'
+                        height: '12%',
+                        top: '76%'
                     }, {
-                        top: '90%',
-                        height: '8%'
+                        height: '12%',
+                        top: '88%'
                     }],
                     legend: {
                         enabled: true,
@@ -1227,20 +1249,6 @@ function drawChart() {
                         itemDistance: 10,
                         x: 0,
                         y: 0
-                    }
-                }
-            }, {
-                condition: {
-                    minWidth: 501  // 태블릿/데스크톱 화면
-                },
-                chartOptions: {
-                    legend: {
-                        align: 'center',
-                        verticalAlign: 'bottom',
-                        layout: 'horizontal',
-                        itemStyle: {
-                            fontSize: '14px'
-                        }
                     }
                 }
             }]
