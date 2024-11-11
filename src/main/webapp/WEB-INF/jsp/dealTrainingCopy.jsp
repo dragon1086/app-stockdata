@@ -246,46 +246,30 @@
             color: #0000ff;  /* 파란색 */
         }
 
-        @media screen and (orientation: landscape) {
-            body {
-                padding-top: 56px;
-                overflow-y: auto; /* 스크롤 허용 */
-            }
-
-            .main-container {
-                padding: 0.5rem;
-                margin-top: 0.5rem;
-                margin-bottom: 2rem; /* footer와의 간격 확보 */
-                min-height: calc(100vh - 60px); /* navbar 높이(56px)를 제외한 높이 */
-                width: 100%;
-            }
-
-            #container {
-                height: calc(100vh - 120px) !important; /* navbar와 여백을 고려한 높이 */
-                min-height: 300px;
-                width: 100% !important;
-                margin-bottom: 1rem; /* 하단 여백 추가 */
-            }
-
-            footer {
-                position: relative; /* absolute/fixed 대신 relative 사용 */
-                width: 100%;
-                bottom: 0;
-                margin-top: auto;
-            }
+        #container {
+            width: 1200px !important;
+            height: 1000px !important;
+            margin: 0 auto !important;
+            padding: 10px !important;
         }
 
-        /* 모바일 세로 화면에서의 스타일 추가 */
-        @media screen and (orientation: portrait) {
-            .main-container {
-                margin-bottom: 2rem;
-                padding: 1rem;
-            }
+        #toggle-button-container {
+            width: 1200px !important;          /* 차트와 동일한 너비 */
+            margin: 0 auto !important;         /* 중앙 정렬 */
+            padding-right: 10px !important;    /* 오른쪽 여백 */
+        }
 
-            #container {
-                height: 80vh !important;
-                margin-bottom: 1rem;
-            }
+        #candlestick-heikinashi-toggle {
+            position: relative !important;
+            margin-bottom: 5px !important;
+        }
+
+        /* 차트 영역이 잘 보이도록 부모 컨테이너도 조정 */
+        .main-container {
+            padding: 1rem;
+            margin-top: 1rem;
+            height: auto;
+            min-height: calc(100vh - 60px);  /* navbar 높이 고려 */
         }
     </style>
 

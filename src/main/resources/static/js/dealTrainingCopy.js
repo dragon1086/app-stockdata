@@ -113,58 +113,6 @@ $(function(){
     });
     document.cookie = "SameSite=None; Secure";
 
-    // 창 크기 변경과 화면 회전 처리를 위한 변수
-    let resizeTimer;
-    let lastOrientation = window.orientation;
-
-    // 화면 회전과 리사이즈 통합 처리
-    window.addEventListener('resize', function() {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            if (chartInstance) {
-                const isOrientationChanged = lastOrientation !== window.orientation;
-                lastOrientation = window.orientation;
-
-                // 기본적인 리플로우
-                chartInstance.reflow();
-
-                // 화면 회전이 발생한 경우 추가 처리
-                if (isOrientationChanged) {
-                    const isLandscape = window.orientation === 90 || window.orientation === -90;
-
-                    // 차트 설정 업데이트
-                    chartInstance.update({
-                        chart: {
-                            height: isLandscape ? '100vh' : '80vh',  // 가로 모드일 때 전체 높이 사용
-                            marginLeft: isLandscape ? 10 : 5,
-                            marginRight: isLandscape ? 10 : 5
-                        },
-                        yAxis: [{
-                            height: isLandscape ? '70%' : '60%',
-                            top: '0%'
-                        }, {
-                            height: isLandscape ? '10%' : '12%',
-                            top: isLandscape ? '72%' : '62%'
-                        }, {
-                            height: isLandscape ? '8%' : '12%',
-                            top: isLandscape ? '84%' : '76%'
-                        }, {
-                            height: isLandscape ? '8%' : '12%',
-                            top: isLandscape ? '92%' : '88%'
-                        }]
-                    }, false);
-
-                    chartInstance.redraw();
-                }
-            }
-        }, 250);
-    });
-
-    // orientationchange 이벤트도 resize 이벤트를 발생시키도록 처리
-    window.addEventListener('orientationchange', function() {
-        window.dispatchEvent(new Event('resize'));
-    });
-
     setDealModifications();
     additionalBuyingSellHistory();
     showDealStatus();
@@ -660,12 +608,14 @@ function createToggleButton() {
     if (toggleButtonContainer.length === 0) {
         toggleButtonContainer = $('<div>', {
             id: toggleContainerId,
-            class: 'd-flex justify-content-end mb-3'
+            class: 'd-flex justify-content-end mb-3',
+            style: 'position: relative; margin-bottom: 10px; margin-top: -30px;'  // 위치 직접 조정
         });
 
         const toggleButton = $('<button>', {
             id: 'candlestick-heikinashi-toggle',
             class: 'btn btn-outline-primary btn-sm',
+            style: 'z-index: 100;',  // 버튼이 차트 위에 보이도록
             html: '<i class="fas fa-exchange-alt"></i> 캔들스틱/하이킨아시 전환'
         });
 
@@ -734,30 +684,38 @@ function drawChart() {
     chartInstance = Highcharts.stockChart('container', {
         title: {
             text: '주식 차트(' + itemName + ')',
+            align: 'center',
+            y: 20,                      // 상단에 위치
             style: {
                 color: '#00443a',
-                fontSize: window.innerWidth < 500 ? '18px' : '28px',
+                fontSize: '28px',
                 fontWeight: 'bold'
             }
         },
         subtitle: {
             text: '시뮬레이션 기간: ' + formattedStartDate + ' - ' + formattedEndDate,
-            align: 'left',
+            align: 'center',
+            y: 50,
             style: {
-                fontSize: window.innerWidth < 500 ? '12px' : '16px'
+                fontSize: '16px'
             }
         },
         chart: {
+            width: 1200,              // 고정 너비
+            height: 1000,             // 고정 높이
             zoomType: 'x',
+            animation: false,
             events: {
                 load: function() {
                     this.showLoading = function() {};
                     this.hideLoading = function() {};
                 }
             },
-            animation: false,  // 모바일에서 성능 향상을 위해 애니메이션 비활성화
-            spacing: [10, 10, 15, 10], // 차트 여백 조정 [top, right, bottom, left]
-            height: null  // 자동 높이 조정 활성화
+            spacing: [80, 10, 20, 10],
+            marginTop: 150,
+            marginRight: 80,
+            marginBottom: 200,
+            marginLeft: 80
         },
         time: {
             useUTC: false,
@@ -766,12 +724,21 @@ function drawChart() {
         legend: {
             enabled: true,
             align: 'center',
+            verticalAlign: 'bottom',
+            layout: 'horizontal',
             backgroundColor: '#FCFFC5',
             borderColor: 'black',
-            borderWidth: 2,
+            borderWidth: 1,
             shadow: true,
+            padding: 8,
+            itemMarginBottom: 5,
+            y: -5,
+            padding: 20,
+            x: 0,
+            useHTML: true,
+            floating: false,           // 고정 위치
             itemStyle: {
-                fontSize: '14px'
+                fontSize: '11px'
             }
         },
         rangeSelector: {
@@ -814,7 +781,15 @@ function drawChart() {
                 }
             }],
             selected: 0, // 기본적으로 일봉(3개월) 선택
-            inputEnabled: false
+            inputEnabled: false,
+            buttonPosition: {
+                y: -100
+            },
+            inputPosition: {
+                align: 'right',
+                y: 0,
+                x: 0
+            }
         },
         navigator: {
             enabled: true,
@@ -839,7 +814,9 @@ function drawChart() {
         scrollbar: {
             enabled: true
         },
+        // PC 기본 yAxis 설정
         yAxis: [{
+            // 첫 번째 y축 - 가격
             labels: {
                 align: 'right',
                 x: -3,
@@ -854,7 +831,7 @@ function drawChart() {
                 align: 'high',
                 offset: 0,
                 rotation: 0,
-                y: -10,
+                y: -5,
                 x: -20,
                 reserveSpace: false,
                 text: '가격',
@@ -862,12 +839,15 @@ function drawChart() {
                     fontSize: '16px'
                 }
             },
-            height: '55%',
+            height: '60%',
+            top: '5%',
             lineWidth: 2,
+            offset: 40,
             resize: {
                 enabled: true
             }
         }, {
+            // 두 번째 y축 - 거래량
             labels: {
                 align: 'right',
                 x: -3,
@@ -882,19 +862,20 @@ function drawChart() {
                 align: 'high',
                 offset: 0,
                 rotation: 0,
-                y: -10,
-                x: -30,
+                y: -5,
+                x: -20,
                 reserveSpace: false,
                 text: '거래량',
                 style: {
                     fontSize: '16px'
                 }
             },
-            top: '60%',
-            height: '10%',
-            offset: 0,
+            top: '69%',
+            height: '12%',
+            offset: 40,   // 추가된 부분
             lineWidth: 2
         }, {
+            // 세 번째 y축 - 비중
             labels: {
                 align: 'right',
                 x: -3,
@@ -909,7 +890,7 @@ function drawChart() {
                 align: 'high',
                 offset: 0,
                 rotation: 0,
-                y: -10,
+                y: -5,
                 x: -20,
                 reserveSpace: false,
                 text: '비중',
@@ -917,11 +898,12 @@ function drawChart() {
                     fontSize: '16px'
                 }
             },
-            top: '75%',
-            height: '10%',
-            offset: 0,
+            top: '85%',
+            height: '7%',
+            offset: 40,
             lineWidth: 2
         }, {
+            // 네 번째 y축 - 매수/매도 금액
             labels: {
                 align: 'right',
                 x: -3,
@@ -932,19 +914,20 @@ function drawChart() {
             title: {
                 align: 'high',
                 textAlign: 'left',
-                offset: 0,
+                offset: -10,
                 rotation: 0,
-                y: -10,
-                x: -60,
+                y: -0,
+                x: -80,
                 reserveSpace: false,
-                text: '매수/매도 금액',
+                text: '매수/매도금액',
                 style: {
-                    fontSize: '16px'
+                    fontSize: '16px',
+                    whiteSpace: 'nowrap'
                 }
             },
-            top: '90%',
-            height: '10%',
-            offset: 0,
+            top: '95%',
+            height: '5%',
+            offset: 40,
             lineWidth: 2
         }],
         plotOptions: {
@@ -970,90 +953,49 @@ function drawChart() {
             hideDelay: 50,
             distance: 50,
             formatter: function() {
-                // 모바일 여부 확인
-                const isMobile = window.innerWidth <= 500;
-
                 // UTC+9 (한국 시간)으로 조정
                 const date = new Date(this.x + 9 * 3600 * 1000);
                 let tooltipText = '<b>' + Highcharts.dateFormat('%Y년 %m월 %d일', date) + '</b><br/>';
 
-                if (isMobile) {
-                    // 모바일용 간소화된 툴팁
-                    if (this.points || this.point) {
-                        const points = this.points || [this.point];
-                        points.forEach(function(point) {
-                            const series = point.series;
-                            if (series.name === itemName) {
-                                const point = point.point || point;  // point 객체 정확히 참조
-                                const open = Highcharts.numberFormat(point.open, 0, '', ',');
-                                const high = Highcharts.numberFormat(point.high, 0, '', ',');
-                                const low = Highcharts.numberFormat(point.low, 0, '', ',');
-                                const close = Highcharts.numberFormat(point.close || point.y, 0, '', ',');
-                                let changeRate = 0;
+                if (this.points || this.point) {
+                    const points = this.points || [this.point];
+                    points.forEach(function(point) {
+                        const series = point.series;
+                        if (series.name === itemName) {
+                            const open = Highcharts.numberFormat(point.open || point.y, 0, '', ',');
+                            const high = Highcharts.numberFormat(point.high || point.y, 0, '', ',');
+                            const low = Highcharts.numberFormat(point.low || point.y, 0, '', ',');
+                            const close = Highcharts.numberFormat(point.close || point.y, 0, '', ',');
 
-                                if (point.close) {
-                                    const prevClose = point.prev ? point.prev.close : point.open;
-                                    changeRate = ((point.close - prevClose) / prevClose * 100).toFixed(2);
-                                }
-                                const color = changeRate >= 0 ? 'red' : 'blue';
+                            tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ':<br/>' +
+                                '시가: ' + open + '<br/>' +
+                                '고가: ' + high + '<br/>' +
+                                '저가: ' + low + '<br/>' +
+                                '종가: ' + close + '<br/>';
 
-                                tooltipText += '<span style="color: ' + series.color + '">●</span> ' + series.name + ':<br/>' +
-                                    '시가: ' + open + '<br/>' +
-                                    '고가: ' + high + '<br/>' +
-                                    '저가: ' + low + '<br/>' +
-                                    '종가: ' + close + '<br/>' +
-                                    '<span style="color: ' + color + '">등락률: ' + changeRate + '%</span><br/>';
-                            } else if (series.name === '거래량') {
-                                tooltipText += '<span style="color: ' + series.color + '">●</span> ' +
-                                    series.name + ': ' + Highcharts.numberFormat(point.y, 0, '', ',') + '<br/>';
-                            } else if (series.name === '비중') {
-                                tooltipText += '<span style="color: ' + series.color + '">●</span> ' +
-                                    series.name + ': ' + Highcharts.numberFormat(point.y, 0, '', ',') + '%<br/>';
+                            if (point.close) {
+                                const prevClose = point.prev ? point.prev.close : point.open;
+                                const changeRate = ((point.close - prevClose) / prevClose * 100).toFixed(2);
+                                const changeRateColor = changeRate >= 0 ? 'red' : 'blue';
+                                tooltipText += '변화율: <span style="color: ' + changeRateColor + '">' + changeRate + '%</span><br/>';
                             }
-                        });
-                    }
-                } else {
-                    // 데스크톱용 기존 툴팁
-                    if (this.points || this.point) {
-                        const points = this.points || [this.point];
-                        points.forEach(function(point) {
-                            const series = point.series;
-                            if (series.name === itemName) {
-                                const open = Highcharts.numberFormat(point.open || point.y, 0, '', ',');
-                                const high = Highcharts.numberFormat(point.high || point.y, 0, '', ',');
-                                const low = Highcharts.numberFormat(point.low || point.y, 0, '', ',');
-                                const close = Highcharts.numberFormat(point.close || point.y, 0, '', ',');
-
-                                tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ':<br/>' +
-                                    '시가: ' + open + '<br/>' +
-                                    '고가: ' + high + '<br/>' +
-                                    '저가: ' + low + '<br/>' +
-                                    '종가: ' + close + '<br/>';
-
-                                if (point.close) {
-                                    const prevClose = point.prev ? point.prev.close : point.open;
-                                    const changeRate = ((point.close - prevClose) / prevClose * 100).toFixed(2);
-                                    const changeRateColor = changeRate >= 0 ? 'red' : 'blue';
-                                    tooltipText += '변화율: <span style="color: ' + changeRateColor + '">' + changeRate + '%</span><br/>';
-                                }
-                            } else if (series.name.includes('이동평균')) {
-                                tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ': ' +
-                                    Highcharts.numberFormat(point.y, 0, '', ',') + '<br/>';
-                            } else if (series.name === '거래량' || series.name === '비중') {
-                                tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ': ' +
-                                    Highcharts.numberFormat(point.y, 0, '', ',') + (series.name === '비중' ? '%' : '') + '<br/>';
-                            } else {
-                                tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ': ' +
-                                    Highcharts.numberFormat(point.y, 2, '.', ',') + '<br/>';
-                            }
-                        });
-                    }
+                        } else if (series.name.includes('이동평균')) {
+                            tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ': ' +
+                                Highcharts.numberFormat(point.y, 0, '', ',') + '<br/>';
+                        } else if (series.name === '거래량' || series.name === '비중') {
+                            tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ': ' +
+                                Highcharts.numberFormat(point.y, 0, '', ',') + (series.name === '비중' ? '%' : '') + '<br/>';
+                        } else {
+                            tooltipText += '<br/><span style="color: ' + series.color + '">●</span> ' + series.name + ': ' +
+                                Highcharts.numberFormat(point.y, 2, '.', ',') + '<br/>';
+                        }
+                    });
                 }
 
                 return tooltipText;
             },
             style: {
-                fontSize: window.innerWidth <= 500 ? '10px' : '14px'
+                fontSize: '14px'
             },
             padding: 5
         },
@@ -1258,58 +1200,7 @@ function drawChart() {
             yAxis: 3,
             color: '#0022ff',
             onSeries: 'buyingAmount'
-        }],
-        responsive: {
-            rules: [{
-                condition: {
-                    maxWidth: 500 // 모바일 화면 기준
-                },
-                chartOptions: {
-                    chart: {
-                        height: 'auto',  // 자동 높이 조정
-                        marginLeft: 5,
-                        marginRight: 5
-                    },
-                    rangeSelector: {
-                        inputEnabled: false,
-                        buttonPosition: {
-                            align: 'center'  // 버튼을 중앙 정렬
-                        }
-                    },
-                    scrollbar: {
-                        height: 4
-                    },
-                    navigator: {
-                        height: 30
-                    },
-                    yAxis: [{
-                        height: '60%',  // 메인 차트 영역 비율 증가
-                        top: '0%'
-                    }, {
-                        height: '12%',
-                        top: '62%'
-                    }, {
-                        height: '12%',
-                        top: '76%'
-                    }, {
-                        height: '12%',
-                        top: '88%'
-                    }],
-                    legend: {
-                        enabled: true,
-                        layout: 'horizontal',
-                        align: 'center',
-                        verticalAlign: 'bottom',
-                        itemStyle: {
-                            fontSize: '8px'
-                        },
-                        itemDistance: 10,
-                        x: 0,
-                        y: 0
-                    }
-                }
-            }]
-        },
+        }]
     });
 
     // 3개월 범위로 초기 설정
