@@ -37,30 +37,32 @@ public class WebUtilApiV1 {
     public XmlUrlSet sitemap() {
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
         List<String> urls = new ArrayList<>();
+        String baseUrl = "https://stocksimulation.kr";
 
         for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
             RequestMappingInfo mappingInfo = entry.getKey();
 
-            // Spring 5.3+ 방식
             if (mappingInfo.getPathPatternsCondition() != null) {
                 mappingInfo.getPathPatternsCondition().getPatterns()
-                        .forEach(pattern -> urls.add(pattern.getPatternString()));
+                        .forEach(pattern -> urls.add(baseUrl + pattern.getPatternString()));
             }
-            // 이전 버전 호환성을 위한 처리
             else if (mappingInfo.getPatternsCondition() != null) {
-                urls.addAll(mappingInfo.getPatternsCondition().getPatterns());
+                mappingInfo.getPatternsCondition().getPatterns()
+                        .forEach(pattern -> urls.add(baseUrl + pattern));
             }
         }
 
         return sitemapService.createSitemap(urls);
     }
 
+
     @RequestMapping(value = "/robots.txt")
     @ResponseBody
     public String robots() {
         return "User-agent: *\n" +
                 "Disallow: /company\n" +
-                "Disallow: /resources/";
+                "Disallow: /resources/\n" +
+                "Sitemap: https://stocksimulation.kr/sitemap.xml";
     }
 
     @RequestMapping(value = "/ads.txt", method = RequestMethod.GET)

@@ -10,21 +10,6 @@ function initTooltips() {
     })
 }
 
-function checkMobileDevice() {
-    // 모바일 디바이스 체크
-    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (isMobile) {
-        if (!sessionStorage.getItem('mobileWarningShown')) {
-            var result = confirm('이 웹사이트는 PC 환경에 최적화되어 있습니다.\n계속 진행하시겠습니까?');
-            if (!result) {
-                // 취소를 누르면 홈페이지로 리다이렉트
-                window.location.href = "/";
-            }
-            sessionStorage.setItem('mobileWarningShown', 'true');
-        }
-    }
-}
-
 $(function() {    //화면 다 뜨면 시작
     document.cookie = "SameSite=None; Secure";
 
@@ -67,11 +52,15 @@ $(function() {    //화면 다 뜨면 시작
         initTooltips();
     });
 
-    // 모바일 체크
-    checkMobileDevice();
-
-    // 화면 크기 변경 시 모바일 체크 (debounce 적용)
-    $(window).on('resize', _.debounce(function() {
-        checkMobileDevice();
-    }, 250));
+    // 모바일 디바이스 체크
+    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+        if (!sessionStorage.getItem('mobileWarningShown')) {
+            var result = confirm('이 웹사이트는 PC 환경에 최적화되어 있습니다.\n계속 진행하시겠습니까?');
+            if (!result) {
+                window.location.href = "/";
+            }
+            sessionStorage.setItem('mobileWarningShown', 'true');
+        }
+    }
 });
