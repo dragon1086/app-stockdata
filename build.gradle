@@ -1,0 +1,65 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.5'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'java'
+    id 'com.github.node-gradle.node' version '3.3.0'
+}
+
+group = 'com.dragon'
+version = '0.0.1-SNAPSHOT'
+java.sourceCompatibility = '17'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.h2database:h2'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+node {
+    version = '16.13.0'
+    npmVersion = '8.1.0'
+    download = true
+    workDir = file("${project.buildDir}/nodejs")
+    npmWorkDir = file("${project.buildDir}/npm")
+}
+
+def frontendDir = "$projectDir/src/main/frontend"
+
+task installFrontend(type: NpmTask) {
+    workingDir = file(frontendDir)
+    args = ['install']
+}
+
+task buildFrontend(type: NpmTask) {
+    workingDir = file(frontendDir)
+    args = ['run', 'build']
+}
+
+buildFrontend.dependsOn installFrontend
+processResources.dependsOn buildFrontend
+
+task copyFrontendBuild(type: Copy) {
+    from "$frontendDir/build"
+    into "$buildDir/resources/main/static"
+}
+
+processResources.dependsOn copyFrontendBuild
+
+test {
+    useJUnitPlatform()
+}
