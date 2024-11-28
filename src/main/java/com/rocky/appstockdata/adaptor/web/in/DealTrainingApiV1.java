@@ -38,11 +38,15 @@ public class DealTrainingApiV1 {
         this.supabaseUseCase = supabaseUseCase;
     }
 
+    @GetMapping("/new-deal-training")
+    public String serveReactApp() {
+        return "forward:/react-app/index.html";
+    }
+
     @GetMapping("/")
     public String dealTrainingMain(ModelMap modelMap,
                                    @RequestParam(required = false) String error){
         if (error != null && !error.isEmpty()) {
-            // 에러 메시지 처리
             String errorMessage;
             switch (error) {
                 case "Verification failed":
@@ -72,7 +76,6 @@ public class DealTrainingApiV1 {
         UserDTO user = (UserDTO) session.getAttribute("sessionUser");
 
         try{
-            //fixme : token이 만료되었다면?
             if(user != null) {
                 UserDTO updatedUser = supabaseUseCase.verifyAndGetUser(user.getAccessToken());
                 session.setAttribute("sessionUser", updatedUser);

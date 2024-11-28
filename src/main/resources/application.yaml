@@ -13,6 +13,10 @@ spring:
     static-path-pattern: /resources/**
   web:
     resources:
+      static-locations:
+        - classpath:/static/
+        - classpath:/public/
+        - classpath:/react-app/
       chain:
         strategy:
           content:
@@ -41,11 +45,11 @@ server:
       force: true
   tomcat:
     threads:
-      max: 100 # 생성할 수 있는 thread의 총 개수
-      min-spare: 50 # 항상 활성화 되어있는(idle) thread의 개수
-    max-connections: 8192 # 수립가능한 connection의 총 개수
-    accept-count: 100 # 작업큐의 사이즈
-    connection-timeout: 60000 # timeout 판단 기준 시간, 60초
+      max: 100
+      min-spare: 50
+    max-connections: 8192
+    accept-count: 100
+    connection-timeout: 60000
 
 supabase:
   url: ${SUPABASE_URL}
@@ -71,92 +75,3 @@ logging:
     org.mybatis: DEBUG
     org.springframework.jdbc: INFO
     com.rocky.appstockdata.application.port.out: TRACE
-
----
-spring:
-  config:
-    activate:
-      on-profile: real
-  lifecycle:
-    timeout-per-shutdown-phase: 20s
-  mvc:
-    view:
-      prefix: /WEB-INF/jsp/
-      suffix: .jsp
-    static-path-pattern: /resources/**
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST}:3306/stock_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
-    username: ${DB_USER}
-    password: ${DB_PASSWORD}
-    hikari:
-      pool-name: stockHikariPool
-      maximum-pool-size: 10
-      minimum-idle: 5  # 최소 유휴 연결 수
-      idle-timeout: 300000  # 5분
-      max-lifetime: 1800000  # 30분
-      connection-timeout: 30000  # 30초로 증가
-      validation-timeout: 5000  # 5초
-      leak-detection-threshold: 60000  # 1분
-
-server:
-  port: 8081
-  shutdown: graceful
-  servlet:
-    context-path: /
-  tomcat:
-    threads:
-      max: 50 # 생성할 수 있는 thread의 총 개수
-      min-spare: 20 # 항상 활성화 되어있는(idle) thread의 개수
-    max-connections: 1000 # 수립가능한 connection의 총 개수
-    accept-count: 50 # 작업큐의 사이즈
-    connection-timeout: 30000
-    max-keep-alive-requests: 100
-    keepalive-timeout: 20000
-
-supabase:
-  url: ${SUPABASE_URL}
-  key: ${SUPABASE_KEY}
-  redirect-uri: ${SUPABASE_REDIRECT_URI}
-
-mybatis:
-  configuration:
-    cache-enabled: true
-    lazy-loading-enabled: true
-    aggressive-lazy-loading: false
-    default-statement-timeout: 30
-    default-fetch-size: 100
-    map-underscore-to-camel-case: true
-    call-setters-on-nulls: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-    metrics:
-      enabled: true
-    prometheus:
-      enabled: true
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-    tags:
-      application: ${spring.application.name}
-    distribution:
-      percentiles-histogram:
-        http.server.requests: true
-      slo:
-        http.server.requests: 50ms, 100ms, 200ms, 300ms
-
-logging:
-  level:
-    root: INFO
-    org.springframework.web: INFO
-    org.springframework.security: INFO
-    org.mybatis: INFO
-    org.springframework.jdbc: INFO
