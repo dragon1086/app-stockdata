@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import FormInput from '../components/FormInput';
-import AutocompleteInput from '../components/AutocompleteInput';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import FormInput from '@/components/FormInput';
+import AutocompleteInput from '@/components/AutocompleteInput';
 import { QuestionCircle } from 'lucide-react';
 import { 
   DealTrainingForm, 
@@ -11,7 +11,7 @@ import {
   User, 
   DifficultyLevel,
   TooltipContent 
-} from '../types/dealTraining';
+} from '@/types/dealTraining';
 
 const tooltipContent: TooltipContent = {
   companyName: "시뮬레이션할 기업을 선택합니다. 기본적으로 랜덤으로 선택되며, 체크박스를 선택하면 직접 입력할 수 있습니다.",
