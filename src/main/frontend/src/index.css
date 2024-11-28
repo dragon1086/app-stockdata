@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background-color: #f8f9fa;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 부트스트랩 호환성 클래스 */
+.form-control:disabled {
+  background-color: #e9ecef;
+  opacity: 1;
+}
+
+/* 자동완성 스타일링 */
+.ui-autocomplete {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ui-autocomplete .ui-menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.ui-autocomplete .ui-menu-item:hover {
+  background-color: #f0f9ff;
+}
+
+/* AQR 위젯 스타일링 */
+.aqr-widget {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
