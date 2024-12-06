@@ -1,4 +1,5 @@
 import React from 'react';
+import { HelpCircle } from 'lucide-react';
 import { useCompanyAutocomplete } from '../../hooks/useCompanyAutocomplete';
 
 interface CompanyNameInputProps {
@@ -20,14 +21,19 @@ export const CompanyNameInput: React.FC<CompanyNameInputProps> = ({
     <div className="mb-4">
       <label htmlFor="companyNameInput" className="form-label d-flex align-items-center">
         기업 이름
-        <i className="bi bi-question-circle-fill ms-2" data-bs-toggle="tooltip" data-bs-placement="right" 
-           title="시뮬레이션할 기업을 선택합니다. 기본적으로 랜덤으로 선택되며, 체크박스를 선택하면 직접 입력할 수 있습니다." />
+        <HelpCircle 
+          className="ms-2 text-primary cursor-pointer" 
+          size={16}
+          data-bs-toggle="tooltip" 
+          data-bs-placement="right" 
+          title="시뮬레이션할 기업을 선택합니다. 기본적으로 랜덤으로 선택되며, 체크박스를 선택하면 직접 입력할 수 있습니다."
+        />
       </label>
       <div className="input-group">
         <input
           type="text"
           id="companyNameInput"
-          className={`form-control ${error ? 'is-invalid' : ''}`}
+          className={\`form-control \${error ? 'is-invalid' : ''}\`}
           value={value}
           onChange={(e) => {
             onChange(e.target.value);
