@@ -11,6 +11,8 @@ import { DealTrainingForm } from '../../types/dealTraining';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Tooltip } from 'bootstrap';
 
 const validationSchema = yup.object().shape({
   companyName: yup.string().when('isCompanyNameEnabled', {
@@ -62,7 +64,7 @@ const DealTraining: React.FC = () => {
     // Initialize tooltips
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.forEach(tooltipTriggerEl => {
-      new bootstrap.Tooltip(tooltipTriggerEl);
+      new Tooltip(tooltipTriggerEl);
     });
   }, []);
 
@@ -132,7 +134,7 @@ const DealTraining: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-5">
           <CompanyNameInput
             value={watch('companyName')}
             onChange={(value) => setValue('companyName', value)}
