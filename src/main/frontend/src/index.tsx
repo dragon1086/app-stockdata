@@ -1,17 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { createRoot } from 'react-dom/client';
+import App from './App';
 import './index.css';
-import DealTrainingIndex from './pages/DealTrainingIndex';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const container = document.getElementById('root');
+const root = createRoot(container!);
 
 root.render(
   <React.StrictMode>
-    <Router>
-      <DealTrainingIndex />
-    </Router>
+    <App />
   </React.StrictMode>
 );
