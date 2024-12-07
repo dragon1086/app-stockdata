@@ -1,7 +1,6 @@
 import React from 'react';
 import { HelpCircle } from 'lucide-react';
-import Tooltip from 'react-bootstrap/Tooltip';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 
 interface AutocompleteInputProps {
   label: string;

@@ -2,8 +2,7 @@ import React from 'react';
 import { HelpCircle } from 'lucide-react';
 import { UseFormRegister, FieldError } from 'react-hook-form';
 import { DealTrainingForm } from '../../types/dealTraining';
-import Tooltip from 'react-bootstrap/Tooltip';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 
 interface AmountInputProps {
   register: UseFormRegister<DealTrainingForm>;
