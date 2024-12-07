@@ -23,7 +23,7 @@ export const AmountInput: React.FC<AmountInputProps> = ({ register, error }) => 
       </label>
       <input
         type="number"
-        className={\`form-control \${error ? 'is-invalid' : ''}\`}
+        className={"form-control" + (error ? " is-invalid" : "")}
         id="slotAmount"
         placeholder="배분할 총금액을 입력하세요"
         {...register('slotAmount')}

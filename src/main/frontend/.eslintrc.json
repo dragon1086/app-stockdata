@@ -1,0 +1,12 @@
+{
+  "extends": [
+    "react-app",
+    "react-app/jest"
+  ],
+  "rules": {
+    "no-template-curly-in-string": "off",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off"
+  }
+}

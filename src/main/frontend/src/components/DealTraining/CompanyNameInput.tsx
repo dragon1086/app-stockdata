@@ -33,7 +33,7 @@ export const CompanyNameInput: React.FC<CompanyNameInputProps> = ({
         <input
           type="text"
           id="companyNameInput"
-          className={\`form-control \${error ? 'is-invalid' : ''}\`}
+          className={"form-control" + (error ? " is-invalid" : "")}
           value={value}
           onChange={(e) => {
             onChange(e.target.value);
