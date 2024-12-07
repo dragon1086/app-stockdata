@@ -15,16 +15,6 @@ export interface DealTrainingForm extends Partial<Omit<DealTrainingFormBase, 'sl
   level: DifficultyLevel;
 }
 
-export interface CompanyAutocompleteResponse {
-  companies: string[];
-}
-
-export interface DealCalculationResponse {
-  success: boolean;
-  message?: string;
-  redirectUrl?: string;
-}
-
 export interface SessionUser {
   email: string;
 }

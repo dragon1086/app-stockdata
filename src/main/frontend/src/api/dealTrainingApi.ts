@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { DealTrainingForm, CompanyAutocompleteResponse, DealCalculationResponse } from '../types/dealTraining';
+import { DealTrainingForm } from '../types/dealTraining';
+import { CompanyAutocompleteResponse, DealCalculationResponse } from '../types/api';
 
 const api = axios.create({
   baseURL: '/',
