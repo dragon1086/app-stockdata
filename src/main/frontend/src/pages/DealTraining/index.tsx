@@ -85,7 +85,130 @@ const DealTraining: React.FC = () => {
     submitForm(data);
   };
 
-  // ... (나머지 JSX 코드는 그대로 유지)
+  return (
+    <>
+      <nav className="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+        <div className="container">
+          <a className="navbar-brand" href="/">주식 매매 시뮬레이션</a>
+          <button 
+            className="navbar-toggler" 
+            type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#navbarNav"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <ul className="navbar-nav">
+              <li className="nav-item">
+                <a className="btn btn-outline-light" href="/buildup">
+                  자동 시뮬레이션으로 이동
+                </a>
+              </li>
+            </ul>
+            <div className="ms-auto">
+              {sessionUser ? (
+                <>
+                  <span className="text-light me-3">
+                    환영합니다, {sessionUser.email}님!
+                  </span>
+                  <button 
+                    className="btn btn-outline-light me-2"
+                    onClick={() => window.location.href = '/logout/google'}
+                  >
+                    로그아웃
+                  </button>
+                  <button 
+                    className="btn btn-info"
+                    onClick={openHistory}
+                  >
+                    시뮬레이션 이어하기
+                  </button>
+                </>
+              ) : (
+                <button 
+                  className="btn btn-outline-light"
+                  onClick={() => window.location.href = '/login/google'}
+                >
+                  Google로 로그인
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div className="container main-container mt-5 py-4">
+        <h1 className="text-center mb-4">주식 매매 시뮬레이션</h1>
+
+        {error && (
+          <div className="alert alert-danger mb-4">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-5">
+          <CompanyNameInput
+            value={watch('companyName')}
+            onChange={(value) => setValue('companyName', value)}
+            disabled={!isCompanyNameEnabled}
+            onToggleDisabled={() => setIsCompanyNameEnabled(!isCompanyNameEnabled)}
+          />
+
+          <AmountInput
+            register={register}
+            error={errors.slotAmount}
+          />
+
+          <PortionInput
+            register={register}
+            error={errors.portion}
+          />
+
+          <DateInput
+            register={register}
+            error={errors.startDate}
+            disabled={!isStartDateEnabled}
+            onToggleDisabled={() => setIsStartDateEnabled(!isStartDateEnabled)}
+          />
+
+          <ValuationInput
+            register={register}
+            error={errors.valuationPercent}
+            disabled={!isValuationEnabled}
+            onToggleDisabled={() => setIsValuationEnabled(!isValuationEnabled)}
+          />
+
+          <LevelSelect
+            register={register}
+            error={errors.level}
+          />
+
+          <div className="d-grid">
+            <button 
+              type="submit" 
+              className="btn btn-primary btn-lg"
+              disabled={loading}
+            >
+              {loading ? '처리중...' : '시뮬레이션 시작'}
+            </button>
+          </div>
+        </form>
+
+        <hr className="my-4" />
+
+        <div className="text-center">
+          <button 
+            type="button" 
+            className="btn btn-info"
+            onClick={() => window.location.href = '/dealTrainingManual'}
+          >
+            시뮬레이션 메뉴얼
+          </button>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default DealTraining;
