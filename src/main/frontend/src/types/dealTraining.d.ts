@@ -7,18 +7,7 @@ export interface DealTrainingForm {
   startDate: string;
   valuationPercent: number;
   level: DifficultyLevel;
-}
-
-export interface SessionUser {
-  email: string;
-}
-
-export interface CompanyAutocompleteResponse {
-  companies: string[];
-}
-
-export interface DealCalculationResponse {
-  success: boolean;
-  message?: string;
-  redirectUrl?: string;
+  isCompanyNameEnabled?: boolean;
+  isStartDateEnabled?: boolean;
+  isValuationEnabled?: boolean;
 }
