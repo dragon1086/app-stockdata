@@ -1,6 +1,8 @@
 import React from 'react';
 import { HelpCircle } from 'lucide-react';
 import { useCompanyAutocomplete } from '../../hooks/useCompanyAutocomplete';
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
 interface CompanyNameInputProps {
   value: string;
@@ -17,17 +19,21 @@ export const CompanyNameInput: React.FC<CompanyNameInputProps> = ({
 }) => {
   const { suggestions, loading, error, searchCompanies } = useCompanyAutocomplete();
 
+  const tooltipContent = (
+    <Tooltip id="company-tooltip">
+      시뮬레이션할 기업을 선택합니다. 기본적으로 랜덤으로 선택되며, 체크박스를 선택하면 직접 입력할 수 있습니다.
+    </Tooltip>
+  );
+
   return (
     <div className="mb-4">
       <label htmlFor="companyNameInput" className="form-label d-flex align-items-center">
         기업 이름
-        <HelpCircle 
-          className="ms-2 text-primary cursor-pointer" 
-          size={16}
-          data-bs-toggle="tooltip" 
-          data-bs-placement="right" 
-          title="시뮬레이션할 기업을 선택합니다. 기본적으로 랜덤으로 선택되며, 체크박스를 선택하면 직접 입력할 수 있습니다."
-        />
+        <OverlayTrigger placement="right" overlay={tooltipContent}>
+          <span className="ms-2">
+            <HelpCircle size={16} className="text-primary cursor-pointer" />
+          </span>
+        </OverlayTrigger>
       </label>
       <div className="input-group">
         <input

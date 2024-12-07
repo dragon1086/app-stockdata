@@ -5,22 +5,35 @@ import { DealTrainingForm } from '../../types/dealTraining';
 import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
-interface AmountInputProps {
+interface FormInputProps {
+  label: string;
+  name: keyof DealTrainingForm;
+  tooltipText: string;
+  type?: string;
+  placeholder?: string;
   register: UseFormRegister<DealTrainingForm>;
   error?: FieldError;
+  disabled?: boolean;
 }
 
-export const AmountInput: React.FC<AmountInputProps> = ({ register, error }) => {
+export const FormInput: React.FC<FormInputProps> = ({
+  label,
+  name,
+  tooltipText,
+  type = 'text',
+  placeholder,
+  register,
+  error,
+  disabled = false,
+}) => {
   const tooltipContent = (
-    <Tooltip id="amount-tooltip">
-      이 종목에 투자할 총 금액을 입력합니다. 이 금액을 기준으로 매매가 이루어집니다.
-    </Tooltip>
+    <Tooltip id={`${name}-tooltip`}>{tooltipText}</Tooltip>
   );
 
   return (
     <div className="mb-4">
-      <label htmlFor="slotAmount" className="form-label d-flex align-items-center">
-        종목에 배분할 금액
+      <label htmlFor={name} className="form-label d-flex align-items-center">
+        {label}
         <OverlayTrigger placement="right" overlay={tooltipContent}>
           <span className="ms-2">
             <HelpCircle size={16} className="text-primary cursor-pointer" />
@@ -28,11 +41,12 @@ export const AmountInput: React.FC<AmountInputProps> = ({ register, error }) => 
         </OverlayTrigger>
       </label>
       <input
-        type="number"
+        type={type}
+        id={name}
         className={"form-control" + (error ? " is-invalid" : "")}
-        id="slotAmount"
-        placeholder="배분할 총금액을 입력하세요"
-        {...register('slotAmount')}
+        placeholder={placeholder}
+        disabled={disabled}
+        {...register(name)}
       />
       {error && <div className="invalid-feedback">{error.message}</div>}
     </div>
