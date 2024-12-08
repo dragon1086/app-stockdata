@@ -40,7 +40,7 @@ public class DealTrainingApiV1 {
 
     @GetMapping("/new-deal-training")
     public String serveReactApp() {
-        return "forward:/resources/react-app/index.html";
+        return "forward:/react-app/index.html";
     }
 
     @GetMapping("/")
