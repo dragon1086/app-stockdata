@@ -1,8 +1,0 @@
-spring:
-  web:
-    resources:
-      static-locations: classpath:/react-app/
-  mvc:
-    view:
-      prefix: /
-      suffix: .html

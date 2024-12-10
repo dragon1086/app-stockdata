@@ -4,11 +4,11 @@ import DealTraining from './pages/DealTraining';
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/new-deal-training" element={<DealTraining />} />
-      </Routes>
-    </Router>
+      <Router basename="/app">  {/* basename 추가 */}
+          <Routes>
+              <Route path="/new" element={<DealTraining />} />
+          </Routes>
+      </Router>
   );
 };
 

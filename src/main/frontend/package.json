@@ -2,6 +2,8 @@
   "name": "app-stockdata-frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/app",
+  "proxy": "http://localhost:8081",
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
     "@popperjs/core": "^2.11.8",

@@ -186,7 +186,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.outputDirectory}/react-app</outputDirectory>
+                            <outputDirectory>${project.build.outputDirectory}/classes/react-app</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>${project.basedir}/src/main/frontend/build</directory>

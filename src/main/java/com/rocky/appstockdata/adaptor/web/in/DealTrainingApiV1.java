@@ -38,9 +38,9 @@ public class DealTrainingApiV1 {
         this.supabaseUseCase = supabaseUseCase;
     }
 
-    @GetMapping("/new-deal-training")
+    @GetMapping("/new")
     public String serveReactApp() {
-        return "forward:/react-app/index.html";
+        return "forward:/app/index.html";
     }
 
     @GetMapping("/")

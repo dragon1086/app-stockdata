@@ -15,8 +15,7 @@ spring:
     resources:
       static-locations:
         - classpath:/static/
-        - classpath:/public/
-        - classpath:/react-app/
+        - classpath:/react-app/  # 이 경로가 React 빌드 결과물이 복사되는 위치와 일치합니다
       chain:
         strategy:
           content:
